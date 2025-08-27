@@ -69,5 +69,5 @@ In a production environment, this would be automated and governed using:
 ---
 
 ## References
-- [Business Case](../statement/1-eurostyle-contonso-ma-business-case.md)  
-- [Product Backlog](../statement/2-eurostyle-contonso-ma-project-backlog.md)  
+- [Business Case](https://github.com/subllings/eurostyle-contonso-ma-unified-data-ai-databricks-fabric/blob/main/statement/1-eurostyle-contonso-ma-business-case.md)  
+- [Product Backlog](https://github.com/subllings/eurostyle-contonso-ma-unified-data-ai-databricks-fabric/blob/main/statement/2-eurostyle-contonso-ma-project-backlog.md)  
