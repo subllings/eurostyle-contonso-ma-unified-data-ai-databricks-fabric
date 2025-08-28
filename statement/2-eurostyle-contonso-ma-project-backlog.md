@@ -190,9 +190,47 @@ As a Data Engineer, I want to ingest EuroStyle and Contoso CSVs into Bronze so t
 ### Sprint day plan (4.5 days)
 - **Day 1:** Ingest Contoso → Bronze (with `ingest_ts`, `source_system`), validate types/dates, expose for DirectQuery (publish a thin SQL view or Delta table with Power BI‑friendly types, register in the metastore, and validate a Power BI Desktop DirectQuery connection via the Databricks connector — see Learning Resources), DA smoke test from Power BI.  
 - **Day 2:** Ingest EuroStyle → Bronze, align obvious column names/types across brands (build a simple mapping table or dict: `source_name → unified_name`, plus `target_type`; apply with `withColumnRenamed`/`selectExpr` and `cast`; store mapping CSV in `docs/` and reference it in the runbook; prefer snake_case, consistent date/decimal types — see Learning Resources), update mapping notes and folder structure.  
-- **Day 3:** Reconcile raw→Bronze row counts, compute basic Data Quality (DQ) summary (nulls, duplicates, top dims), document any variances.  
+- **Day 3:** Reconcile raw→Bronze row counts; compute a basic DQ summary (nulls, dup rate on business key, top dims); persist key metrics in a small monitoring table (e.g., `monitor.dq_bronze_daily`) and note any variance >1%.  
 - **Day 4:** Prove idempotent re‑run (same inputs → same end state). Use deterministic overwrite by date/partition or a MERGE on business keys to avoid duplicates; enforce basic constraints (NOT NULL/CHECK) where useful. Finalize docs: commit a mini schema dictionary at `docs/bronze-schema-dictionary.md` (use `docs/data-dictionary-template.md`) and a runbook at `docs/runbook-ingestion.md` (steps, paths, re-run notes). Address issues raised by DA/DS.  
 - **Day 4.5:** Buffer and hand‑off; optional pre‑aggregate view: create a thin day‑level view for faster DirectQuery (e.g., `CREATE VIEW bronze.sales_contoso_daily AS SELECT order_date, COUNT(*) AS orders, SUM(quantity*unit_price) AS revenue FROM bronze.sales_contoso GROUP BY order_date;`) and register it (see CREATE VIEW in Learning Resources).
+
+#### Mini notes — Feature 1.1 (per day)
+- Day 1 — Ingest + DirectQuery
+   - Read CSV to Delta, add lineage columns:
+      ```sql
+      CREATE OR REPLACE TABLE bronze.sales_contoso AS
+      SELECT *, current_timestamp() AS ingest_ts, 'CONTOSO' AS source_system
+      FROM read_files('dbfs:/FileStore/retail/raw/contoso/*.csv', format => 'csv', header => true);
+      ```
+   - Expose a BI‑friendly view (types trimmed):
+      ```sql
+      CREATE OR REPLACE VIEW bronze.v_sales_contoso AS
+      SELECT CAST(order_date AS DATE) AS order_date,
+                CAST(quantity AS INT)    AS quantity,
+                CAST(unit_price AS DECIMAL(18,2)) AS unit_price,
+                order_id, sku, customer_id, source_system, ingest_ts
+      FROM bronze.sales_contoso;
+      ```
+   - In Power BI, connect via Databricks (Token, Hostname, HTTP Path), storage mode = DirectQuery; DA runs a smoke visual.
+
+- Day 2 — Mapping + types
+   - Keep a simple mapping CSV in `docs/column_mapping.csv` with `source_name, unified_name, target_type`.
+   - Apply rename/cast (example in PySpark):
+      ```python
+      from pyspark.sql.functions import col
+      mapping = {"InvoiceNo":"order_id","StockCode":"sku","CustomerID":"customer_id"}
+      df = raw_df.select([col(c).alias(mapping.get(c,c)) for c in raw_df.columns])
+      df = df.withColumn("order_date", col("order_date").cast("date")).withColumn("unit_price", col("unit_price").cast("decimal(18,2)"))
+      ```
+
+- Day 3 — Counts + DQ summary
+   - Reconcile counts raw→bronze and persist a few metrics to `monitor.dq_bronze_daily` (row_count, null rates on keys, dup rate on BK, min/max date). Note any variance >1%.
+
+- Day 4 — Idempotence + docs
+   - Re‑run safely via `MERGE` on business keys or deterministic overwrite by date window (`replaceWhere`). Add NOT NULL/CHECK where useful. Commit `docs/bronze-schema-dictionary.md` and `docs/runbook-ingestion.md`.
+
+- Day 4.5 — Pre‑aggregate view
+   - Create/register a thin day view for DirectQuery performance and validate from Power BI.
 
 ---
 
@@ -205,6 +243,8 @@ As a Data Engineer, I want Silver tables with clean, harmonized schemas so Analy
 - [Schema Evolution in Delta](https://docs.databricks.com/delta/delta-batch.html#table-schema-evolution)  
 - [Data Quality Management](https://www.databricks.com/discover/pages/data-quality-management)  
 - [PySpark DataFrame API](https://api-docs.databricks.com/python/pyspark/latest/pyspark.sql/api/pyspark.sql.DataFrame.html)  
+ - [Star schema guidance (natural/business vs surrogate keys)](https://learn.microsoft.com/power-bi/guidance/star-schema)  
+ - [Delta Lake — overwrite specific partitions with replaceWhere](https://learn.microsoft.com/azure/databricks/delta/delta-batch#overwrite-specific-partitions-with-replacewhere)  
 
 **Key Concepts**:  
 - Silver = cleaned and standardized layer.  
@@ -243,11 +283,84 @@ As a Data Engineer, I want Silver tables with clean, harmonized schemas so Analy
 - As a DE, I ensure idempotent Silver writes so re‑runs are safe and deterministic.
 
 ### Sprint day plan (4.5 days)
-- **Day 1:** Design keys and dedup logic; implement core dedup; align types.  
-- **Day 2:** Implement FX conversion to EUR; persist `silver.fx_rates_eur` snapshot.  
-- **Day 3:** Unify customer IDs; align product hierarchy via mapping table.  
-- **Day 4:** Add idempotent write strategy; publish schema contract; update DQ report (before/after).  
-- Day 4.5: Buffer; quantify Raw→Silver impacts and hand‑off to DA/DS.
+- **Day 1:** Define business keys and dedup strategy (dedup = remove duplicate rows so only one remains per business key; use a window over keys ordered by `ingest_ts` to keep latest); profile duplicate rates per brand; normalize types (dates/decimals), trim/uppercase IDs; capture edge cases (null/invalid keys).  
+  
+- **Day 2:** Build and persist `silver.fx_rates_eur` snapshot (valuation date, source, currency, rate); join-as-of date to convert to EUR; handle missing currencies with fallback/exclusion; document rounding/precision and null-handling in notes.  
+- **Day 3:** Create customer/product crosswalks (case-trim, resolve collisions); store mapping CSVs in `docs/` and register Delta mapping tables; enforce referential checks (orphan sales) and fix before proceeding.  
+- **Day 4:** Implement idempotent writes (`replaceWhere` by date window or `MERGE` on business keys); publish Silver schema contract (names, types, nullability) and mapping rules; refresh DQ report with pre/post metrics.  
+- **Day 4.5:** Buffer; quantify Raw→Silver impacts (% duplicate reduction, FX impact), run sample queries with DA/DS, and hand-off.
+
+#### Mini notes — definitions & examples (Silver)
+
+- Business key (BK): stable, real‑world identifier used to deduplicate and join (e.g., order_id+sku+customer_id+order_date). Surrogates are technical IDs added later if needed. See Star schema guidance in Learning Resources.
+
+- fx_rates_eur (starter):
+   ```sql
+   CREATE OR REPLACE TABLE silver.fx_rates_eur (
+      valuation_date DATE    NOT NULL,
+      source         STRING  NOT NULL,
+      currency       STRING  NOT NULL,
+      rate_to_eur    DECIMAL(18,8) NOT NULL
+   ) USING DELTA;
+
+   INSERT INTO silver.fx_rates_eur (valuation_date, source, currency, rate_to_eur) VALUES
+      (date'2025-08-01', 'ECB', 'EUR', 1.00000000),
+      (date'2025-08-01', 'ECB', 'USD', 0.91500000),
+      (date'2025-08-01', 'ECB', 'GBP', 1.17000000);
+   ```
+   Join rule: convert amounts by matching `order_date` (or chosen valuation date) and `currency`.
+
+- Rounding/precision and null‑handling (what to document):
+   - Types: use DECIMAL(18,2) for money amounts, DECIMAL(18,8) for FX rates; avoid FLOAT for currency.
+   - Rounding: round at the final amount step to 2 decimals; state the function (e.g., `ROUND(x, 2)`) and rounding mode (Spark `round` is HALF_UP). Example SQL:
+      ```sql
+      SELECT ROUND(quantity * unit_price * rate_to_eur, 2) AS revenue_eur
+      FROM silver.sales_clean sc
+      JOIN silver.fx_rates_eur fx ON fx.currency = sc.currency AND fx.valuation_date = DATE(sc.order_date);
+      ```
+      PySpark example:
+      ```python
+      from pyspark.sql import functions as F
+      df = df.withColumn("revenue_eur", F.round(F.col("quantity")*F.col("unit_price")*F.col("rate_to_eur"), 2))
+      ```
+   - Null‑handling: define a fallback if `rate_to_eur` is missing (e.g., previous business day, default to EUR=1 when currency='EUR', or exclude and log). Record counts of affected rows in DQ metrics and note the policy in the schema contract.
+   - Contract note: explicitly write the chosen scales (`DECIMAL(18,2)` amounts, `DECIMAL(18,8)` rates), rounding step (final vs intermediate), and fallback policy.
+
+- Crosswalks (customer/product): mapping tables to align source codes/IDs to unified ones across brands.
+   - Example structure: `silver.product_xwalk(source_system, product_code_src, product_code_unified)` and `silver.customer_xwalk(source_system, customer_id_src, customer_id_unified)`.
+   - Use them to rename/normalize and to detect collisions (two sources mapping to the same unified code unexpectedly).
+
+- Referential checks: ensure facts reference existing dims/unified IDs; detect orphans via anti‑joins.
+   ```sql
+   -- Orphan sales on product
+   SELECT s.*
+   FROM silver.sales_clean s
+   LEFT JOIN silver.product_xwalk x
+      ON s.source_system = x.source_system AND upper(trim(s.product_code)) = x.product_code_src
+   WHERE x.product_code_unified IS NULL;
+   ```
+
+- Idempotent writes (what/why/how): same inputs → same end state; prevents duplicate rows on re‑runs.
+   - How: either `MERGE` on BKs …
+      ```sql
+      MERGE INTO silver.sales_clean t
+      USING tmp_updates u
+      ON t.order_id = u.order_id AND t.sku = u.sku AND t.customer_id = u.customer_id AND t.order_date = u.order_date
+      WHEN MATCHED THEN UPDATE SET *
+      WHEN NOT MATCHED THEN INSERT *;
+      ```
+   - … or overwrite a window deterministically with `replaceWhere` (e.g., by date):
+      ```sql
+      df.write.format("delta")
+         .option("replaceWhere", "order_date BETWEEN '2025-08-01' AND '2025-08-31'")
+         .mode("overwrite").saveAsTable("silver.sales_clean");
+      ```
+
+- Interaction with DA/DS: 
+   - Day 2: align FX valuation date and currency list with DA/DS (reporting expectations).
+   - Day 3: agree crosswalk columns and unify naming; confirm impact on analyses/features.
+   - Day 4: share the Silver schema contract + DQ deltas; DA updates model; DS updates feature joins.
+   - Day 4.5: run sample queries together to validate KPIs and feature readiness.
 
 ---
 
@@ -316,11 +429,105 @@ FROM silver.sales_clean;
 - As a DA/DS, I can query Gold marts with documented schema and consistent keys.  
 
 ### Sprint day plan (4.5 days)
-- **Day 1:** Design mart schemas and keys; create base dims/refs.  
-- **Day 2:** Implement `sales_daily` (GMV, AOV, margin proxy if COGS missing).  
-- **Day 3:** Implement `category_perf` and `customer_360` (RFM base).  
-- **Day 4:** Validate against Silver; document schema and constraints.  
-- Day 4.5: Light tuning (partitioning/coalesce), sample queries, hand‑off.
+- **Day 1:** Define **star schemas** (grain, conformed dims, keys); decide surrogate vs natural keys; set naming/format rules; pre-create reference dims (date, product, customer).  
+- **Day 2:** Build `sales_daily`: derive revenue, apply margin proxy if COGS missing (label clearly); handle returns/negatives; partition/coalesce sensibly; validate totals against Silver.  
+- **Day 3:** Build `category_perf` and `customer_360` (include RFM base); ensure one-row-per-customer, dedupe/keys consistent across brands; snapshot any slowly changing attributes if needed.  
+- **Day 4:** Reconcile counts and KPIs vs Silver; add basic constraints (NOT NULL, CHECK ranges); document schemas and assumptions (e.g., margin proxy).  
+- **Day 4.5:** Light tuning (partitioning/coalesce), create a few helper views (and register them), run smoke queries with DA/DS, and hand-off.
+
+#### Mini examples — Star schema and `sales_daily` (start)
+
+Define the star schema (concise)
+- Grain: one row per day × product (optionally carry `source_system` for splits).
+- Conformed dims: `gold.date_dim`, `gold.product_dim`, `gold.customer_dim` with stable business attributes.
+- Keys: use surrogate keys on dims (IDENTITY for product/customer; `date_key` as `yyyymmdd` int). Facts store SKs.
+- Naming/formats: snake_case; dates as DATE; money as DECIMAL(18,2); avoid nullable keys.
+
+Starter SQL — reference dimensions
+```sql
+-- DATE DIM (populate from Silver dates; tighten to your window)
+CREATE OR REPLACE TABLE gold.date_dim (
+   date_key   INT    NOT NULL,    -- yyyymmdd
+   date_value DATE   NOT NULL,
+   year       INT,
+   month      INT,
+   day        INT
+) USING DELTA;
+
+INSERT OVERWRITE gold.date_dim
+SELECT DISTINCT
+   CAST(date_format(CAST(order_date AS DATE), 'yyyyMMdd') AS INT) AS date_key,
+   CAST(order_date AS DATE) AS date_value,
+   year(order_date)  AS year,
+   month(order_date) AS month,
+   day(order_date)   AS day
+FROM silver.sales_clean;
+
+-- PRODUCT DIM (surrogate key via identity)
+CREATE OR REPLACE TABLE gold.product_dim (
+   product_sk   BIGINT GENERATED ALWAYS AS IDENTITY,
+   product_code STRING NOT NULL,
+   category     STRING,
+   brand        STRING
+) USING DELTA;
+
+INSERT INTO gold.product_dim
+SELECT DISTINCT
+   upper(trim(product_code)) AS product_code,
+   upper(trim(category))     AS category,
+   upper(trim(brand))        AS brand
+FROM silver.products_clean;
+```
+
+Starter SQL — `sales_daily` (fact)
+```sql
+-- CONTRACT (sales_daily)
+-- Grain: day × product (per source_system)
+-- Keys: date_key (INT yyyymmdd), product_sk (BIGINT), source_system (STRING)
+-- Measures: orders, units, revenue, estimated_margin (proxy if COGS missing)
+
+CREATE OR REPLACE TABLE gold.sales_daily (
+   date_key         INT     NOT NULL,
+   product_sk       BIGINT  NOT NULL,
+   source_system    STRING  NOT NULL,
+   orders           INT,
+   units            BIGINT,
+   revenue          DECIMAL(18,2),
+   estimated_margin DECIMAL(18,2),
+   CONSTRAINT chk_nonneg CHECK (units >= 0 AND revenue >= 0)
+) USING DELTA;
+
+-- First load (proxy margin 40%; treat negative quantities as returns)
+INSERT OVERWRITE gold.sales_daily
+WITH s AS (
+   SELECT
+      CAST(date_format(CAST(order_date AS DATE), 'yyyyMMdd') AS INT) AS date_key,
+      upper(trim(product_code)) AS product_code,
+      source_system,
+      order_id,
+      CAST(quantity AS BIGINT) AS qty,
+      CAST(unit_price AS DECIMAL(18,2)) AS price
+   FROM silver.sales_clean
+), p AS (
+   SELECT product_sk, product_code FROM gold.product_dim
+)
+SELECT
+   s.date_key,
+   p.product_sk,
+   s.source_system,
+   COUNT(DISTINCT s.order_id)                                        AS orders,
+   SUM(GREATEST(s.qty, 0))                                           AS units,
+   SUM(GREATEST(s.qty, 0) * s.price)                                 AS revenue,
+   SUM(GREATEST(s.qty, 0) * s.price * 0.40)                          AS estimated_margin
+FROM s JOIN p USING (product_code)
+GROUP BY s.date_key, p.product_sk, s.source_system;
+```
+
+Notes
+- Swap the margin proxy when COGS is available (join a cost table or per‑category rate).
+- If identity columns aren't desired, compute SKs from stable BKs (e.g., `md5(upper(trim(product_code)))`).
+- Keep idempotent loads: use `INSERT OVERWRITE` by date window or write via `MERGE` on `(date_key, product_sk, source_system)`.
+
 
 ---
 
@@ -394,11 +601,21 @@ Deliverables
 - As a DA, I capture perf/accessibility quick wins and a draft RLS matrix.  
 
 ### Sprint day plan (4.5 days)
-- **Day 1:** Connect to Contoso Bronze; define semantic model and base measures; build landing page.  
-- **Day 2:** Add visuals; refine measures; apply formatting and display folders.  
-- **Day 3:** Performance Analyzer pass; accessibility checks; iterate visuals.  
-- **Day 4:** Update KPI Catalog v0.2 and mini data dictionary; prepare review.  
-- Day 4.5: Buffer; publish PBIX/Fabric report; address feedback.
+- **Day 1:** Connect via Databricks DirectQuery; set storage mode; define relationships; hide technical columns; create base DAX measures (GMV, AOV, Orders) and build a simple landing page.  
+- **Day 2:** Add visuals (cards, line, table); refine measures (formats, divide-by-zero guards); organize display folders; configure sort-by and cross-highlighting behavior.  
+- **Day 3:** Run Performance Analyzer; reduce expensive visuals/filters; avoid high-cardinality slicers; apply accessibility basics (contrast, alt text); iterate layout.  
+- **Day 4:** Update KPI Catalog v0.2 and mini data dictionary in repo; annotate assumptions/limitations; add simple navigation/bookmarks; prep demo flow.  
+- **Day 4.5:** Buffer; publish to Fabric workspace; verify dataset credentials; collect stakeholder feedback and log actions.
+
+#### Mini notes — Day 1 (DirectQuery setup)
+- Connect: Power BI Desktop → Get Data → Azure Databricks → Authentication = Token; paste Server Hostname + HTTP Path; choose DirectQuery storage mode. Import the Contoso Bronze table/view (e.g., `bronze.sales_contoso`) and a Date table (or create one in Power BI).
+- Relationships: create one-to-many from Date[date] → Sales[order_date]; set cross-filter = single; mark Date as date table. Add other obvious relationships if needed.
+- Hide technicals: hide `ingest_ts`, staging keys, and columns not used in visuals; create display folders (Measures, Dates).
+- Base measures (DAX):
+   - GMV = SUMX('sales', 'sales'[quantity] * 'sales'[unit_price])
+   - Orders = DISTINCTCOUNT('sales'[order_id])
+   - AOV = DIVIDE([GMV], [Orders])
+- Landing page: add three KPI cards (GMV, AOV, Orders), a line chart GMV by Date, and a table of Top Products/Categories; format currency and thousands; set Sort By on labels where needed.
 
 ---
 
@@ -443,11 +660,18 @@ As a Data Analyst, I want to compare KPIs Raw vs Silver to highlight data cleani
 - As a DA, I configure first RLS roles on Silver and validate.  
 
 ### Sprint day plan (4.5 days)
-- **Day 1:** Connect Raw and Silver; implement base and delta measures.  
-- **Day 2:** Build side‑by‑side/toggle views; ensure consistent layouts.  
-- **Day 3:** Quantify impacts; annotate visuals; write findings.  
-- **Day 4:** Configure/test RLS roles; log DevOps issues.  
-- Day 4.5: Buffer; stakeholder review; polish.
+- **Day 1:** Connect to both Raw and Silver (consistent fields/units); implement paired measures (`*_raw`, `*_silver`, `*_delta`); ensure returns handling is consistent.  
+- **Day 2:** Build side‑by‑side pages and bookmark toggles; sync slicers across pages; align layouts and tooltips for comparability.  
+- **Day 3:** Quantify impacts (% dup reduction, FX normalization effect); annotate visuals; summarize findings in README.  
+- **Day 4:** Configure brand-level RLS on Silver; validate with "View as role"; open DevOps items for data-quality issues.  
+- **Day 4.5:** Buffer; stakeholder walkthrough; polish visuals and documentation.
+
+#### Mini notes — Feature 2.2 (per day)
+- Day 1: Import both models (Raw and Silver) with consistent field names/units; create paired measures `*_raw`, `*_silver`, and delta measures; avoid mixed grains.
+- Day 2: Use bookmarks + selection panes to toggle Raw/Silver views; sync date/brand slicers across pages.
+- Day 3: Quantify % duplicate reduction and FX impact (note methods); annotate visuals/tooltips with caveats.
+- Day 4: Define brand-level roles; validate with "View as"; ensure measures respect filter context under RLS.
+- Day 4.5: Walk stakeholders through deltas; capture actions into the backlog.
 
 ---
 
@@ -481,11 +705,18 @@ As an Executive, I want consolidated GMV, AOV, and margin so I can track EuroSty
 - As a DA, I enforce RLS for managers vs executives.  
 
 ### Sprint day plan (4.5 days)
-- **Day 1:** Connect to Gold marts; outline pages and key visuals.  
-- **Day 2:** Implement brand and regional comparisons.  
-- **Day 3:** Add margin proxy/final; performance tuning.  
-- **Day 4:** Configure/validate RLS; prepare demo.  
-- Day 4.5: Buffer; finalize and publish.
+- **Day 1:** Connect to Gold marts; outline pages/sections; confirm grain and relationships; stub key measures with proper formats.  
+- **Day 2:** Implement brand/regional comparisons (consistent axes, legends); add drill targets (brand→region→product).  
+- **Day 3:** Add margin (proxy/final); run Performance Analyzer; consider Power BI aggregation tables or summarizations if needed.  
+- **Day 4:** Configure/validate RLS (brand manager vs exec; use "View as"); create demo bookmarks; rehearse narrative.  
+- **Day 4.5:** Buffer; finalize and publish; verify sharing and permissions.
+
+#### Mini notes — Feature 2.3 (per day)
+- Day 1: Confirm fact/dim relationships on Gold; stub measures and formatting; set consistent date table.
+- Day 2: Build brand/region comparisons with aligned axes; add drill targets and verify cross-highlighting.
+- Day 3: If slow, consider aggregation tables or summarize to daily grain; re-run Performance Analyzer.
+- Day 4: Implement RLS (brand manager vs exec); validate with "View as"; save role definitions.
+- Day 4.5: Publish; verify dataset credentials and audience access; document the demo flow.
 
 ---
 
@@ -521,11 +752,18 @@ As a Marketing Manager, I want to see customer segments & churn risk so I can de
 - As a DA, I wire What‑if parameters and publish via Fabric.  
 
 ### Sprint day plan (4.5 days)
-- **Day 1:** Integrate scored tables; define segments and navigation.  
-- **Day 2:** Build segment visuals and summary KPIs.  
-- **Day 3:** Add drill‑through and What‑if parameters.  
-- **Day 4:** Publish in Fabric; test RLS and interactions.  
-- Day 4.5: Buffer; documentation and screenshots.
+- **Day 1:** Integrate churn/CLV scored tables; define segment rules (RFM buckets, risk tiers); design navigation and landing tiles.  
+- **Day 2:** Build segment visuals (treemaps/tables) and KPIs; use field parameters for flexible dimension toggles.  
+- **Day 3:** Implement drill‑through to customer detail; add What‑if parameters for thresholds and bind into measures.  
+- **Day 4:** Publish in Fabric; test RLS interactions (use "View as") and cross-highlighting; validate performance on typical filters.  
+- **Day 4.5:** Buffer; capture screenshots and document segmentation logic.
+
+#### Mini notes — Feature 2.4 (per day)
+- Day 1: Align segment rules with DS; map fields from scored tables; design landing tiles for quick nav.
+- Day 2: Use field parameters for dimension toggles; build segment KPIs and summary visuals.
+- Day 3: Add drill-through to customer detail; wire back buttons; add tooltip pages where helpful.
+- Day 4: Publish; validate RLS interactions with "View as"; test typical filters for performance.
+- Day 4.5: Screenshot key views; document segmentation rules and thresholds in README.
 
 
 ---
@@ -578,11 +816,18 @@ As a Data Scientist, I want to perform **Exploratory Data Analysis (EDA)** to un
 - As a DS, I initialize MLflow with the evaluation plan and baselines.
 
 ### Sprint day plan (4.5 days)
-- **Day 1:** Load Bronze; run profiling and describe distributions/missingness.  
-- **Day 2:** Define churn; compute prevalence; choose split strategy.  
-- **Day 3:** Implement baselines; leakage checklist; draft risk log.  
-- **Day 4:** Initialize MLflow; write EDA readout; align with DA/DE.  
-- Day 4.5: Buffer; finalize artifacts.
+- **Day 1:** Load Bronze; run profiling (distributions, missingness, outliers); capture tables/shapes; note obvious data issues for DE/DA.  
+- **Day 2:** Define churn (inactivity horizon); compute prevalence by brand/period; select non‑leaky split (time/customer‑grouped) and freeze seed.  
+- **Day 3:** Implement naive baselines (rules/RFM); complete leakage checklist; start risk log (PII, drift, label quality).  
+- **Day 4:** Initialize MLflow experiment; log baseline runs and artifacts; draft EDA readout and align with DA/DE.  
+- **Day 4.5:** Buffer; finalize notebooks and readout; link in backlog.
+
+#### Mini notes — Feature 3.1 (per day)
+- Day 1: Profile with distributions and missingness; save shapes and head/tail for reproducibility.
+- Day 2: Fix churn horizon (e.g., >90 days); compute prevalence by brand/period; freeze random seed.
+- Day 3: Implement rule/RFM baselines; complete leakage checklist; start the risk log.
+- Day 4: Initialize MLflow experiment; log baseline runs and artifacts (plots/tables).
+- Day 4.5: Publish a 1–2 page EDA summary with top issues and recommended fixes.
 
 ---
 
@@ -628,11 +873,18 @@ As a Data Scientist, I want RFM and behavioral features to build churn & CLV mod
 - As a DS, I define a consumption contract with DE/DA for scoring integration.
 
 ### Sprint day plan (4.5 days)
-- **Day 1:** Compute RFM metrics; persist as Delta (v1).  
-- **Day 2:** Implement basket diversity and cross‑brand features.  
-- **Day 3:** Correlation/cardinality screening; leakage checks; doc preprocessing.  
-- **Day 4:** Define consumption contract; train simple baselines; log to MLflow.  
-- Day 4.5: Buffer; finalize feature tables and docs.
+- **Day 1:** Compute RFM with a fixed as‑of date; persist `v1` Delta with metadata (version, created_ts, source snapshot); register for team access.  
+- **Day 2:** Add basket diversity (distinct categories) and cross‑brand flags; ensure only pre‑as‑of window info to avoid leakage.  
+- **Day 3:** Run correlation/cardinality screening; drop constant/high‑card features; document imputation/log transforms (fit on TRAIN only).  
+- **Day 4:** Define consumption contract (schema, keys, cadence) with DE/DA; train quick baselines and log to MLflow for sanity.  
+- **Day 4.5:** Buffer; finalize feature tables and docs.
+
+#### Mini notes — Feature 3.2 (per day)
+- Day 1: Use a fixed as-of date; persist `v1` features with version metadata; document source snapshot.
+- Day 2: Add basket diversity and cross-brand features; avoid leakage (pre-as-of info only).
+- Day 3: Run correlation/cardinality screens; drop constants/high-card fields; note imputations.
+- Day 4: Define consumption contract (schema, keys, cadence) with DE/DA; train quick baselines.
+- Day 4.5: Version the feature table; note joins and refresh cadence in README.
 
 ---
 
@@ -668,11 +920,18 @@ As a Data Scientist, I want baseline models for churn and CLV so I can evaluate 
 - As a DS, I log metrics/params/artifacts in MLflow, including calibration and CI.
 
 ### Sprint day plan (4.5 days)
-- **Day 1:** Train churn LR baseline; log metrics/artifacts.  
-- **Day 2:** Train CLV Random Forest baseline; log metrics/artifacts.  
-- **Day 3:** Light tuning; compute CIs; calibration checks.  
-- **Day 4:** Segment-wise evaluation; finalize registry/notes.  
-- Day 4.5: Buffer; review and hand‑off for scoring.
+- **Day 1:** Train churn LR baseline with fixed split/seed; log pipeline, metrics, and artifacts; check class balance and thresholds.  
+- **Day 2:** Train CLV Random Forest baseline; handle skew (winsorize/log if needed); log feature importance and errors.  
+- **Day 3:** Light tuning; bootstrap CIs; calibration (Brier/reliability plot); select operating points.  
+- **Day 4:** Segment‑wise eval (brand/region); record results; register models/names and document versioning.  
+- **Day 4.5:** Buffer; review and hand‑off for scoring.
+
+#### Mini notes — Feature 3.3 (per day)
+- Day 1: Train LR churn baseline with fixed split; check class balance; log to MLflow.
+- Day 2: Train RF for CLV; handle skew (winsorize/log); log importance and error metrics.
+- Day 3: Light tuning; bootstrap CIs; calibration (Brier/reliability plot).
+- Day 4: Segment-wise eval (brand/region); register models and document versions.
+- Day 4.5: Summarize results vs baselines; decide next scoring steps.
 
 ---
 
@@ -712,11 +971,18 @@ As a Data Scientist, I want to score churn/CLV and join them into Customer 360 s
 - As a DS, I validate train/serve skew and run E2E checks before hand‑off to DA.
 
 ### Sprint day plan (4.5 days)
-- **Day 1:** Prepare scoring pipeline and schema contract.  
-- **Day 2:** Run full scoring; persist `customer_scores_gold`.  
-- **Day 3:** Join scores into `customer_360_gold`; basic QA.  
-- **Day 4:** Validate skew/constraints; produce explainability notes.  
-- Day 4.5: Buffer; alignment with DA and publish.
+- **Day 1:** Freeze model versions; prepare scoring pipeline (UDFs/loader) and output schema contract (keys, types, nullability).  
+- **Day 2:** Run batch scoring; partition to manage scale; write idempotently; persist `customer_scores_gold`.  
+- **Day 3:** Join into `customer_360_gold`; QA nulls/distributions; verify counts and keys.  
+- **Day 4:** Train/serve skew checks (PSI/simple comparisons); add explainability notes (feature importances); finalize schema/versions.  
+- **Day 4.5:** Buffer; align with DA; publish tables and links.
+
+#### Mini notes — Feature 3.4 (per day)
+- Day 1: Freeze model and feature versions; define output schema; write a tiny E2E test plan.
+- Day 2: Batch score with partitions; write idempotently; persist `customer_scores_gold`.
+- Day 3: Join into `customer_360_gold`; validate counts/keys; sanity-check distributions.
+- Day 4: Check train/serve skew (PSI/simple compares); add feature importances/explainability notes.
+- Day 4.5: Publish outputs and docs; align with DA on dashboard bindings.
 
 ---
 
@@ -763,11 +1029,18 @@ For your information
 - As a DE, I ingest them into Fabric Lakehouse tables via Data Pipelines.  
 
 ### Sprint day plan (4.5 days)
-- **Day 1:** Define export contract; test with one small table.  
-- **Day 2:** Package all Gold marts for export.  
-- **Day 3:** Manual transfer to Fabric; configure pipeline ingest.  
-- **Day 4:** Validate Delta tables and connectivity (Power BI/Direct Lake).  
-- Day 4.5: Buffer; document steps and limitations.
+- **Day 1:** Define export contract (paths, `_SUCCESS`, `release_manifest.json`, schema); dry‑run on one small table and verify re‑ingest.  
+- **Day 2:** Package all Gold marts; coalesce to reasonable file sizes; compute row counts and optional checksums; bundle manifest.  
+- **Day 3:** Manually transfer to Fabric Lakehouse `/Files`; configure Data Pipeline mappings and create Delta tables.  
+- **Day 4:** Validate counts/schemas post‑ingest; test Power BI connectivity (Direct Lake) and basic visuals.  
+- **Day 4.5:** Buffer; document steps, limitations, and troubleshooting.
+
+#### Mini notes — Feature 4.1 (per day)
+- Day 1: Define export paths and manifest fields; do a tiny dry-run end-to-end.
+- Day 2: Coalesce files to reasonable sizes; compute counts/checksums; finalize manifest.
+- Day 3: Manual transfer to Fabric `/Files`; map columns in Data Pipeline.
+- Day 4: Validate counts/schemas; test Direct Lake connectivity with a simple visual.
+- Day 4.5: Document manual steps and limits for Free tier; add troubleshooting tips.
 
 
 ---
@@ -805,11 +1078,18 @@ As a Data Analyst, I want Power BI dashboards published through Fabric so execut
 - As a DA, I deploy via Fabric pipelines across stages.  
 
 ### Sprint day plan (4.5 days)
-- **Day 1:** Executive dashboard page(s).  
-- **Day 2:** Segmentation dashboard page(s).  
-- **Day 3:** RLS configuration and testing.  
-- **Day 4:** Pipeline promotion Dev → Test and validation.  
-- Day 4.5: Buffer; polish and documentation.
+- **Day 1:** Build Executive pages (theme, navigation, KPI cards); ensure consistent formats and tooltips.  
+- **Day 2:** Build Segmentation pages; integrate scored tables; validate cross‑highlighting behavior.  
+- **Day 3:** Configure RLS roles and map to groups; validate with "View as".  
+- **Day 4:** Promote via Fabric Deployment Pipeline Dev → Test; validate connections and parameters.  
+- **Day 4.5:** Buffer; polish visuals, documentation, and sharing settings.
+
+#### Mini notes — Feature 4.2 (per day)
+- Day 1: Apply a report theme (colors/number formats); add navigation (buttons/bookmarks); place KPI cards for GMV, AOV, margin; set formats (currency/decimal) and standard tooltips; hide technical columns.
+- Day 2: Add Segmentation pages; connect to `customer_scores_gold`; confirm relationships (customer/date); test cross-highlighting between segment charts and KPI cards; avoid high-cardinality slicers.
+- Day 3: Create roles (e.g., `BrandManager` filters brand='Contoso'); map roles to security groups; test with "View as" for both manager and exec; verify measures behave correctly under RLS.
+- Day 4: Use Fabric Deployment Pipeline to promote Dev→Test; validate dataset parameters (Lakehouse, workspace); refresh and check all visuals; log any broken lineage.
+- Day 4.5: Review sharing (audience, app access); add README pointers (dataset, dashboards, pipeline URL); capture screenshots for hand‑off.
 
 ---
 <a id="feature-4-3"></a>
@@ -848,11 +1128,18 @@ As a Data Scientist, I want churn and CLV scores exported from Databricks into F
 - As a DA, I confirm dashboards consume the new tables consistently.  
 
 ### Sprint day plan (4.5 days)
-- **Day 1:** Prepare scored outputs and export plan.  
-- **Day 2:** Export and upload to Fabric; configure pipeline.  
-- **Day 3:** Validate tables and dashboard bindings.  
-- **Day 4:** Document validation and edge cases.  
-- Day 4.5: Buffer; finalize evidence links.
+- **Day 1:** Define scored output schemas/partitions and export plan (manifest fields, `_SUCCESS`); confirm table list with DA.  
+- **Day 2:** Export Parquet + manifest; upload to Fabric `/Files`; configure Pipeline mappings for each table.  
+- **Day 3:** Validate Lakehouse tables (schema/row counts) and Power BI bindings; refresh visuals.  
+- **Day 4:** Document validations and edge cases (type coercions, time zones, rounding); capture before/after metrics.  
+- **Day 4.5:** Buffer; finalize evidence links and ownership.
+
+#### Mini notes — Feature 4.3 (per day)
+- Day 1: Confirm scored schema (keys/types); list export fields and `_SUCCESS`.
+- Day 2: Export Parquet+manifest; upload to Fabric; configure mappings per table.
+- Day 3: Validate row counts and dashboard bindings; refresh visuals.
+- Day 4: Log validation notes (types/time zones/rounding); record pre/post metrics.
+- Day 4.5: Link evidence and owners; close the loop with DA.
 
 
 ---
@@ -922,11 +1209,18 @@ Trade-offs and when to skip
 - As a DA/DS, I query hubs/links for consistent keys and history.  
 
 ### Sprint day plan (4.5 days)
-- **Day 1:** Build `customer_hub`, `product_hub`, `calendar_hub`.  
-- **Day 2:** Build `sales_link` and resolve keys.  
-- **Day 3:** Build a first satellite (e.g., `customer_satellite`).  
-- **Day 4:** Validate joins/cardinalities; fix issues.  
-- Day 4.5: Document schema and SCD policy.
+- **Day 1:** Build `customer_hub`, `product_hub`, `calendar_hub`; choose hash function and key normalization; ensure idempotent population.  
+- **Day 2:** Build `sales_link`; resolve FK lookups; handle null/late‑arriving keys; confirm transaction granularity.  
+- **Day 3:** Build a first satellite (e.g., `customer_satellite`) with SCD2 fields; implement change detection and closing/opening rows.  
+- **Day 4:** Validate joins/cardinality, orphan detection, and date consistency; fix issues and re‑run.  
+- **Day 4.5:** Document schema, keys, and SCD policy (diagram + notes).
+
+#### Mini notes — Feature 5.1 (per day)
+- Day 1: Normalize BKs; hash to SKs; ensure idempotent hub loads.
+- Day 2: Build sales_link; resolve FK lookups; handle late/unknowns.
+- Day 3: Implement SCD2 change detection; set effective_from/to; flag is_current.
+- Day 4: Validate joins and cardinality; detect orphans; iterate fixes.
+- Day 4.5: Document schema and SCD2 policy with a small diagram.
 
 **Minimal SQL Example** (adapt if needed)
 ```sql
@@ -1030,11 +1324,11 @@ As a Data Analyst, I want to implement advanced segmentation logic and dynamic d
 - As a Marketing user, I can navigate from KPIs to segment to customer.  
 
 ### Sprint day plan (4.5 days)
-- **Day 1:** Define segmentation logic and parameters.  
-- **Day 2:** Build dynamic visuals and segment pages.  
-- **Day 3:** Implement drill‑through to customer detail.  
-- **Day 4:** Connect to Gold tables; test interactions.  
-- Day 4.5: Buffer; document.
+- **Day 1:** Define segmentation logic (bins/thresholds) and What‑if parameter ranges; align with stakeholders.  
+- **Day 2:** Build dynamic visuals (field parameters/small multiples) and segment pages; ensure consistent legends.  
+- **Day 3:** Implement drill‑through to detail with back buttons; add tooltip pages where useful.  
+- **Day 4:** Connect to Gold tables; test interactions/performance; consider aggregated tables if needed.  
+- **Day 4.5:** Buffer; document rules and navigation.
 
 <a id="feature-5-3"></a>
 ### Feature 5.3 (DS) – Survival & Probabilistic Models for Churn and CLV  
@@ -1074,11 +1368,11 @@ As a Data Scientist, I want to implement advanced survival analysis and probabil
 - As a DA, I receive segment‑level visuals (survival/CLV).  
 
 ### Sprint day plan (4.5 days)
-- **Day 1:** Prepare datasets and checks.  
-- **Day 2:** Train Cox/Kaplan‑Meier; evaluate.  
-- **Day 3:** Train BG/NBD and Gamma‑Gamma; evaluate.  
-- **Day 4:** Build visuals and segment comparisons.  
-- Day 4.5: Document results and recommendations.
+- **Day 1:** Prepare datasets with censoring rules and time origin; validate horizons and event definitions; sanity checks.  
+- **Day 2:** Train Cox/Kaplan‑Meier; test proportional hazards assumptions; evaluate by segment.  
+- **Day 3:** Train BG/NBD and Gamma‑Gamma; initialize sensibly; check convergence and plausibility.  
+- **Day 4:** Build survival/CLV visuals; compute quantiles and calibration; compare to baselines.  
+- **Day 4.5:** Document results, seeds, and reproducibility notes.
 
 <a id="feature-5-4"></a>
 ### Feature 5.4 (All) – End-to-End Deployment (Databricks + Fabric)
@@ -1135,11 +1429,11 @@ As a project team (DE, DA, DS), we want to simulate an end-to-end deployment pip
 - As stakeholders, we can trace artifacts and promotions across environments.  
 
 ### Sprint day plan (4.5 days)
-- **Day 1:** Structure repo and artifacts; define CI checks.  
-- **Day 2:** Produce/export artifacts (notebooks, PBIX, configs).  
-- **Day 3:** Set up Fabric pipeline Dev; manual deployment steps.  
-- **Day 4:** Promote to Test; validate RLS and data bindings.  
-- Day 4.5: Capture screenshots and finalize documentation.
+- **Day 1:** Structure repo/artifacts; define CI checks (lint notebooks, schema checks, docs build); decide version tags.  
+- **Day 2:** Produce/export artifacts (notebooks, PBIX, configs); tag versions; include manifests and changelogs.  
+- **Day 3:** Set up Fabric pipeline (Dev); perform manual deployment steps; configure rules/parameters.  
+- **Day 4:** Promote to Test; validate RLS, data bindings, and KPIs; capture issues.  
+- **Day 4.5:** Capture screenshots and finalize documentation (what's automated vs manual).
 - No Jobs API → cannot schedule or trigger pipelines automatically.  
 - No Unity Catalog → no centralized governance or lineage.  
 - Limited compute → must work on small datasets.  
