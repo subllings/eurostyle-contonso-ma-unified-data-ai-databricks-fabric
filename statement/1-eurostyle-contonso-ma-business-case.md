@@ -50,8 +50,8 @@ The **Chief Marketing Officer (CMO)** and **Chief Data & Analytics Officer (CDAO
     - **Gross Merchandise Value (GMV)**: total value of merchandise sold,  
     - **Average Order Value (AOV)**: average spend per order,  
     - and margin.  
-  - Note: If Cost of Goods Sold (COGS: direct costs to acquire/produce items, e.g., purchase cost, manufacturing, inbound freight) is not present in source datasets, margin may be deferred or computed as an estimated proxy (clearly labeled) until proper cost data is available. See the Product Backlog (Feature 1.3 – Gold Business Marts) for proxy methods and a short SQL example.
-- Implement **Role-Based Access Control (RLS)** so managers only see their own brand, while executives access the consolidated view.
+  - Note: If **Cost of Goods Sold** (**COGS**: direct costs to acquire/produce items, e.g., purchase cost, manufacturing, inbound freight) is not present in source datasets, margin may be deferred or computed as an estimated proxy (clearly labeled) until proper cost data is available. See the Product Backlog (Feature 1.3 – Gold Business Marts) for proxy methods and a short SQL example.
+- Implement **Row-Level Security (RLS)** so managers only see their own brand, while executives access the consolidated view.
 - Provide clarity on key business questions: market share by region, margin gaps, and customer behavior differences North vs. South.
 
 ### Data Science
