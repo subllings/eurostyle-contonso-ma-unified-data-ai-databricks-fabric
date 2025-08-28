@@ -75,7 +75,7 @@ The **Chief Marketing Officer (CMO)** and **Chief Data & Analytics Officer (CDAO
 - **Data Analysts (DA)**  
   - Define **key performance indicators (KPIs)** from Day 0, highlighting differences in definitions between EuroStyle and Contoso.  
   - Build side-by-side dashboards early on raw/Bronze data, then refine them progressively on Silver and Gold.  
-  - Implement **Role-Based Access Control (RLS)** in Power BI so managers see only their own brand while executives access consolidated dashboards.  
+  - Implement **Row-Level Security (RLS)** in Power BI so managers see only their own brand while executives access consolidated dashboards.  
   - Deliver the final **executive Post-Merger dashboards** in Power BI, covering consolidated **Gross Merchandise Value (GMV)**, **Average Order Value (AOV)**, margin, churn, and customer segments.  
 
 - **Data Scientists (DS)**  
