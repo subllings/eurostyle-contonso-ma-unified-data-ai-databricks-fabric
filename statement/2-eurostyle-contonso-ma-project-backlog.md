@@ -104,6 +104,17 @@ The project will follow an agile approach adapted to the constraints of Databric
 - Columns: Backlog → Selected for Sprint → In Progress → In Review → Done (optional: "Blocked").
 - Card content: each card describes a deliverable (not a personal to‑do) and includes Acceptance Criteria, Definition of Done, and links to code/dashboards. Use sub‑tasks when several members collaborate.
 
+#### DQ tickets (Azure DevOps) — lightweight template
+
+- When to open: any reconciliation variance >1%, material null/duplication spikes, orphan facts, missing FX, or parsing errors blocking DA/DS.
+- Work item type: Bug (tag: `DQ`).
+- Title: short, specific (e.g., "DQ: EuroStyle vs Bronze count variance 2.3% on 2025‑08‑01").
+- Description: what is wrong, why it matters, scope (brand/date/tables).
+- Evidence: paste queries, row counts, and 3–5 sample rows.
+- Owner / ETA / Severity: assign a DE; set realistic ETA; severity P1–P3.
+- Tags: `DQ`, `Bronze`/`Silver`, `EuroStyle`/`Contoso`.
+- Links: add notebook/table paths; paste link in README under "Data Quality Issues".
+
 ### Sprint cadence
 
 - Duration: 4.5 days per sprint.
@@ -171,6 +182,7 @@ As a Data Engineer, I want to ingest EuroStyle and Contoso CSVs into Bronze so t
  - Dates and numeric columns parse correctly; consistent column naming applied where feasible across brands.  
  - Basic Data Quality (DQ) summary produced (missing values, duplicate rate on `(order_id, sku, customer_id, order_date)`, top countries/currencies).  
  - Mini schema dictionary and a short runbook (how to re-run ingestion, folder structure, naming conventions) added to repo.
+ - Azure DevOps DQ tickets opened for any raw→Bronze variance >1% or material DQ issue; links captured in README and referenced by DA in Feature 2.2.
 
 **Tasks**:  
 - Upload EuroStyle dataset (Online Retail II) into `/FileStore/retail/raw/eurostyle/`  
@@ -180,6 +192,7 @@ As a Data Engineer, I want to ingest EuroStyle and Contoso CSVs into Bronze so t
  - Expose tables/views for DirectQuery and perform a smoke test from Power BI.  
  - Produce a one‑page Data Quality (DQ) summary (nulls, duplicates, row counts), and reconcile raw→Bronze counts (±1% tolerance or documented variance).  
  - Publish a mini schema dictionary and a short runbook for re‑runs.
+ - Open Azure DevOps "DQ" tickets for any reconciliation variance >1% or material DQ issue; include evidence (counts, sample rows), severity, owner, and ETA; paste the work item links into the README.
 
 **User Stories (breakdown)**  
 - As a DA, I can connect to Contoso Bronze via DirectQuery on Day 1 to build the First Look.  
@@ -190,7 +203,7 @@ As a Data Engineer, I want to ingest EuroStyle and Contoso CSVs into Bronze so t
 ### Sprint day plan (4.5 days)
 - **Day 1:** Ingest Contoso → Bronze (with `ingest_ts`, `source_system`), validate types/dates, expose for DirectQuery (publish a thin SQL view or Delta table with Power BI‑friendly types, register in the metastore, and validate a Power BI Desktop DirectQuery connection via the Databricks connector — see Learning Resources), DA smoke test from Power BI.  
 - **Day 2:** Ingest EuroStyle → Bronze, align obvious column names/types across brands (build a simple mapping table or dict: `source_name → unified_name`, plus `target_type`; apply with `withColumnRenamed`/`selectExpr` and `cast`; store mapping CSV in `docs/` and reference it in the runbook; prefer snake_case, consistent date/decimal types — see Learning Resources), update mapping notes and folder structure.  
-- **Day 3:** Reconcile raw→Bronze row counts; compute a basic DQ summary (nulls, dup rate on business key, top dims); persist key metrics in a small monitoring table (e.g., `monitor.dq_bronze_daily`) and note any variance >1%.  
+ - **Day 3:** Reconcile raw→Bronze row counts; compute a basic DQ summary (nulls, dup rate on business key, top dims); persist key metrics in a small monitoring table (e.g., `monitor.dq_bronze_daily`) and note any variance >1%; open Azure DevOps DQ tickets for any variance >1% or material issue and link them in the README.  
 - **Day 4:** Prove idempotent re‑run (same inputs → same end state). Use deterministic overwrite by date/partition or a MERGE on business keys to avoid duplicates; enforce basic constraints (NOT NULL/CHECK) where useful. Finalize docs: commit a mini schema dictionary at `docs/bronze-schema-dictionary.md` (use `docs/data-dictionary-template.md`) and a runbook at `docs/runbook-ingestion.md` (steps, paths, re-run notes). Address issues raised by DA/DS.  
 - **Day 4.5:** Buffer and hand‑off; optional pre‑aggregate view: create a thin day‑level view for faster DirectQuery (e.g., `CREATE VIEW bronze.sales_contoso_daily AS SELECT order_date, COUNT(*) AS orders, SUM(quantity*unit_price) AS revenue FROM bronze.sales_contoso GROUP BY order_date;`) and register it (see CREATE VIEW in Learning Resources).
 
@@ -265,6 +278,7 @@ As a Data Engineer, I want Silver tables with clean, harmonized schemas so Analy
  - Silver data contract published (schema with types/nullability and mapping rules).  
  - DQ report updated (pre/post cleaning: duplicates removed %, nulls reduced %, FX normalization impact).  
  - FX snapshot table (`silver.fx_rates_eur`) versioned with valuation date and source metadata.
+ - Azure DevOps DQ tickets opened/updated for any Raw→Silver residual issues discovered (e.g., orphan facts, missing FX rates); links added to README and referenced by DA in Feature 2.2.
 
 **Tasks**:  
 - Deduplicate data using business keys.  
@@ -275,6 +289,7 @@ As a Data Engineer, I want Silver tables with clean, harmonized schemas so Analy
  - Implement idempotent write logic (e.g., overwrite by date window or equivalent) and document it.  
  - Publish the Silver schema contract (names, types, nullability) and mapping rules.  
  - Refresh and attach the DQ report highlighting Raw→Silver improvements.
+ - Create/refresh Azure DevOps DQ tickets for residual data issues (e.g., orphans, invalid codes, missing FX); attach evidence queries and assign owners with ETA; paste links in README.
 
 **User Stories (breakdown)**  
 - As a DE, I deliver Silver sales with duplicates removed and currencies normalized to EUR.  
@@ -595,6 +610,16 @@ Deliverables
  - Draft KPI Catalog and a lightweight data dictionary (fields, definitions, units).  
  - Prepare a draft RLS matrix (who sees what) for future sprints; no enforcement yet.
 
+ - **Provide insights: Storytelling one‑liners (Feature 2.1)**  
+    - GMV changed by X% vs last week; orders moved by Y% and AOV by Z%.  
+    - Yesterday's GMV was X; top category [Category] contributed Y% and [Top Product] led sales.  
+    - AOV is X (±Y% vs 7‑day average); customers bought Z items per order on average.  
+    - GMV peaked on [Date] driven by [Category] in [Country]; orders up X%.  
+    - Top 10 products generated X% of GMV; [P1], [P2], [P3] explain most of the gain.  
+    - [Country/Region] accounts for X% of GMV; [Second] is Y% — focus remains [Top Region].  
+    - New vs returning: returning customers generated X% of GMV; AOV returning is Y% higher.  
+    - Today looks normal: GMV within ±X% of 7‑day average; no unusual spikes.  
+
 **User Stories (breakdown)**  
 - As a DA, I build a v1 report using Contoso Bronze with named measures and a clear semantic model.  
 - As a DA, I document KPI Catalog v0.2 and mini data dictionary.  
@@ -602,20 +627,19 @@ Deliverables
 
 ### Sprint day plan (4.5 days)
 - **Day 1:** Connect via Databricks DirectQuery; set storage mode; define relationships; hide technical columns; create base DAX measures (GMV, AOV, Orders) and build a simple landing page.  
+   - Story focus: add simple deltas vs last week (GMV, Orders, AOV) and 7‑day averages for "normal day" checks.  
+   - Prepare Top Category and Top Product (share of GMV) for the one‑liners; keep one small table per item.  
 - **Day 2:** Add visuals (cards, line, table); refine measures (formats, divide-by-zero guards); organize display folders; configure sort-by and cross-highlighting behavior.  
+   - Story focus: show Top 10 products with cumulative %; add a region share bar; annotate peak day on the GMV line.  
+   - Add Units per order to explain AOV changes (items/order).  
 - **Day 3:** Run Performance Analyzer; reduce expensive visuals/filters; avoid high-cardinality slicers; apply accessibility basics (contrast, alt text); iterate layout.  
+   - Story focus: create a "Today looks normal?" status (GMV within ±X% of 7‑day avg); surface in a small card.  
+   - Keep tooltips that display "vs last week" and "vs 7‑day avg" for GMV/AOV/Orders.  
 - **Day 4:** Update KPI Catalog v0.2 and mini data dictionary in repo; annotate assumptions/limitations; add simple navigation/bookmarks; prep demo flow.  
-- **Day 4.5:** Buffer; publish to Fabric workspace; verify dataset credentials; collect stakeholder feedback and log actions.
-
-#### Mini notes — Day 1 (DirectQuery setup)
-- Connect: Power BI Desktop → Get Data → Azure Databricks → Authentication = Token; paste Server Hostname + HTTP Path; choose DirectQuery storage mode. Import the Contoso Bronze table/view (e.g., `bronze.sales_contoso`) and a Date table (or create one in Power BI).
-- Relationships: create one-to-many from Date[date] → Sales[order_date]; set cross-filter = single; mark Date as date table. Add other obvious relationships if needed.
-- Hide technicals: hide `ingest_ts`, staging keys, and columns not used in visuals; create display folders (Measures, Dates).
-- Base measures (DAX):
-   - GMV = SUMX('sales', 'sales'[quantity] * 'sales'[unit_price])
-   - Orders = DISTINCTCOUNT('sales'[order_id])
-   - AOV = DIVIDE([GMV], [Orders])
-- Landing page: add three KPI cards (GMV, AOV, Orders), a line chart GMV by Date, and a table of Top Products/Categories; format currency and thousands; set Sort By on labels where needed.
+   - Story focus: document the eight one‑liners and which visuals/measures feed each sentence.  
+   - Optional: add a text box that reads the current context (date/region) to prefill a headline.  
+- **Day 4.5:** Buffer; publish to Fabric workspace; verify dataset credentials; collect stakeholder feedback and log actions.  
+   - Story focus: capture the one‑liners for the last 7 days (or last week) and paste into the README for hand‑off.  
 
 ---
 
@@ -654,6 +678,14 @@ As a Data Analyst, I want to compare KPIs Raw vs Silver to highlight data cleani
  - Configure and test RLS roles on Silver (brand managers vs executives).  
  - Log Azure DevOps items for identified data-quality issues and link them from the report/README.
 
+ - Provide insights: Storytelling one‑liners (Feature 2.2)  
+    - After cleaning, GMV differs by X%; duplicates dropped by Y% and FX normalization changed totals by Z%.  
+    - AOV moved from X to Y after removing duplicates; impact comes from [reason: fewer inflated orders or corrected prices].  
+    - Return rate changed from X% to Y% due to consistent handling of negative quantities/credit notes; note if Contoso lacks returns.  
+    - Biggest delta is in [brand/region/category]; drivers are [dup removal, FX to EUR, SKU mapping].  
+    - Today's delta is small: KPIs within ±X% of Raw; Silver is safe for executive views.  
+    - Confidence note: margin is proxy for W% of rows; decisions within ±V% tolerance.  
+
 **User Stories (breakdown)**  
 - As a DA, I compare Raw vs Silver KPIs with clear delta measures and toggles.  
 - As a DA, I quantify data-quality impacts and log issues to DevOps.  
@@ -672,6 +704,19 @@ As a Data Analyst, I want to compare KPIs Raw vs Silver to highlight data cleani
 - Day 3: Quantify % duplicate reduction and FX impact (note methods); annotate visuals/tooltips with caveats.
 - Day 4: Define brand-level roles; validate with "View as"; ensure measures respect filter context under RLS.
 - Day 4.5: Walk stakeholders through deltas; capture actions into the backlog.
+
+##### Feature 2.1 vs feature 2.2 (quick comparison)
+| Aspect | Feature 2.1: First Look (Contoso, Bronze) | Feature 2.2: Raw vs Silver (EuroStyle + Contoso) |
+|---|---|---|
+| Goal | Tell what happened (performance snapshot). | Explain what changed after cleaning (data‑quality impact). |
+| Scope | Contoso only. | Contoso + EuroStyle. |
+| Data layer | Bronze (raw). | Bronze vs Silver (cleaned/harmonized). |
+| Measures | GMV, AOV, Orders (named DAX). | Paired KPIs: `*_raw`, `*_silver`, `*_delta`, plus `return_rate_delta`. |
+| Visuals | KPI cards, daily GMV line, Top 10 products. | Before/After pages, toggle/bookmarks, DQ impact table (dup %, FX effect). |
+| One‑liners | "GMV X; Orders Y; AOV Z; Top category/product." | "After cleaning: GMV −X% (−dup Y%, +FX Z%); biggest delta in [brand/region]." |
+| Caveats | Minimal (raw snapshot). | Methods banner: returns rule, FX valuation date, margin proxy note. |
+| RLS | Draft only. | Basic RLS on Silver (brand manager vs exec). |
+| Output | v1 report + KPI Catalog v0.2 + perf notes. | Comparison page + delta measures + DQ tickets. |
 
 ---
 
