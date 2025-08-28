@@ -367,6 +367,8 @@ As a Data Scientist, I want to score churn/CLV and join them into Customer 360 s
 **Learning Resources**:  
 - [MLflow Model Registry](https://mlflow.org/docs/latest/model-registry.html)  
 - [Databricks Batch Scoring](https://docs.databricks.com/machine-learning/model-inference/index.html)  
+- [Getting Started with Databricks - Building a Forecasting Model on Databricks](https://community.databricks.com/t5/get-started-guides/getting-started-with-databricks-building-a-forecasting-model-on/ta-p/69301)
+- [Responsible AI with the Databricks Data Intelligence Platform](https://www.databricks.com/blog/responsible-ai-databricks-data-intelligence-platform)
 - [Explainability Methods](https://christophm.github.io/interpretable-ml-book/)  
 
 **Key Concepts**:  
@@ -401,6 +403,11 @@ As a Data Engineer, I want Gold marts exported to Fabric so dashboards can consu
 - [Fabric Lakehouse Overview](https://learn.microsoft.com/en-us/fabric/data-engineering/lakehouse-overview)  
 - [Fabric Data Pipelines](https://learn.microsoft.com/en-us/fabric/data-factory/)  
 - [Databricks Parquet & Delta Export](https://docs.databricks.com/delta/delta-batch.html)  
+
+For your information
+- [Integrate OneLake with Azure Databricks](https://learn.microsoft.com/en-us/fabric/onelake/onelake-azure-databricks)
+- [Understand medallion lakehouse architecture for Microsoft Fabric with OneLake](https://learn.microsoft.com/en-us/fabric/onelake/onelake-medallion-lakehouse-architecture)
+- [Microsoft Fabric documentation](https://learn.microsoft.com/en-us/fabric)
 
 **Key Concepts**:  
 - **Gold marts** = final curated tables for analytics (sales_daily, customer_360, etc.).  
