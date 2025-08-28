@@ -562,6 +562,23 @@ As a Data Scientist, I want churn and CLV scores exported from Databricks into F
 **User Story**  
 As a Data Engineer, I want a simplified Data Vault (Hubs, Links, Satellites) in the Silver layer so downstream Gold marts are consistent, modular, and easy to evolve.
 
+#### Why Data Vault in Silver? (Benefits)
+
+- Change-tolerant model: hubs/links/satellites decouple core identities from changing attributes, so source schema tweaks impact only the affected satellite.
+- Consistent keys across brands: stable, hashed business keys unify EuroStyle and Contoso identifiers despite differing source systems and formats.
+- Built-in historization: satellites track attribute changes over time (SCD2), enabling both "current" and "as-of date" analytics downstream.
+- Reusable semantic layer: multiple Gold marts reuse the same conforming hubs/links/satellites, reducing duplication and drift.
+- Clear lineage and governance: record_source, load_ts, and hub/link relationships make provenance and audit simple.
+- M&A friendly: isolates integration pain (mapping, late-arriving keys, overlaps) while keeping downstream models stable.
+- Scales incrementally: easy to append new sources or attributes by adding satellites without refactoring existing marts.
+
+Trade-offs and when to skip
+- Overhead: adds modeling/ETL effort; if the scope is short-lived or schemas are stable, a straight dimensional model may be sufficient.
+- Complexity: requires naming and keying conventions; in free-tier setups SCD2 is manual.
+- Guidance for this project: keep it "light" (a few hubs/links, at least one satellite). If time is tight, prioritize Medallion + conformed dimensions and treat this feature as optional.
+
+
+
 **Learning Resources**  
 - [Medallion Architecture (Databricks)](https://docs.databricks.com/lakehouse/medallion.html)  
 - [Delta Lake Best Practices (Azure Databricks)](https://learn.microsoft.com/en-us/azure/databricks/delta/best-practices)  
@@ -596,7 +613,7 @@ As a Data Engineer, I want a simplified Data Vault (Hubs, Links, Satellites) in 
 5. Document  
    - ASCII/Mermaid schema, naming conventions, key logic, SCD policy.
 
-**Minimal SQL Example (adapt for CE)**  
+**Minimal SQL Example**  
 ```sql
 -- CUSTOMER HUB
 CREATE OR REPLACE TABLE silver.customer_hub AS
@@ -778,11 +795,6 @@ As a project team (DE, DA, DS), we want to simulate an end-to-end deployment pip
 - Manual export/import only → users must download Parquet from DBFS and upload into Fabric.  
 - GitHub Actions usable for **static checks only** (no direct deployment).  
 
----
-
-## Educational note (BeCode Data Analytics & AI Bootcamp)
-
-This Product Backlog is provided solely for educational purposes as part of the BeCode Data Analytics & AI Bootcamp. Names, datasets, and scenarios are illustrative for training only and are not production guidance.
 
 ---
 
@@ -826,7 +838,11 @@ This Product Backlog is provided solely for educational purposes as part of the 
 | RPV | Revenue Per Visitor |
 | CR | Conversion Rate |
 
+---
 
+## Educational note (BeCode Data Analytics & AI Bootcamp)
+
+This Product Backlog is provided solely for educational purposes as part of the BeCode Data Analytics & AI Bootcamp. Names, datasets, and scenarios are illustrative for training only and are not production guidance.
 
 
 
