@@ -174,7 +174,8 @@ As a Data Engineer, I want Gold marts for sales and customers so the business ge
 As a Data Analyst, I want KPIs from Bronze so I can deliver a "First Look" dashboard.  
 
 **Learning Resources**:  
-- [Power BI Fundamentals](https://learn.microsoft.com/en-us/power-bi/fundamentals/)  
+- [Power BI Fundamentals](https://learn.microsoft.com/en-us/power-bi/fundamentals/)
+- [Work with the legacy Hive metastore alongside Unity Catalog](https://docs.databricks.com/aws/en/data-governance/unity-catalog/hive-metastore)  
 - [DirectQuery to Databricks](https://learn.microsoft.com/en-us/azure/databricks/partners/bi/power-bi)  
 - [Data Visualization Best Practices](https://www.tableau.com/learn/articles/data-visualization)  
 
