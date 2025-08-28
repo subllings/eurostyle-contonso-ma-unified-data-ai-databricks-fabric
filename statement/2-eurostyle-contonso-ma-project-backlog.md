@@ -658,6 +658,56 @@ As a Data Scientist, I want to implement advanced survival analysis and probabil
 5. (Optional) Prototype a sequential NN model (LSTM) for churn prediction.  
 6. Document findings and compare with baseline tree-based models.  
 
+### Feature 5.4 (All) – End-to-End Deployment (Databricks + Fabric)
+
+**User Story**  
+As a project team (DE, DA, DS), we want to simulate an end-to-end deployment pipeline across Databricks and Microsoft Fabric so that data pipelines, ML models, and dashboards can be versioned, validated, and promoted, even if some steps remain manual in Free Editions.
+
+**Learning Resources**  
+- [Databricks Repos and GitHub integration](https://learn.microsoft.com/en-us/azure/databricks/repos)  
+- [CI/CD on Databricks with GitHub Actions](https://learn.microsoft.com/en-us/azure/databricks/dev-tools/ci-cd)  
+- [Fabric Deployment Pipelines](https://learn.microsoft.com/en-us/power-bi/create-reports/deployment-pipelines-overview)  
+- [Row-level security in Fabric](https://learn.microsoft.com/en-us/fabric/security/row-level-security)  
+
+**Key Concepts**  
+- **Databricks (Enterprise)**: normally supports CI/CD with Jobs, Workflows, Unity Catalog, and GitHub Actions.  
+- **Databricks Free Edition**: lacks Jobs API, Unity Catalog, and secure tokens → deployment is **manual** (export notebooks, run pipelines interactively).  
+- **Fabric Free/Student**: supports Lakehouse + Dashboards + Deployment Pipelines, but capacity and automation are limited.  
+- **CI/CD Simulation**: GitHub Actions runs schema checks and produces artifacts (notebooks, PBIX, configs), but "CD" (deployment) is performed manually.
+
+**Acceptance Criteria**  
+- A Fabric deployment pipeline created with Dev and Test stages.  
+- Gold marts (sales_daily, customer_360, customer_scores_gold) exported from Databricks Free Edition and ingested into Fabric Dev, then promoted to Test.  
+- At least one Power BI dashboard published and promoted across stages.  
+- RLS validated across environments.  
+- Documentation highlights which steps are automated vs. manual.  
+- Limitations of Databricks Free Edition explicitly listed in README.
+
+**Tasks**  
+1. **Databricks**  
+   - Export Gold marts as Parquet + `_SUCCESS`.  
+   - Document manual process: download from Free Edition DBFS, upload into Fabric Lakehouse.  
+   - (Optional in Enterprise) integrate with GitHub Actions + Jobs API for automated runs.  
+2. **Fabric**  
+   - Configure Deployment Pipeline (Dev + Test).  
+   - Ingest Gold marts into Lakehouse Dev → promote to Test.  
+   - Connect dashboards to Test Lakehouse and validate KPIs.  
+   - Apply RLS rules in Test.  
+3. **CI/CD Simulation**  
+   - Create GitHub Actions workflow that runs schema checks or linting on notebooks.  
+   - Store artifacts (exported notebooks, dashboards) in GitHub for reproducibility.  
+4. **Documentation**  
+   - Write README section:  
+     - "Databricks Enterprise vs Free Edition deployment"  
+     - "Fabric deployment steps in Free Edition"  
+     - Screenshots of Fabric pipeline promotions.
+
+**Databricks Free Edition Limitations (explicit)**  
+- No Jobs API → cannot schedule or trigger pipelines automatically.  
+- No Unity Catalog → no centralized governance or lineage.  
+- Limited compute → must work on small datasets.  
+- Manual export/import only → users must download Parquet from DBFS and upload into Fabric.  
+- GitHub Actions usable for **static checks** (not direct deployment).  
 
 
 
@@ -667,15 +717,3 @@ As a Data Scientist, I want to implement advanced survival analysis and probabil
 
 
 
-
-
-
-
-
-
-
----
-
-- Advanced ML: Neural Nets, Gradient Boosted Trees  
-- MLOps: CI/CD pipelines, model drift detection  
-- Portfolio polish: publish repo + blog posts
