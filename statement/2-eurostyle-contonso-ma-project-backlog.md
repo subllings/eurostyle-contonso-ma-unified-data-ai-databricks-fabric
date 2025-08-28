@@ -251,8 +251,9 @@ As an Executive, I want consolidated GMV, AOV, and margin so I can track EuroSty
 As a Marketing Manager, I want to see customer segments & churn risk so I can design campaigns.  
 
 **Learning Resources**:  
-- [RFM Analysis](https://clevertap.com/blog/rfm-analysis/) – segmentation by Recency, Frequency, Monetary value  
-- [Customer Churn Basics](https://towardsdatascience.com/churn-prediction-in-telecom-industry-2f2c7d7e9388)  
+- [RFM Analysis](https://clevertap.com/blog/rfm-analysis/) 
+- [Databricks Solution Accelarator - Predict Customer Churn](https://www.databricks.com/solutions/accelerators/predict-customer-churn)  
+- [Databricks Intelligence Platform for C360: Reducing Customer Churn](https://www.databricks.com/resources/demos/tutorials/lakehouse-platform/c360-platform-reduce-churn)
 - [Power BI in Fabric](https://learn.microsoft.com/en-us/fabric/get-started/microsoft-fabric-overview)  
 
 **Key Concepts**:  
