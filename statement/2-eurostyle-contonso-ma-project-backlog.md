@@ -1,6 +1,5 @@
 # EuroStyle–Contoso M&A – Product Backlog (Databricks & Fabric)
 
-
 ---
 
 ## Platform Architecture – Free vs Paid (Databricks ↔ Microsoft Fabric)
@@ -779,9 +778,11 @@ As a project team (DE, DA, DS), we want to simulate an end-to-end deployment pip
 - Manual export/import only → users must download Parquet from DBFS and upload into Fabric.  
 - GitHub Actions usable for **static checks only** (no direct deployment).  
 
+---
 
+## Educational note (BeCode Data Analytics & AI Bootcamp)
 
-
+This Business Case is provided solely for educational purposes as part of the BeCode Data Analytics & AI Bootcamp. Names, datasets, and scenarios are illustrative for training only and are not production guidance.
 
 
 

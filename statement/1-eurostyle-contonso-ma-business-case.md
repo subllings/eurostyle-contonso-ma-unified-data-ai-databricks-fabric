@@ -258,3 +258,7 @@ Recommendations
 For full details of tasks, acceptance criteria, and technical specifications, see the [Product Backlog](https://github.com/subllings/eurostyle-contonso-ma-unified-data-ai-databricks-fabric/blob/main/statement/2-eurostyle-contonso-ma-project-backlog.md).
 
 ---
+
+## Educational note (BeCode Data Analytics & AI Bootcamp)
+
+This Business Case is provided solely for educational purposes as part of the BeCode Data Analytics & AI Bootcamp. Names, datasets, and scenarios are illustrative for training only and are not production guidance.
