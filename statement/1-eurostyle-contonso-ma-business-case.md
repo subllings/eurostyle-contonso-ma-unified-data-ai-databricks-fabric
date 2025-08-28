@@ -1,4 +1,4 @@
-# EuroStyle–Contoso M&A – Unified Data & AI Platform with Databricks and Azure Fabric
+# EuroStyle–Contoso M&A – Unified Data & AI Platform with Databricks and Microsoft Fabric
 
 ## Business Case
 
@@ -29,6 +29,7 @@ The **Chief Marketing Officer (CMO)** and **Chief Data & Analytics Officer (CDAO
 - **RFM Analysis**: Post-merger segmentation showing differences in behavior between Northern and Southern European customers.  
 - **Customer 360°**: Unified customer entity across both companies, with deduplication and cross-brand identifiers.  
 - **Churn**: Customers inactive for >90 days, measured consistently across both brands.
+ - **FX (Foreign Exchange)**: Currency conversion from source currencies to a common reporting currency (e.g., EUR). Use documented reference rates (e.g., European Central Bank (ECB)) and a fixed valuation date for reproducibility. Examples of FX sources: European Central Bank (ECB) reference rates (https://www.ecb.europa.eu/stats/eurofxref/), XE.com or OANDA APIs, Yahoo Finance API (historical rates).
 
 ---
 
@@ -48,7 +49,8 @@ The **Chief Marketing Officer (CMO)** and **Chief Data & Analytics Officer (CDAO
   - **Unified view**: consolidated KPIs across both brands, including  
     - **Gross Merchandise Value (GMV)**: total value of merchandise sold,  
     - **Average Order Value (AOV)**: average spend per order,  
-    - and margin.
+    - and margin.  
+  - Note: If Cost of Goods Sold (COGS: direct costs to acquire/produce items, e.g., purchase cost, manufacturing, inbound freight) is not present in source datasets, margin may be deferred or computed as an estimated proxy (clearly labeled) until proper cost data is available. See the Product Backlog (Feature 1.3 – Gold Business Marts) for proxy methods and a short SQL example.
 - Implement **Role-Based Access Control (RLS)** so managers only see their own brand, while executives access the consolidated view.
 - Provide clarity on key business questions: market share by region, margin gaps, and customer behavior differences North vs. South.
 
@@ -102,7 +104,7 @@ The project is organized into five sprints, each delivering specific outcomes ac
 
 **Note – Sprint 1 (Bronze in Databricks):**  
 You expose your Bronze tables via the `hive_metastore` (or SQL views).  
-In Power BI Desktop: *Get Data → Databricks* → provide **Server Hostname** and **HTTP Path** (found in cluster JDBC/ODBC settings).
+In Power BI Desktop: *Get Data → Databricks* → provide **Server Hostname** and **HTTP Path** (found in cluster JDBC/ODBC settings). Authenticate using a Databricks Personal Access Token (Authentication method = Token).
 
 ---
 

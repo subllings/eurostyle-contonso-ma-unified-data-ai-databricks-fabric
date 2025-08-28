@@ -113,6 +113,7 @@ As a Data Engineer, I want Silver tables with clean, harmonized schemas so Analy
 - Standardize currencies (convert all to EUR).  
 - Use mapping tables for product hierarchy alignment.  
 - Normalize customer IDs across EuroStyle & Contoso.  
+ - FX (Foreign Exchange) = converting source currency amounts into a single reporting currency (e.g., EUR) using documented reference rates and a fixed valuation date for reproducibility. Example sources: European Central Bank (ECB) reference rates (https://www.ecb.europa.eu/stats/eurofxref/), XE.com or OANDA APIs, Yahoo Finance API (historical).
 
 **Acceptance Criteria**:  
 - Duplicates removed with correct logic.  
@@ -120,12 +121,14 @@ As a Data Engineer, I want Silver tables with clean, harmonized schemas so Analy
 - Product hierarchy aligned across both datasets.  
 - Customer IDs unified and cross-brand duplicates resolved.  
 - Documentation of cleaning steps added in notebook.  
+   - Note: Currency conversion reproducibility — store a reference FX table (e.g., European Central Bank (ECB) daily rates) and use a fixed valuation snapshot/date for the sprint; persist it in Silver (e.g., `silver.fx_rates_eur`).
 
 **Tasks**:  
 - Deduplicate data using business keys.  
 - Standardize currencies (conversion → EUR).  
 - Align product hierarchies using mapping table.  
 - Normalize customer IDs across EuroStyle & Contoso.  
+ - Create and persist an `fx_rates_eur` reference table with the chosen valuation date and FX source (e.g., European Central Bank (ECB)).
 
 ---
 
@@ -135,12 +138,12 @@ As a Data Engineer, I want Gold marts for sales and customers so the business ge
 
 **Learning Resources**:  
 - [Star Schema Design](https://www.databricks.com/glossary/star-schema)  
-- [Performance Optimization in Delta](https://docs.databricks.com/aws/en/delta/best-practices)  
+ - [Performance Optimization in Delta](https://learn.microsoft.com/en-us/azure/databricks/delta/best-practices)  
 - [Recency, Frequency, Monetary (RFM) Segmentation](https://www.databricks.com/solutions/accelerators/rfm-segmentation)  
 - [Retail Personalization with RFM Segmentation and the Composable CDP](https://www.databricks.com/blog/retail-personalization-rfm-segmentation-and-composable-cdp)
 - [RFM Segmentation, Databricks Solution Accelerators](https://github.com/databricks-industry-solutions/rfm-segmentation)
 - [Gross Merchandise Value (GMV): Meaning & Calculation](https://www.yieldify.com/blog/gross-merchandise-value-gmv)
-- [Understanding GMV in ecommerce](https://getrecharge.com/blog/understanding-gmv-in-ecommerc)
+ - [Understanding GMV in ecommerce](https://getrecharge.com/blog/understanding-gmv-in-ecommerce/)
 - [AOV vs CR vs RPV vs GMV in Ecommerce: Important Metrics You Should Know](https://www.mida.so/blog/important-ecommerce-metrics-aov-cr-rpv-gmv)
 
 **Key Concepts**:  
@@ -155,6 +158,31 @@ As a Data Engineer, I want Gold marts for sales and customers so the business ge
 - `category_perf` mart aggregates sales by product and category.  
 - `customer_360` mart built with RFM metrics and source_system flag.  
 - All marts validated against Silver consistency checks.  
+    - Note: Margin calculation requires Cost of Goods Sold (COGS: direct costs to acquire/produce items, e.g., purchase cost, manufacturing, inbound freight). If unavailable in the source datasets, either (a) defer margin to a stretch goal, or (b) use a documented proxy (e.g., assumed margin rates by category) and clearly label as "Estimated Margin".
+
+#### If COGS is missing - proxy margin methods (guidance)
+
+Example proxy methods:
+
+- Apply an assumed margin rate by product category (e.g., Apparel = 35%, Footwear = 40%, Accessories = 50%).
+- Use a flat benchmark margin rate across all items (e.g., 40%).
+- Define a synthetic cost table where COGS = unit_price × (1 – assumed_margin_rate).
+
+Important: All proxy-based calculations must be explicitly documented (e.g., "margin = revenue × 0.4 proxy") so stakeholders understand they are estimates, not accounting-accurate.
+
+Example in SQL (proxy margin rate = 40% flat):
+
+```sql
+-- Assume unit_price is revenue per item
+SELECT
+   order_id,
+   sku,
+   quantity,
+   unit_price,
+   quantity * unit_price AS revenue,
+   quantity * unit_price * 0.4 AS estimated_margin
+FROM silver.sales_clean;
+```
 
 **Tasks**:  
 - Build `sales_daily` (GMV, AOV, margin).  
@@ -175,7 +203,7 @@ As a Data Analyst, I want KPIs from Bronze so I can deliver a "First Look" dashb
 
 **Learning Resources**:  
 - [Power BI Fundamentals](https://learn.microsoft.com/en-us/power-bi/fundamentals/)
-- [Work with the legacy Hive metastore alongside Unity Catalog](https://docs.databricks.com/aws/en/data-governance/unity-catalog/hive-metastore)  
+ - [Work with the legacy Hive metastore alongside Unity Catalog](https://learn.microsoft.com/en-us/azure/databricks/data-governance/unity-catalog/hive-metastore)  
 - [DirectQuery to Databricks](https://learn.microsoft.com/en-us/azure/databricks/partners/bi/power-bi)  
 - [Data Visualization Best Practices](https://www.tableau.com/learn/articles/data-visualization)  
 
@@ -189,6 +217,7 @@ As a Data Analyst, I want KPIs from Bronze so I can deliver a "First Look" dashb
 - Dashboard created in Power BI with GMV, AOV, and order counts.  
 - Data source connected directly to Databricks Bronze (DirectQuery).  
 - First insights available even before cleaning.  
+   - Note: In Power BI Desktop, authenticate to Databricks using a Personal Access Token (Authentication method = Token). Use Server Hostname and HTTP Path from the cluster's JDBC/ODBC settings.
 
 **Tasks**:  
 - Compute **GMV (Gross Merchandise Value)**.  
@@ -214,6 +243,7 @@ As a Data Analyst, I want to compare KPIs Raw vs Silver to highlight data cleani
 - Dashboard compares Raw vs Silver KPIs: GMV, AOV, return rates.  
 - Documentation highlights the differences (e.g., reduced duplicates).  
 - Stakeholders understand the value of Silver over Raw.  
+   - Note: Online Retail II captures returns (credit notes/negative quantities). If the Contoso dataset lacks explicit returns, either simulate a conservative return flag or exclude return-rate comparisons for Contoso and document the limitation.
 
 **Tasks**:  
 - Create dashboard with GMV, AOV, return rates (before/after cleaning).  
@@ -253,7 +283,7 @@ As a Marketing Manager, I want to see customer segments & churn risk so I can de
 
 **Learning Resources**:  
 - [RFM Analysis](https://clevertap.com/blog/rfm-analysis/) 
-- [Databricks Solution Accelarator - Predict Customer Churn](https://www.databricks.com/solutions/accelerators/predict-customer-churn)  
+ - [Databricks Solution Accelerator - Predict Customer Churn](https://www.databricks.com/solutions/accelerators/predict-customer-churn)  
 - [Databricks Intelligence Platform for C360: Reducing Customer Churn](https://www.databricks.com/resources/demos/tutorials/lakehouse-platform/c360-platform-reduce-churn)
 - [Power BI in Fabric](https://learn.microsoft.com/en-us/fabric/get-started/microsoft-fabric-overview)  
 

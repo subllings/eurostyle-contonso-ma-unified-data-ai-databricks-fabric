@@ -27,6 +27,7 @@ To address this, the CMO and CDAO requested a **prototype platform** combining *
 - **Data Engineering (Databricks)**: Build reproducible Medallion pipelines, harmonize schemas, create unified Gold marts, export to Fabric Lakehouse.  
 - **Data Analytics (Fabric/Power BI)**: Deliver comparative dashboards (EuroStyle vs Contoso) and unified post-merger dashboards with RLS.  
 - **Data Science (Databricks MLflow)**: Train churn and Customer Lifetime Value (CLV) models, publish scored datasets into Customer 360°.  
+  - Note: Margin requires Cost of Goods Sold (COGS; direct costs to acquire/produce items, e.g., purchase cost, manufacturing, inbound freight); if not available in datasets, treat margin as a stretch goal or clearly label estimates until cost data is present.
 
 ---
 
@@ -69,5 +70,6 @@ In a production environment, this would be automated and governed using:
 ---
 
 ## References
+Note on FX (Foreign Exchange): Amounts from different source currencies are converted into a single reporting currency (e.g., EUR) using documented reference rates and a fixed valuation date to ensure reproducibility. Example sources: European Central Bank (ECB) reference rates (https://www.ecb.europa.eu/stats/eurofxref/), XE.com or OANDA APIs, Yahoo Finance API (historical).
 - [Business Case](https://github.com/subllings/eurostyle-contonso-ma-unified-data-ai-databricks-fabric/blob/main/statement/1-eurostyle-contonso-ma-business-case.md)  
 - [Product Backlog](https://github.com/subllings/eurostyle-contonso-ma-unified-data-ai-databricks-fabric/blob/main/statement/2-eurostyle-contonso-ma-project-backlog.md)  
