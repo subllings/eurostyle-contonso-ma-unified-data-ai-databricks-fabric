@@ -45,12 +45,12 @@ This table lists all epics, distributed by sprint and by profile (DE, DS, DA). I
 
 | Sprint | DE (Data Engineer) | DS (Data Scientist) | DA (Data Analyst) |
 |---|---|---|---|
-| 0 | [Epic 1 – Data Foundation Platform](#epic-1) (setup) | [Epic 3 – ML & Predictive](#epic-3) (hypotheses/scope) | [Epic 2 – Analytics & BI](#epic-2) (KPI Catalog v0.1) |
-| 1 | [Epic 1 – Data Foundation Platform](#epic-1) | [Epic 3 – ML & Predictive](#epic-3) (EDA) | [Epic 2 – Analytics & BI](#epic-2) (First Look – Contoso) |
-| 2 | [Epic 1 – Data Foundation Platform](#epic-1) (Silver) | [Epic 3 – ML & Predictive](#epic-3) (Features) | [Epic 2 – Analytics & BI](#epic-2) (Raw vs Silver – Contoso + EuroStyle) |
-| 3 | [Epic 1 – Data Foundation Platform](#epic-1) (Gold marts) | [Epic 3 – ML & Predictive](#epic-3) (Model training) | [Epic 2 – Analytics & BI](#epic-2) (Executive) |
-| 4 | [Epic 4 – Platform Integration](#epic-4) (Fabric) | [Epic 3 – ML](#epic-3) (Batch scoring) + [Epic 4](#epic-4) (Export/Validation) | [Epic 2 – Analytics](#epic-2) (Segmentation) + [Epic 4](#epic-4) (Power BI Suite) |
-| 5 (optional) | [Epic 5 – Optional Extensions](#epic-5) (DE: Data Vault light; All: E2E deployment) | [Epic 5 – Optional Extensions](#epic-5) (DS: advanced models; All: export/validation) | [Epic 5 – Optional Extensions](#epic-5) (DA: dynamic dashboards; All: deployment pipeline) |
+| 0 | [Epic 1 – Data Foundation Platform](#epic-1) (setup: workspace, folders, ingest paths) | [Epic 3 – ML & Predictive](#epic-3) (hypotheses/requirements, MLflow init) | [Epic 2 – Analytics & BI](#epic-2) (KPI Catalog v0.1, semantic draft) |
+| 1 | [Epic 1 – Data Foundation Platform](#epic-1) (Bronze: ES+Contoso, metadata, DirectQuery) | [Epic 3 – ML & Predictive](#epic-3) (EDA: prevalence, drift, baselines) | [Epic 2 – Analytics & BI](#epic-2) (First Look – Contoso: semantic model, measures, v1 report, KPI v0.2) |
+| 2 | [Epic 1 – Data Foundation Platform](#epic-1) (Silver: dedup, FX→EUR, IDs, schema contract) | [Epic 3 – ML & Predictive](#epic-3) (Features: RFM, basket, versioning, leakage checks) | [Epic 2 – Analytics & BI](#epic-2) (Raw vs Silver: deltas, toggles, RLS v1, DQ impacts) |
+| 3 | [Epic 1 – Data Foundation Platform](#epic-1) (Gold marts: sales_daily, category_perf, customer_360) | [Epic 3 – ML & Predictive](#epic-3) (Model training: churn LR, CLV RF, calibration/CI) | [Epic 2 – Analytics & BI](#epic-2) (Executive: consolidated KPIs, brand/region, RLS) |
+| 4 | [Epic 4 – Platform Integration](#epic-4) (Fabric export: Parquet+manifest, pipeline ingest) | [Epic 3 – ML](#epic-3) (Batch scoring, join to Gold, explainability) + [Epic 4](#epic-4) (Export/validation) | [Epic 2 – Analytics](#epic-2) (Segmentation) + [Epic 4](#epic-4) (Power BI Suite, pipeline promotion) |
+| 5 (optional) | [Epic 5 – Optional Extensions](#epic-5) (Data Vault light; E2E deployment sim) | [Epic 5 – Optional Extensions](#epic-5) (Survival/BG‑NBD; export/validation) | [Epic 5 – Optional Extensions](#epic-5) (Dynamic dashboards: what‑if/drill; deployment pipeline) |
 
 Notes
 - Optional extensions (Epic 5.x) are scheduled under Sprint 5 (optional) based on team capacity.
@@ -64,11 +64,11 @@ This table lists all features, distributed by sprint and by profile (DE, DS, DA)
 | Sprint | DE (Data Engineer) | DS (Data Scientist) | DA (Data Analyst) |
 |---|---|---|---|
 | 0 | — | — | — |
-| 1 | [1.1 Raw Data Ingestion](#feature-1-1) | [3.1 EDA, baselines & MLflow setup](#feature-3-1) | [2.1 First Look – Contoso](#feature-2-1) (semantic model, measures, v1 report) |
-| 2 | [1.2 Silver Cleaning & Harmonization](#feature-1-2) | [3.1 EDA summary & risk log](#feature-3-1); [3.2 Feature Engineering](#feature-3-2) | [2.2 Raw vs Silver – Contoso + EuroStyle](#feature-2-2) |
-| 3 | [1.3 Gold Business Marts](#feature-1-3) | [3.3 Model Training](#feature-3-3) | [2.3 Executive Post‑Merger Dashboard](#feature-2-3) |
-| 4 | [4.1 Export Gold to Fabric](#feature-4-1) | [3.4 Batch Scoring & Integration](#feature-3-4), [4.3 Scoring Export & Validation](#feature-4-3) | [2.4 Customer Segmentation](#feature-2-4), [4.2 Power BI Suite](#feature-4-2) |
-| 5 (optional) | [5.1 Simplified Data Vault](#feature-5-1); [5.4 E2E Deployment](#feature-5-4) (cross‑role) | [5.3 Survival/Probabilistic Models](#feature-5-3); [5.4 E2E Deployment](#feature-5-4) (cross‑role) | [5.2 Advanced Segmentation](#feature-5-2); [5.4 E2E Deployment](#feature-5-4) (cross‑role) |
+| 1 | [1.1 Raw Data Ingestion](#feature-1-1) (Bronze Delta with ingest_ts/source_system; DQ summary; schema dictionary; runbook) | [3.1 EDA, baselines & MLflow setup](#feature-3-1) (EDA readout; baselines; leakage/risk log; MLflow init) | [2.1 First Look – Contoso](#feature-2-1) (semantic model; named measures; v1 report) |
+| 2 | [1.2 Silver Cleaning & Harmonization](#feature-1-2) (idempotent writes; Silver schema contract; FX normalization with ECB snapshot; DQ before/after) | [3.1 EDA summary & risk log](#feature-3-1); [3.2 Feature Engineering](#feature-3-2) (RFM; basket/cross‑brand; versioned feature tables; leakage checks; consumption contract) | [2.2 Raw vs Silver – Contoso + EuroStyle](#feature-2-2) (side‑by‑side KPIs; delta measures; RLS draft; bookmarks/toggles) |
+| 3 | [1.3 Gold Business Marts](#feature-1-3) (sales_daily; customer_360; category_perf; margin proxy/notes) | [3.3 Model Training](#feature-3-3) (LR churn; RF CLV; calibration/CIs; segment evaluation; registry notes) | [2.3 Executive Post‑Merger Dashboard](#feature-2-3) (GMV/AOV/margin; brand & region splits; RLS configured; perf tuned) |
+| 4 | [4.1 Export Gold to Fabric](#feature-4-1) (Parquet + manifest/Shortcuts; Fabric Pipeline ingest; connectivity validated) | [3.4 Batch Scoring & Integration](#feature-3-4), [4.3 Scoring Export & Validation](#feature-4-3) (batch scoring churn/CLV; join to customer_360; export to Fabric; validate metrics/skew) | [2.4 Customer Segmentation](#feature-2-4), [4.2 Power BI Suite](#feature-4-2) (Executive + Segmentation dashboards; RLS; pipeline Dev→Test; publish suite) |
+| 5 (optional) | [5.1 Simplified Data Vault](#feature-5-1); [5.4 E2E Deployment](#feature-5-4) (Hubs/Links/Sats; manual SCD2; deployment docs/pipeline outline) | [5.3 Survival/Probabilistic Models](#feature-5-3); [5.4 E2E Deployment](#feature-5-4) (Cox/KM; BG/NBD + Gamma‑Gamma; compare; scoring pipeline docs) | [5.2 Advanced Segmentation](#feature-5-2); [5.4 E2E Deployment](#feature-5-4) (dynamic parameters; drill‑through; segment pages; publish/promotion scripts) |
 
 Notes
 - Optional extensions (5.x) are grouped in Sprint 5 (optional): 5.1 (DE), 5.2 (DA), 5.3 (DS), and 5.4 (All, cross‑role).
@@ -141,12 +141,21 @@ The project will follow an agile approach adapted to the constraints of Databric
 As a Data Engineer, I want to ingest EuroStyle and Contoso CSVs into Bronze so the teams can start analyzing real data.  
 
 **Learning Resources**:  
-- [Medallion Architecture](https://docs.databricks.com/lakehouse/medallion.html)  
-- [Delta Lake Basics](https://docs.databricks.com/delta/index.html)  
-- [What is Delta Lake in Azure Databricks?](https://learn.microsoft.com/en-us/azure/databricks/delta/)
+- [Medallion Architecture](https://docs.databricks.com/en/lakehouse/medallion-architecture.html)  
+- [Delta Lake Basics](https://docs.databricks.com/en/delta/index.html)  
+- [What is Delta Lake in Azure Databricks?](https://learn.microsoft.com/azure/databricks/delta/)
 - [Apache Spark&trade; Tutorial: Getting Started with Apache Spark on Databricks](https://www.databricks.com/spark/getting-started-with-apache-spark/dataframes#visualize-the-dataframe)
 - [PySpark DataFrame API](https://spark.apache.org/docs/latest/api/python/reference/pyspark.sql/dataframe.html)  
-- [Tutorial: Build an ETL pipeline with Lakeflow Declarative Pipelines](https://learn.microsoft.com/en-us/azure/databricks/getting-started/data-pipeline-get-started)
+- [Tutorial: Build an ETL pipeline with Lakeflow Declarative Pipelines](https://learn.microsoft.com/azure/databricks/getting-started/data-pipeline-get-started)
+- [Power BI Databricks connector – DirectQuery](https://learn.microsoft.com/power-bi/connect-data/desktop-azure-databricks?tabs=directquery)
+- [Unity Catalog – create/manage tables](https://docs.databricks.com/aws/en/tables/managed)
+- [Databricks SQL – CREATE VIEW syntax](https://learn.microsoft.com/azure/databricks/sql/language-manual/sql-ref-syntax-ddl-create-view)
+- [PySpark DataFrame.withColumnRenamed](https://spark.apache.org/docs/latest/api/python/reference/pyspark.sql/api/pyspark.sql.DataFrame.withColumnRenamed.html)
+- [PySpark Column.cast](https://spark.apache.org/docs/latest/api/python/reference/pyspark.sql/api/pyspark.sql.Column.cast.html)
+- [Delta schema evolution](https://learn.microsoft.com/azure/databricks/delta/delta-batch#table-schema-evolution)
+- [SQL identifier naming rules](https://learn.microsoft.com/azure/databricks/sql/language-manual/sql-ref-names)
+ - [Delta MERGE INTO (upserts)](https://learn.microsoft.com/azure/databricks/delta/merge)
+ - [Delta constraints (NOT NULL, CHECK)](https://learn.microsoft.com/azure/databricks/delta/delta-constraints)
 
 **Key Concepts**:  
 - Bronze = raw data "as delivered" (no cleaning yet).  
@@ -179,11 +188,11 @@ As a Data Engineer, I want to ingest EuroStyle and Contoso CSVs into Bronze so t
 - As a DE, I publish a mini schema dictionary and runbook so the team can re‑run ingestion.
 
 ### Sprint day plan (4.5 days)
-- Day 1: Ingest Contoso → Bronze (with `ingest_ts`, `source_system`), validate types/dates, expose for DirectQuery, DA smoke test from Power BI.  
-- Day 2: Ingest EuroStyle → Bronze, align obvious column names/types across brands, update mapping notes and folder structure.  
-- Day 3: Reconcile raw→Bronze row counts, compute basic Data Quality (DQ) summary (nulls, duplicates, top dims), document any variances.  
-- Day 4: Prove idempotent re‑run, finalize mini schema dictionary and runbook; address issues raised by DA/DS.  
-- Day 4.5: Buffer and hand‑off; optional pre‑aggregate view (`bronze.sales_contoso_daily`) if time remains.
+- **Day 1:** Ingest Contoso → Bronze (with `ingest_ts`, `source_system`), validate types/dates, expose for DirectQuery (publish a thin SQL view or Delta table with Power BI‑friendly types, register in the metastore, and validate a Power BI Desktop DirectQuery connection via the Databricks connector — see Learning Resources), DA smoke test from Power BI.  
+- **Day 2:** Ingest EuroStyle → Bronze, align obvious column names/types across brands (build a simple mapping table or dict: `source_name → unified_name`, plus `target_type`; apply with `withColumnRenamed`/`selectExpr` and `cast`; store mapping CSV in `docs/` and reference it in the runbook; prefer snake_case, consistent date/decimal types — see Learning Resources), update mapping notes and folder structure.  
+- **Day 3:** Reconcile raw→Bronze row counts, compute basic Data Quality (DQ) summary (nulls, duplicates, top dims), document any variances.  
+- **Day 4:** Prove idempotent re‑run (same inputs → same end state). Use deterministic overwrite by date/partition or a MERGE on business keys to avoid duplicates; enforce basic constraints (NOT NULL/CHECK) where useful. Finalize docs: commit a mini schema dictionary at `docs/bronze-schema-dictionary.md` (use `docs/data-dictionary-template.md`) and a runbook at `docs/runbook-ingestion.md` (steps, paths, re-run notes). Address issues raised by DA/DS.  
+- **Day 4.5:** Buffer and hand‑off; optional pre‑aggregate view: create a thin day‑level view for faster DirectQuery (e.g., `CREATE VIEW bronze.sales_contoso_daily AS SELECT order_date, COUNT(*) AS orders, SUM(quantity*unit_price) AS revenue FROM bronze.sales_contoso GROUP BY order_date;`) and register it (see CREATE VIEW in Learning Resources).
 
 ---
 
@@ -234,10 +243,10 @@ As a Data Engineer, I want Silver tables with clean, harmonized schemas so Analy
 - As a DE, I ensure idempotent Silver writes so re‑runs are safe and deterministic.
 
 ### Sprint day plan (4.5 days)
-- Day 1: Design keys and dedup logic; implement core dedup; align types.  
-- Day 2: Implement FX conversion to EUR; persist `silver.fx_rates_eur` snapshot.  
-- Day 3: Unify customer IDs; align product hierarchy via mapping table.  
-- Day 4: Add idempotent write strategy; publish schema contract; update DQ report (before/after).  
+- **Day 1:** Design keys and dedup logic; implement core dedup; align types.  
+- **Day 2:** Implement FX conversion to EUR; persist `silver.fx_rates_eur` snapshot.  
+- **Day 3:** Unify customer IDs; align product hierarchy via mapping table.  
+- **Day 4:** Add idempotent write strategy; publish schema contract; update DQ report (before/after).  
 - Day 4.5: Buffer; quantify Raw→Silver impacts and hand‑off to DA/DS.
 
 ---
@@ -307,10 +316,10 @@ FROM silver.sales_clean;
 - As a DA/DS, I can query Gold marts with documented schema and consistent keys.  
 
 ### Sprint day plan (4.5 days)
-- Day 1: Design mart schemas and keys; create base dims/refs.  
-- Day 2: Implement `sales_daily` (GMV, AOV, margin proxy if COGS missing).  
-- Day 3: Implement `category_perf` and `customer_360` (RFM base).  
-- Day 4: Validate against Silver; document schema and constraints.  
+- **Day 1:** Design mart schemas and keys; create base dims/refs.  
+- **Day 2:** Implement `sales_daily` (GMV, AOV, margin proxy if COGS missing).  
+- **Day 3:** Implement `category_perf` and `customer_360` (RFM base).  
+- **Day 4:** Validate against Silver; document schema and constraints.  
 - Day 4.5: Light tuning (partitioning/coalesce), sample queries, hand‑off.
 
 ---
@@ -385,10 +394,10 @@ Deliverables
 - As a DA, I capture perf/accessibility quick wins and a draft RLS matrix.  
 
 ### Sprint day plan (4.5 days)
-- Day 1: Connect to Contoso Bronze; define semantic model and base measures; build landing page.  
-- Day 2: Add visuals; refine measures; apply formatting and display folders.  
-- Day 3: Performance Analyzer pass; accessibility checks; iterate visuals.  
-- Day 4: Update KPI Catalog v0.2 and mini data dictionary; prepare review.  
+- **Day 1:** Connect to Contoso Bronze; define semantic model and base measures; build landing page.  
+- **Day 2:** Add visuals; refine measures; apply formatting and display folders.  
+- **Day 3:** Performance Analyzer pass; accessibility checks; iterate visuals.  
+- **Day 4:** Update KPI Catalog v0.2 and mini data dictionary; prepare review.  
 - Day 4.5: Buffer; publish PBIX/Fabric report; address feedback.
 
 ---
@@ -434,10 +443,10 @@ As a Data Analyst, I want to compare KPIs Raw vs Silver to highlight data cleani
 - As a DA, I configure first RLS roles on Silver and validate.  
 
 ### Sprint day plan (4.5 days)
-- Day 1: Connect Raw and Silver; implement base and delta measures.  
-- Day 2: Build side‑by‑side/toggle views; ensure consistent layouts.  
-- Day 3: Quantify impacts; annotate visuals; write findings.  
-- Day 4: Configure/test RLS roles; log DevOps issues.  
+- **Day 1:** Connect Raw and Silver; implement base and delta measures.  
+- **Day 2:** Build side‑by‑side/toggle views; ensure consistent layouts.  
+- **Day 3:** Quantify impacts; annotate visuals; write findings.  
+- **Day 4:** Configure/test RLS roles; log DevOps issues.  
 - Day 4.5: Buffer; stakeholder review; polish.
 
 ---
@@ -472,10 +481,10 @@ As an Executive, I want consolidated GMV, AOV, and margin so I can track EuroSty
 - As a DA, I enforce RLS for managers vs executives.  
 
 ### Sprint day plan (4.5 days)
-- Day 1: Connect to Gold marts; outline pages and key visuals.  
-- Day 2: Implement brand and regional comparisons.  
-- Day 3: Add margin proxy/final; performance tuning.  
-- Day 4: Configure/validate RLS; prepare demo.  
+- **Day 1:** Connect to Gold marts; outline pages and key visuals.  
+- **Day 2:** Implement brand and regional comparisons.  
+- **Day 3:** Add margin proxy/final; performance tuning.  
+- **Day 4:** Configure/validate RLS; prepare demo.  
 - Day 4.5: Buffer; finalize and publish.
 
 ---
@@ -512,10 +521,10 @@ As a Marketing Manager, I want to see customer segments & churn risk so I can de
 - As a DA, I wire What‑if parameters and publish via Fabric.  
 
 ### Sprint day plan (4.5 days)
-- Day 1: Integrate scored tables; define segments and navigation.  
-- Day 2: Build segment visuals and summary KPIs.  
-- Day 3: Add drill‑through and What‑if parameters.  
-- Day 4: Publish in Fabric; test RLS and interactions.  
+- **Day 1:** Integrate scored tables; define segments and navigation.  
+- **Day 2:** Build segment visuals and summary KPIs.  
+- **Day 3:** Add drill‑through and What‑if parameters.  
+- **Day 4:** Publish in Fabric; test RLS and interactions.  
 - Day 4.5: Buffer; documentation and screenshots.
 
 
@@ -569,10 +578,10 @@ As a Data Scientist, I want to perform **Exploratory Data Analysis (EDA)** to un
 - As a DS, I initialize MLflow with the evaluation plan and baselines.
 
 ### Sprint day plan (4.5 days)
-- Day 1: Load Bronze; run profiling and describe distributions/missingness.  
-- Day 2: Define churn; compute prevalence; choose split strategy.  
-- Day 3: Implement baselines; leakage checklist; draft risk log.  
-- Day 4: Initialize MLflow; write EDA readout; align with DA/DE.  
+- **Day 1:** Load Bronze; run profiling and describe distributions/missingness.  
+- **Day 2:** Define churn; compute prevalence; choose split strategy.  
+- **Day 3:** Implement baselines; leakage checklist; draft risk log.  
+- **Day 4:** Initialize MLflow; write EDA readout; align with DA/DE.  
 - Day 4.5: Buffer; finalize artifacts.
 
 ---
@@ -619,10 +628,10 @@ As a Data Scientist, I want RFM and behavioral features to build churn & CLV mod
 - As a DS, I define a consumption contract with DE/DA for scoring integration.
 
 ### Sprint day plan (4.5 days)
-- Day 1: Compute RFM metrics; persist as Delta (v1).  
-- Day 2: Implement basket diversity and cross‑brand features.  
-- Day 3: Correlation/cardinality screening; leakage checks; doc preprocessing.  
-- Day 4: Define consumption contract; train simple baselines; log to MLflow.  
+- **Day 1:** Compute RFM metrics; persist as Delta (v1).  
+- **Day 2:** Implement basket diversity and cross‑brand features.  
+- **Day 3:** Correlation/cardinality screening; leakage checks; doc preprocessing.  
+- **Day 4:** Define consumption contract; train simple baselines; log to MLflow.  
 - Day 4.5: Buffer; finalize feature tables and docs.
 
 ---
@@ -659,10 +668,10 @@ As a Data Scientist, I want baseline models for churn and CLV so I can evaluate 
 - As a DS, I log metrics/params/artifacts in MLflow, including calibration and CI.
 
 ### Sprint day plan (4.5 days)
-- Day 1: Train churn LR baseline; log metrics/artifacts.  
-- Day 2: Train CLV Random Forest baseline; log metrics/artifacts.  
-- Day 3: Light tuning; compute CIs; calibration checks.  
-- Day 4: Segment-wise evaluation; finalize registry/notes.  
+- **Day 1:** Train churn LR baseline; log metrics/artifacts.  
+- **Day 2:** Train CLV Random Forest baseline; log metrics/artifacts.  
+- **Day 3:** Light tuning; compute CIs; calibration checks.  
+- **Day 4:** Segment-wise evaluation; finalize registry/notes.  
 - Day 4.5: Buffer; review and hand‑off for scoring.
 
 ---
@@ -703,10 +712,10 @@ As a Data Scientist, I want to score churn/CLV and join them into Customer 360 s
 - As a DS, I validate train/serve skew and run E2E checks before hand‑off to DA.
 
 ### Sprint day plan (4.5 days)
-- Day 1: Prepare scoring pipeline and schema contract.  
-- Day 2: Run full scoring; persist `customer_scores_gold`.  
-- Day 3: Join scores into `customer_360_gold`; basic QA.  
-- Day 4: Validate skew/constraints; produce explainability notes.  
+- **Day 1:** Prepare scoring pipeline and schema contract.  
+- **Day 2:** Run full scoring; persist `customer_scores_gold`.  
+- **Day 3:** Join scores into `customer_360_gold`; basic QA.  
+- **Day 4:** Validate skew/constraints; produce explainability notes.  
 - Day 4.5: Buffer; alignment with DA and publish.
 
 ---
@@ -754,10 +763,10 @@ For your information
 - As a DE, I ingest them into Fabric Lakehouse tables via Data Pipelines.  
 
 ### Sprint day plan (4.5 days)
-- Day 1: Define export contract; test with one small table.  
-- Day 2: Package all Gold marts for export.  
-- Day 3: Manual transfer to Fabric; configure pipeline ingest.  
-- Day 4: Validate Delta tables and connectivity (Power BI/Direct Lake).  
+- **Day 1:** Define export contract; test with one small table.  
+- **Day 2:** Package all Gold marts for export.  
+- **Day 3:** Manual transfer to Fabric; configure pipeline ingest.  
+- **Day 4:** Validate Delta tables and connectivity (Power BI/Direct Lake).  
 - Day 4.5: Buffer; document steps and limitations.
 
 
@@ -796,10 +805,10 @@ As a Data Analyst, I want Power BI dashboards published through Fabric so execut
 - As a DA, I deploy via Fabric pipelines across stages.  
 
 ### Sprint day plan (4.5 days)
-- Day 1: Executive dashboard page(s).  
-- Day 2: Segmentation dashboard page(s).  
-- Day 3: RLS configuration and testing.  
-- Day 4: Pipeline promotion Dev → Test and validation.  
+- **Day 1:** Executive dashboard page(s).  
+- **Day 2:** Segmentation dashboard page(s).  
+- **Day 3:** RLS configuration and testing.  
+- **Day 4:** Pipeline promotion Dev → Test and validation.  
 - Day 4.5: Buffer; polish and documentation.
 
 ---
@@ -839,10 +848,10 @@ As a Data Scientist, I want churn and CLV scores exported from Databricks into F
 - As a DA, I confirm dashboards consume the new tables consistently.  
 
 ### Sprint day plan (4.5 days)
-- Day 1: Prepare scored outputs and export plan.  
-- Day 2: Export and upload to Fabric; configure pipeline.  
-- Day 3: Validate tables and dashboard bindings.  
-- Day 4: Document validation and edge cases.  
+- **Day 1:** Prepare scored outputs and export plan.  
+- **Day 2:** Export and upload to Fabric; configure pipeline.  
+- **Day 3:** Validate tables and dashboard bindings.  
+- **Day 4:** Document validation and edge cases.  
 - Day 4.5: Buffer; finalize evidence links.
 
 
@@ -913,10 +922,10 @@ Trade-offs and when to skip
 - As a DA/DS, I query hubs/links for consistent keys and history.  
 
 ### Sprint day plan (4.5 days)
-- Day 1: Build `customer_hub`, `product_hub`, `calendar_hub`.  
-- Day 2: Build `sales_link` and resolve keys.  
-- Day 3: Build a first satellite (e.g., `customer_satellite`).  
-- Day 4: Validate joins/cardinalities; fix issues.  
+- **Day 1:** Build `customer_hub`, `product_hub`, `calendar_hub`.  
+- **Day 2:** Build `sales_link` and resolve keys.  
+- **Day 3:** Build a first satellite (e.g., `customer_satellite`).  
+- **Day 4:** Validate joins/cardinalities; fix issues.  
 - Day 4.5: Document schema and SCD policy.
 
 **Minimal SQL Example** (adapt if needed)
@@ -1021,10 +1030,10 @@ As a Data Analyst, I want to implement advanced segmentation logic and dynamic d
 - As a Marketing user, I can navigate from KPIs to segment to customer.  
 
 ### Sprint day plan (4.5 days)
-- Day 1: Define segmentation logic and parameters.  
-- Day 2: Build dynamic visuals and segment pages.  
-- Day 3: Implement drill‑through to customer detail.  
-- Day 4: Connect to Gold tables; test interactions.  
+- **Day 1:** Define segmentation logic and parameters.  
+- **Day 2:** Build dynamic visuals and segment pages.  
+- **Day 3:** Implement drill‑through to customer detail.  
+- **Day 4:** Connect to Gold tables; test interactions.  
 - Day 4.5: Buffer; document.
 
 <a id="feature-5-3"></a>
@@ -1065,10 +1074,10 @@ As a Data Scientist, I want to implement advanced survival analysis and probabil
 - As a DA, I receive segment‑level visuals (survival/CLV).  
 
 ### Sprint day plan (4.5 days)
-- Day 1: Prepare datasets and checks.  
-- Day 2: Train Cox/Kaplan‑Meier; evaluate.  
-- Day 3: Train BG/NBD and Gamma‑Gamma; evaluate.  
-- Day 4: Build visuals and segment comparisons.  
+- **Day 1:** Prepare datasets and checks.  
+- **Day 2:** Train Cox/Kaplan‑Meier; evaluate.  
+- **Day 3:** Train BG/NBD and Gamma‑Gamma; evaluate.  
+- **Day 4:** Build visuals and segment comparisons.  
 - Day 4.5: Document results and recommendations.
 
 <a id="feature-5-4"></a>
@@ -1126,10 +1135,10 @@ As a project team (DE, DA, DS), we want to simulate an end-to-end deployment pip
 - As stakeholders, we can trace artifacts and promotions across environments.  
 
 ### Sprint day plan (4.5 days)
-- Day 1: Structure repo and artifacts; define CI checks.  
-- Day 2: Produce/export artifacts (notebooks, PBIX, configs).  
-- Day 3: Set up Fabric pipeline Dev; manual deployment steps.  
-- Day 4: Promote to Test; validate RLS and data bindings.  
+- **Day 1:** Structure repo and artifacts; define CI checks.  
+- **Day 2:** Produce/export artifacts (notebooks, PBIX, configs).  
+- **Day 3:** Set up Fabric pipeline Dev; manual deployment steps.  
+- **Day 4:** Promote to Test; validate RLS and data bindings.  
 - Day 4.5: Capture screenshots and finalize documentation.
 - No Jobs API → cannot schedule or trigger pipelines automatically.  
 - No Unity Catalog → no centralized governance or lineage.  
