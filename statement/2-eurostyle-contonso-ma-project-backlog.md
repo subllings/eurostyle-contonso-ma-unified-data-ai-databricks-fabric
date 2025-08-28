@@ -613,7 +613,7 @@ Trade-offs and when to skip
 5. Document  
    - ASCII/Mermaid schema, naming conventions, key logic, SCD policy.
 
-**Minimal SQL Example**  
+**Minimal SQL Example** (adapt if needed)
 ```sql
 -- CUSTOMER HUB
 CREATE OR REPLACE TABLE silver.customer_hub AS
