@@ -325,7 +325,7 @@ As a Marketing Manager, I want to see customer segments & churn risk so I can de
 **Key Concepts**:  
 - Customer segmentation = group customers by behavior (RFM).  
 - Churn prediction = probability a customer will stop purchasing.  
-- CLV (Customer Lifetime Value) = expected revenue/margin over a defined horizon.  
+- **CLV (Customer Lifetime Value)** = expected revenue/margin over a defined horizon.  
 - Integration of DS outputs (scores) into dashboards closes the loop between **data science and business action**.  
 
 **Acceptance Criteria**:  
@@ -358,17 +358,17 @@ As a Data Scientist, I want to perform **Exploratory Data Analysis (EDA)** to un
 **Key Concepts**:  
 - **EDA (Exploratory Data Analysis)** = profiling data to find patterns, missing values, distributions.  
 - Churn definition = customers inactive for more than 90 days.  
-- CLV (Customer Lifetime Value) = net margin expected per customer over a defined horizon (e.g., 12 months).  
+- **CLV (Customer Lifetime Value)** = net margin expected per customer over a defined horizon (e.g., 12 months).  
 
 **Acceptance Criteria**:  
 - Missing values, outliers, and overlaps documented.  
 - Clear churn definition (>90 days inactivity).  
-- Draft CLV formula validated with business stakeholders.  
+- Draft **CLV** formula validated with business stakeholders.  
 
 **Tasks**:  
-- Perform EDA on Bronze (distributions, missing values, overlaps).  
+- Perform **EDA** on Bronze (distributions, missing values, overlaps).  
 - Define churn = inactivity > 90 days.  
-- Draft CLV definition (12 months net margin).  
+- Draft **CLV** definition (12 months net margin).  
 
 ---
 
@@ -382,15 +382,15 @@ As a Data Scientist, I want RFM and behavioral features to build churn & CLV mod
 - [MLflow Tracking Features](https://docs.databricks.com/aws/en/mlflow/tracking)  
 
 **Key Concepts**:  
-- RFM = Recency, Frequency, Monetary value (classic segmentation method).  
+- **RFM** = **Recency, Frequency, Monetary** value (classic segmentation method).  
 - Basket diversity = how many unique categories a customer buys from.  
 - Cross-brand shopping = customers who purchased both EuroStyle & Contoso.  
 - Features must be logged and versioned for reproducibility.  
 
 **Acceptance Criteria**:  
-- RFM metrics computed for all customers.  
+- **RFM** metrics computed for all customers.  
 - Basket diversity & cross-brand features available in Silver/Gold.  
-- Feature sets tracked in MLflow or Delta tables.  
+- Feature sets tracked in **MLflow** or Delta tables.  
 
 **Tasks**:  
 - Compute **RFM (Recency, Frequency, Monetary value)** metrics.  
@@ -410,18 +410,18 @@ As a Data Scientist, I want baseline models for churn and CLV so I can evaluate 
 
 **Key Concepts**:  
 - Logistic Regression = baseline classification model for churn (yes/no).  
-- Random Forest = regression model for CLV (predicting value).  
+- Random Forest = regression model for **CLV (predicting value)**.  
 - Model evaluation uses **Accuracy, AUC (Area Under Curve)** for churn, **RMSE (Root Mean Squared Error)** for CLV.  
 
 **Acceptance Criteria**:  
-- Logistic Regression churn model trained and logged.  
-- Random Forest CLV regression trained and logged.  
+- **Logistic Regression** churn model trained and logged.  
+- Random Forest **CLV** regression trained and logged.  
 - Experiments tracked in MLflow with metrics and parameters.  
 
 **Tasks**:  
-- Train Logistic Regression for churn.  
-- Train Random Forest for CLV.  
-- Log all experiments in MLflow.  
+- **Train Logistic Regression** for churn.  
+- Train **Random Forest for CLV**.  
+- Log all experiments in **MLflow**.  
 
 ---
 
@@ -445,7 +445,7 @@ As a Data Scientist, I want to score churn/CLV and join them into Customer 360 s
 **Acceptance Criteria**:  
 - Churn probabilities and CLV values scored for all customers.  
 - Scored datasets joined into `customer_360_gold`.  
-- Model performance documented (Accuracy, AUC, RMSE).  
+- **Model performance documented** (Accuracy, AUC, RMSE).  
 - Feature importance/explainability shared with analysts.  
 
 **Tasks**:  
@@ -655,7 +655,7 @@ FROM silver.customer_hub ch
 JOIN silver.customers_clean c ON ch.customer_bk = upper(trim(c.customer_id));
 ```
 
-Free Edition Limitations (Databricks CE + Fabric Student)
+Free Edition Limitations (Databricks Free Edition + Fabric Student)
 
 - No Delta Live Tables (DLT) or Jobs API: transformations must be run manually; no native scheduled pipelines.
 - No Unity Catalog: no centralized governance, lineage, or fine-grained policies; rely on naming conventions and workspace scopes.
@@ -783,6 +783,48 @@ As a project team (DE, DA, DS), we want to simulate an end-to-end deployment pip
 ## Educational note (BeCode Data Analytics & AI Bootcamp)
 
 This Product Backlog is provided solely for educational purposes as part of the BeCode Data Analytics & AI Bootcamp. Names, datasets, and scenarios are illustrative for training only and are not production guidance.
+
+---
+
+## Acronyms
+
+| Acronym | Meaning |
+|---|---|
+| DE | Data Engineer |
+| DA | Data Analyst |
+| DS | Data Scientist |
+| GMV | Gross Merchandise Value |
+| AOV | Average Order Value |
+| CLV | Customer Lifetime Value |
+| EDA | Exploratory Data Analysis |
+| RFM | Recency, Frequency, Monetary value |
+| KPI | Key Performance Indicator |
+| RLS | Row-Level Security |
+| SQL | Structured Query Language |
+| CSV | Comma-Separated Values |
+| ADLS | Azure Data Lake Storage |
+| DLT | Delta Live Tables |
+| UC | Unity Catalog |
+| RBAC | Role-Based Access Control |
+| API | Application Programming Interface |
+| SCD2 | Slowly Changing Dimension Type 2 |
+| CE | Community Edition (Databricks) |
+| DBFS | Databricks File System |
+| CI/CD | Continuous Integration / Continuous Delivery |
+| Dev/Test/Prod | Development / Test / Production |
+| AUC | Area Under the ROC Curve |
+| RMSE | Root Mean Squared Error |
+| FX | Foreign Exchange |
+| ECB | European Central Bank |
+| BG/NBD | Beta Geometric / Negative Binomial Distribution |
+| LSTM | Long Short-Term Memory |
+| NN | Neural Network |
+| PII | Personally Identifiable Information |
+| SLA | Service Level Agreement |
+| PBIX | Power BI Desktop report file format |
+| ETL | Extract, Transform, Load |
+| RPV | Revenue Per Visitor |
+| CR | Conversion Rate |
 
 
 
