@@ -634,7 +634,7 @@ As a Data Scientist, I want to implement advanced survival analysis and probabil
 **Learning Resources**  
 - [Survival Analysis in Python (lifelines)](https://lifelines.readthedocs.io/en/latest/)  
 - [BG/NBD – step-by-step derivation (Fader, Hardie & Lee, 2019, PDF)](https://www.brucehardie.com/notes/039/bgnbd_derivation__2019-11-06.pdf)  
-- [Gamma–Gamma model of monetary value (Fader & Hardie, 2013, PDF)](https://www.brucehardie.com/notes/025/gamma_gamma.pd)
+- [The Gamma-Gamma Model of Monetary Value)](https://www.brucehardie.com/notes/025/gamma_gamma.pdf)
 - [Sequential Deep Learning with PyTorch](https://pytorch.org/tutorials/beginner/basics/intro.html)  
 - [BTYD models notebook on Databricks](https://www.databricks.com/notebooks/Customer%20Lifetime%20Value%20Virtual%20Workshop/02%20The%20BTYD%20Models.htm)
 
