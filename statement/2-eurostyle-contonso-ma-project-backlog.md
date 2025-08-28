@@ -74,7 +74,10 @@ As a Data Engineer, I want to ingest EuroStyle and Contoso CSVs into Bronze so t
 **Learning Resources**:  
 - [Medallion Architecture](https://docs.databricks.com/lakehouse/medallion.html)  
 - [Delta Lake Basics](https://docs.databricks.com/delta/index.html)  
+- [What is Delta Lake in Azure Databricks?](https://learn.microsoft.com/en-us/azure/databricks/delta/)
+- [Apache Spark&trade; Tutorial: Getting Started with Apache Spark on Databricks](https://www.databricks.com/spark/getting-started-with-apache-spark/dataframes#visualize-the-dataframe)
 - [PySpark DataFrame API](https://spark.apache.org/docs/latest/api/python/reference/pyspark.sql/dataframe.html)  
+- [Tutorial: Build an ETL pipeline with Lakeflow Declarative Pipelines](https://learn.microsoft.com/en-us/azure/databricks/getting-started/data-pipeline-get-started)
 
 **Key Concepts**:  
 - Bronze = raw data "as delivered" (no cleaning yet).  
@@ -132,8 +135,13 @@ As a Data Engineer, I want Gold marts for sales and customers so the business ge
 
 **Learning Resources**:  
 - [Star Schema Design](https://www.databricks.com/glossary/star-schema)  
-- [Performance Optimization in Delta](https://docs.databricks.com/optimizations/index.html)  
-- [RFM Analysis Basics](https://clevertap.com/blog/rfm-analysis/)  
+- [Performance Optimization in Delta](https://docs.databricks.com/aws/en/delta/best-practices)  
+- [Recency, Frequency, Monetary (RFM) Segmentation](https://www.databricks.com/solutions/accelerators/rfm-segmentation)  
+- [Retail Personalization with RFM Segmentation and the Composable CDP](https://www.databricks.com/blog/retail-personalization-rfm-segmentation-and-composable-cdp)
+- [RFM Segmentation, Databricks Solution Accelerators](https://github.com/databricks-industry-solutions/rfm-segmentation)
+- [Gross Merchandise Value (GMV): Meaning & Calculation](https://www.yieldify.com/blog/gross-merchandise-value-gmv)
+- [Understanding GMV in ecommerce](https://getrecharge.com/blog/understanding-gmv-in-ecommerc)
+- [AOV vs CR vs RPV vs GMV in Ecommerce: Important Metrics You Should Know](https://www.mida.so/blog/important-ecommerce-metrics-aov-cr-rpv-gmv)
 
 **Key Concepts**:  
 - Gold = business-ready, aggregated, and optimized marts.  
@@ -193,7 +201,7 @@ As a Data Analyst, I want KPIs from Bronze so I can deliver a "First Look" dashb
 As a Data Analyst, I want to compare KPIs Raw vs Silver to highlight data cleaning impact.  
 
 **Learning Resources**:  
-- [Data Quality Framework](https://docs.databricks.com/lakehouse/data-quality.html)  
+- [Data Quality Management](https://www.databricks.com/discover/pages/data-quality-management)  
 - [Power BI Comparison Techniques](https://learn.microsoft.com/en-us/power-bi/visuals/power-bi-visualization-combo-chart)  
 
 **Key Concepts**:  
@@ -217,8 +225,8 @@ As a Data Analyst, I want to compare KPIs Raw vs Silver to highlight data cleani
 As an Executive, I want consolidated GMV, AOV, and margin so I can track EuroStyle + Contoso performance.  
 
 **Learning Resources**:  
-- [Row-Level Security in Power BI](https://learn.microsoft.com/en-us/power-bi/admin/service-security-rls)  
-- [Performance Optimization in Power BI](https://learn.microsoft.com/en-us/power-bi/guidance/power-bi-performance-best-practices)  
+- [Row-Level Security in Power BI](https://learn.microsoft.com/en-us/fabric/security/service-admin-row-level-security)  
+- [Performance Optimization in Power BI](https://learn.microsoft.com/en-us/power-bi/create-reports/desktop-performance-analyzer)  
 
 **Key Concepts**:  
 - Gold = business-ready marts with consistent KPIs.  

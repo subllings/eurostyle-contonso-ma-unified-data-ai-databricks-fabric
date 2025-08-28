@@ -192,6 +192,7 @@ Agility ensures that data engineers, data scientists, and data analysts can iter
 
 In summary, the Agile way of working ensures that even with limited free-tier platforms (Databricks Free, Fabric Trial), the team can **deliver incremental business value each sprint**, demonstrate progress to stakeholders, and continuously adapt as new challenges or opportunities arise.
 
+---
 
 ## Deliverables Journey – From Essentials to Mastery
 
@@ -248,6 +249,6 @@ Recommendations
 
 ## Detailed Deliverables
 
-For full details of tasks, acceptance criteria, and technical specifications, see the **[Project Backlog](../statement/3-eurostyle-project-backlog.md)** (adapted to M&A).
+For full details of tasks, acceptance criteria, and technical specifications, see the [Product Backlog](https://github.com/subllings/eurostyle-contonso-ma-unified-data-ai-databricks-fabric/blob/main/statement/2-eurostyle-contonso-ma-project-backlog.md).
 
 ---
