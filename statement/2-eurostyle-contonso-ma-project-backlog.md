@@ -651,6 +651,15 @@ As a Data Analyst, I want to compare KPIs Raw vs Silver to highlight data cleani
 **Learning Resources**:  
 - [Data Quality Management](https://www.databricks.com/discover/pages/data-quality-management)  
 - [Power BI Comparison Techniques](https://learn.microsoft.com/en-us/power-bi/visuals/power-bi-visualization-combo-chart)  
+ - [Power BI Bookmarks (toggle Raw/Silver views)](https://learn.microsoft.com/power-bi/create-reports/desktop-bookmarks)  
+ - [Selection pane and layering (show/hide visuals)](https://www.youtube.com/watch?v=mSvJQdHLOAw)  
+ - [Sync slicers across pages](https://learn.microsoft.com/en-us/power-bi/developer/visuals/enable-sync-slicers)  
+ - [Report page tooltips and custom tooltips](https://learn.microsoft.com/en-us/power-bi/create-reports/desktop-tooltips)  
+ - [Row-level security (RLS) with Power BI Desktop](https://learn.microsoft.com/en-us/fabric/security/service-admin-row-level-security)  
+ - [Performance Analyzer for report tuning](https://learn.microsoft.com/power-bi/create-reports/desktop-performance-analyzer)  
+ - [Storage modes (Import, DirectQuery, Dual)](https://learn.microsoft.com/en-us/power-bi/transform-model/desktop-storage-mode)  
+ - [DAX function reference (e.g., DIVIDE, FORMAT)](https://learn.microsoft.com/dax/dax-function-reference)  
+ - [Power BI star schema guidance (avoid mixed grains)](https://learn.microsoft.com/power-bi/guidance/star-schema)
 
 **Key Concepts**:  
 - Silver = cleaned, harmonized data.  
