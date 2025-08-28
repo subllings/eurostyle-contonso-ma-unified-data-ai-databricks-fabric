@@ -288,7 +288,7 @@ As a Data Scientist, I want to perform **Exploratory Data Analysis (EDA)** to un
 **Learning Resources**:  
 - [EDA in Databricks](https://docs.databricks.com/exploratory-data-analysis/index.html)  
 - [MLflow Tracking](https://mlflow.org/docs/latest/tracking.html)  
-- [Churn Prediction Basics](https://towardsdatascience.com/churn-prediction-in-telecom-industry-2f2c7d7e9388)  
+- [Churn Prediction Basics](https://www.databricks.com/solutions/accelerators/predict-customer-churn)  
 
 **Key Concepts**:  
 - **EDA (Exploratory Data Analysis)** = profiling data to find patterns, missing values, distributions.  
@@ -313,8 +313,8 @@ As a Data Scientist, I want RFM and behavioral features to build churn & CLV mod
 
 **Learning Resources**:  
 - [RFM Analysis](https://clevertap.com/blog/rfm-analysis/)  
-- [Feature Engineering Guide](https://docs.databricks.com/machine-learning/feature-engineering/index.html)  
-- [MLflow Tracking Features](https://mlflow.org/docs/latest/feature-store.html)  
+- [Feature Engineering Guide](https://www.databricks.com/glossary/feature-engineering)  
+- [MLflow Tracking Features](https://docs.databricks.com/aws/en/mlflow/tracking)  
 
 **Key Concepts**:  
 - RFM = Recency, Frequency, Monetary value (classic segmentation method).  
