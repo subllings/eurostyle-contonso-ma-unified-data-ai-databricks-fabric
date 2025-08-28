@@ -802,41 +802,41 @@ As a project team (DE, DA, DS), we want to simulate an end-to-end deployment pip
 
 | Acronym | Meaning |
 |---|---|
-| DE | Data Engineer |
-| DA | Data Analyst |
-| DS | Data Scientist |
-| GMV | Gross Merchandise Value |
-| AOV | Average Order Value |
-| CLV | Customer Lifetime Value |
-| EDA | Exploratory Data Analysis |
-| RFM | Recency, Frequency, Monetary value |
-| KPI | Key Performance Indicator |
-| RLS | Row-Level Security |
-| SQL | Structured Query Language |
-| CSV | Comma-Separated Values |
 | ADLS | Azure Data Lake Storage |
-| DLT | Delta Live Tables |
-| UC | Unity Catalog |
-| RBAC | Role-Based Access Control |
+| AOV | Average Order Value |
 | API | Application Programming Interface |
-| SCD2 | Slowly Changing Dimension Type 2 |
-| CE | Community Edition (Databricks) |
-| DBFS | Databricks File System |
-| CI/CD | Continuous Integration / Continuous Delivery |
-| Dev/Test/Prod | Development / Test / Production |
 | AUC | Area Under the ROC Curve |
-| RMSE | Root Mean Squared Error |
-| FX | Foreign Exchange |
-| ECB | European Central Bank |
 | BG/NBD | Beta Geometric / Negative Binomial Distribution |
+| CE | Community Edition (Databricks) |
+| CI/CD | Continuous Integration / Continuous Delivery |
+| CLV | Customer Lifetime Value |
+| CR | Conversion Rate |
+| CSV | Comma-Separated Values |
+| DA | Data Analyst |
+| DBFS | Databricks File System |
+| DE | Data Engineer |
+| Dev/Test/Prod | Development / Test / Production |
+| DLT | Delta Live Tables |
+| DS | Data Scientist |
+| ECB | European Central Bank |
+| EDA | Exploratory Data Analysis |
+| ETL | Extract, Transform, Load |
+| FX | Foreign Exchange |
+| GMV | Gross Merchandise Value |
+| KPI | Key Performance Indicator |
 | LSTM | Long Short-Term Memory |
 | NN | Neural Network |
-| PII | Personally Identifiable Information |
-| SLA | Service Level Agreement |
 | PBIX | Power BI Desktop report file format |
-| ETL | Extract, Transform, Load |
+| PII | Personally Identifiable Information |
+| RBAC | Role-Based Access Control |
+| RFM | Recency, Frequency, Monetary value |
+| RLS | Row-Level Security |
+| RMSE | Root Mean Squared Error |
 | RPV | Revenue Per Visitor |
-| CR | Conversion Rate |
+| SCD2 | Slowly Changing Dimension Type 2 |
+| SLA | Service Level Agreement |
+| SQL | Structured Query Language |
+| UC | Unity Catalog |
 
 ---
 
