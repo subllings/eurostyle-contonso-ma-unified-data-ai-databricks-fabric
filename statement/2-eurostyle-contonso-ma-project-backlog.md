@@ -48,6 +48,41 @@ It provides a clear mapping of **who delivers what, and when**, ensuring no role
 
 ---
 
+## Epic-to-Sprint and Role Mapping
+
+This table lists all epics, distributed by sprint and by profile (DE, DS, DA). It complements the Sprint Planning Matrix and provides a high-level view; ownership remains at the user story level within each epic.
+
+| Sprint | DE (Data Engineer) | DS (Data Scientist) | DA (Data Analyst) |
+|---|---|---|---|
+| 0 | Epic 1 – Data Foundation Platform (setup) | Epic 3 – ML & Predictive (hypotheses/scope) | Epic 2 – Analytics & BI (KPI catalog) |
+| 1 | Epic 1 – Data Foundation Platform | Epic 3 – ML & Predictive (EDA) | Epic 2 – Analytics & BI (First Look) |
+| 2 | Epic 1 – Data Foundation Platform (Silver) | Epic 3 – ML & Predictive (Features) | Epic 2 – Analytics & BI (Raw vs Silver) |
+| 3 | Epic 1 – Data Foundation Platform (Gold marts) | Epic 3 – ML & Predictive (Model training) | Epic 2 – Analytics & BI (Executive) |
+| 4 | Epic 4 – Platform Integration (Fabric) | Epic 3 – ML (Batch scoring) + Epic 4 (Export/Validation) | Epic 2 – Analytics (Segmentation) + Epic 4 (Power BI Suite) |
+| 5 (optional) | Epic 5 – Optional Extensions (DE: Data Vault light; All: E2E deployment) | Epic 5 – Optional Extensions (DS: advanced models; All: export/validation) | Epic 5 – Optional Extensions (DA: dynamic dashboards; All: deployment pipeline) |
+
+Notes
+- Optional extensions (Epic 5.x) are scheduled under Sprint 5 (optional) based on team capacity.
+- For detailed deliverables, see the Features map below and the User Stories within each epic.
+
+
+## Feature-to-Sprint and Role Mapping
+
+This table lists all features, distributed by sprint and by profile (DE, DS, DA). Ownership is ultimately at the user story level; this is the primary owner per feature.
+
+| Sprint | DE (Data Engineer) | DS (Data Scientist) | DA (Data Analyst) |
+|---|---|---|---|
+| 0 | — | — | — |
+| 1 | 1.1 Raw Data Ingestion | 3.1 Exploratory Analysis (start) | 2.1 First Look Dashboard |
+| 2 | 1.2 Silver Cleaning & Harmonization | 3.1 EDA (cont.), 3.2 Feature Engineering | 2.2 Raw vs Silver Dashboard |
+| 3 | 1.3 Gold Business Marts | 3.3 Model Training | 2.3 Executive Post‑Merger Dashboard |
+| 4 | 4.1 Export Gold to Fabric | 3.4 Batch Scoring & Integration, 4.3 Scoring Export & Validation | 2.4 Customer Segmentation, 4.2 Power BI Suite |
+| 5 (optional) | 5.1 Simplified Data Vault; 5.4 E2E Deployment (cross‑role) | 5.3 Survival/Probabilistic Models; 5.4 E2E Deployment (cross‑role) | 5.2 Advanced Segmentation; 5.4 E2E Deployment (cross‑role) |
+
+Notes
+- Optional extensions (5.x) are grouped in Sprint 5 (optional): 5.1 (DE), 5.2 (DA), 5.3 (DS), and 5.4 (All, cross‑role).
+- For exact division of work, see the User Stories within each feature.
+
 
 ## Backlog Structure
 This backlog follows Agile methodology with hierarchical organization:
