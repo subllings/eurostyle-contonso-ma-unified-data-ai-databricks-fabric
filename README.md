@@ -71,7 +71,7 @@ In a production environment, this would be automated and governed using:
 
 
 ## References
-Note on FX (Foreign Exchange): Amounts from different source currencies are converted into a single reporting currency (e.g., EUR) using documented reference rates and a fixed valuation date to ensure reproducibility. Example sources: European Central Bank (ECB) reference rates (https://www.ecb.europa.eu/stats/eurofxref/), XE.com or OANDA APIs, Yahoo Finance API (historical).
+
 - [Business Case](https://github.com/subllings/eurostyle-contonso-ma-unified-data-ai-databricks-fabric/blob/main/statement/1-eurostyle-contonso-ma-business-case.md)  
 - [Product Backlog](https://github.com/subllings/eurostyle-contonso-ma-unified-data-ai-databricks-fabric/blob/main/statement/2-eurostyle-contonso-ma-project-backlog.md)  
 
