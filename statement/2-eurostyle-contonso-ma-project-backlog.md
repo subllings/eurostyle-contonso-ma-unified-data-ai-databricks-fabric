@@ -455,6 +455,219 @@ As a Data Analyst, I want Power BI dashboards published through Fabric so execut
 - Build Customer Segmentation Dashboard (with churn & CLV).  
 - Deploy dashboards via Fabric pipelines.  
 
+---
+## Feature 4.3: Model Scoring Export & Validation in Fabric (Sprint 4)  
+**User Story**:  
+As a Data Scientist, I want churn and CLV scores exported from Databricks into Fabric so that business dashboards can consume and validate predictive insights.  
+
+**Learning Resources**:  
+- [Batch Scoring on Databricks](https://docs.databricks.com/en/machine-learning/model-inference/index.html)  
+- [MLflow Model Registry](https://mlflow.org/docs/latest/model-registry.html)  
+- [Fabric Data Pipelines](https://learn.microsoft.com/en-us/fabric/data-factory/)  
+
+**Key Concepts**:  
+- Batch-scored outputs (`customer_id`, churn probability, CLV value) must be stored in Gold.  
+- Export scored tables as Parquet with manifest for ingestion into Fabric.  
+- Validation in Fabric ensures alignment between Databricks predictions and Power BI dashboards.  
+- This closes the loop between Data Science and BI.  
+
+**Acceptance Criteria**:  
+- Scored churn and CLV tables saved in `customer_scores_gold`.  
+- Files exported as Parquet + manifest for Fabric.  
+- Export process documented and tested **using manual download from Databricks Free Edition and manual upload into Fabric Lakehouse** (no automated integration in free tier).  
+- Fabric Data Pipeline ingests scores into Lakehouse tables.  
+- Power BI dashboards (Feature 4.2) consume these tables for segmentation and risk views.  
+
+**Tasks**:  
+- Run batch scoring in Databricks Free Edition for churn and CLV models.  
+- Save outputs to Gold (`customer_scores_gold`).  
+- Export as Parquet + manifest + `_SUCCESS`.  
+- **Manually download Parquet files from Databricks Free Edition and upload them into Fabric Lakehouse `/Files` folder.**  
+- Ingest with Fabric Data Pipeline → Delta tables.  
+- Validate alignment of predictions between Databricks and Fabric dashboards.   
+
+
+---
+
+## Optional Extensions
+
+### Feature 5.1 (DE) – Simplified Data Vault in Silver  
+
+**User Story**  
+As a Data Engineer, I want a simplified Data Vault (Hubs, Links, Satellites) in the Silver layer so downstream Gold marts are consistent, modular, and easy to evolve.
+
+**Learning Resources**  
+- [Medallion Architecture (Databricks)](https://docs.databricks.com/lakehouse/medallion.html)  
+- [Delta Lake Best Practices (Azure Databricks)](https://learn.microsoft.com/en-us/azure/databricks/delta/best-practices)  
+- [Data Vault (Databricks glossary)](https://www.databricks.com/glossary/data-vault)  
+- [Prescriptive guidance for Data Vault on Lakehouse (Databricks blog)](https://www.databricks.com/blog/2022/06/24/prescriptive-guidance-for-implementing-a-data-vault-model-on-the-databricks-lakehouse-platform.html)  
+- [Hash functions in Databricks SQL: md5](https://docs.databricks.com/sql/language-manual/functions/md5.html), [sha2](https://docs.databricks.com/sql/language-manual/functions/sha2.html)
+
+**Key Concepts**  
+- **Hub**: master entities with stable business keys (customers, products, calendar).  
+- **Link**: transactional/relational tables joining hubs (sales: customer ↔ product ↔ date).  
+- **Satellite**: descriptive and evolving attributes for hubs or links (country, segment, category) with simple SCD2 fields (`effective_from`, `effective_to`, `is_current`).  
+- Objective: a "light" Data Vault in Silver that feeds `sales_daily`, `category_perf`, and `customer_360` in Gold.
+
+**Acceptance Criteria**  
+- `silver.customer_hub`, `silver.product_hub`, `silver.calendar_hub` created with stable hash keys from business keys.  
+- `silver.sales_link` joins customer, product, and date hubs for cleaned sales.  
+- At least one satellite operational (e.g., `silver.customer_satellite` with SCD2 columns).  
+- Joins across hub/link/satellite validated (cardinality, sample checks).  
+- Short README section explaining schema, keys, and historization policy.
+
+**Tasks**  
+1. Build Hubs  
+   - `customer_hub`: deduplicate, harmonize `customer_id`, compute `customer_hk` (hash).  
+   - `product_hub`: harmonize `sku/product_code`, compute `product_hk`.  
+   - `calendar_hub`: generate a date hub and `date_hk` (or keep natural date key).  
+2. Build Link  
+   - `sales_link`: from cleaned sales, resolve FK to hubs, optionally compute `sales_lk`.  
+3. Build at least one Satellite  
+   - `customer_satellite`: descriptive columns (country, segment) with SCD2 fields.  
+4. Validate  
+   - Join samples, row counts, date consistency.  
+5. Document  
+   - ASCII/Mermaid schema, naming conventions, key logic, SCD policy.
+
+**Minimal SQL Example (adapt for CE)**  
+```sql
+-- CUSTOMER HUB
+CREATE OR REPLACE TABLE silver.customer_hub AS
+SELECT
+  md5(upper(trim(customer_id))) AS customer_hk,
+  upper(trim(customer_id))      AS customer_bk,
+  current_timestamp()           AS load_ts,
+  'silver_customers'            AS record_source
+FROM silver.customers_clean
+GROUP BY upper(trim(customer_id));
+
+-- PRODUCT HUB
+CREATE OR REPLACE TABLE silver.product_hub AS
+SELECT
+  md5(upper(trim(product_code))) AS product_hk,
+  upper(trim(product_code))      AS product_bk,
+  current_timestamp()            AS load_ts,
+  'silver_products'              AS record_source
+FROM silver.products_clean
+GROUP BY upper(trim(product_code));
+
+-- CALENDAR HUB
+CREATE OR REPLACE TABLE silver.calendar_hub AS
+SELECT
+  CAST(order_date AS DATE)               AS date_bk,
+  md5(CAST(order_date AS STRING))        AS date_hk,
+  current_timestamp()                    AS load_ts,
+  'derived_calendar'                     AS record_source
+FROM (SELECT DISTINCT CAST(order_date AS DATE) AS order_date
+      FROM silver.sales_clean);
+
+-- SALES LINK (customer–product–date)
+CREATE OR REPLACE TABLE silver.sales_link AS
+SELECT
+  md5(concat_ws('||', ch.customer_hk, ph.product_hk, cal.date_hk,
+                coalesce(cast(s.order_id as string), ''))) AS sales_lk,
+  ch.customer_hk, ph.product_hk, cal.date_hk, s.order_id,
+  current_timestamp() AS load_ts, 'silver_sales' AS record_source
+FROM silver.sales_clean s
+JOIN silver.customer_hub ch ON upper(trim(s.customer_id)) = ch.customer_bk
+JOIN silver.product_hub  ph ON upper(trim(s.product_code)) = ph.product_bk
+JOIN silver.calendar_hub cal ON CAST(s.order_date AS DATE) = cal.date_bk;
+
+-- CUSTOMER SATELLITE (simple SCD2 initialization)
+CREATE OR REPLACE TABLE silver.customer_satellite AS
+SELECT
+  ch.customer_hk,
+  upper(trim(c.country))                           AS country,
+  upper(trim(coalesce(c.segment, 'UNKNOWN')))      AS segment,
+  current_timestamp()                              AS effective_from,
+  timestamp'9999-12-31 23:59:59'                   AS effective_to,
+  true                                             AS is_current,
+  current_timestamp()                              AS load_ts,
+  'silver_customers'                               AS record_source
+FROM silver.customer_hub ch
+JOIN silver.customers_clean c ON ch.customer_bk = upper(trim(c.customer_id));
+```
+
+Free Edition Limitations (Databricks CE + Fabric Student)
+
+- No Delta Live Tables (DLT) or Jobs API: transformations must be run manually; no native scheduled pipelines.
+- No Unity Catalog: no centralized governance, lineage, or fine-grained policies; rely on naming conventions and workspace scopes.
+- Limited compute and session lifetime: keep data volumes modest; avoid heavy SHAP or deep nets on large samples.
+- Limited optimization features: if OPTIMIZE/Z-ORDER options are unavailable, compact data via write patterns (e.g., coalesce/repartition) and keep file sizes reasonable.
+- No Airflow jobs in Fabric free/student and no Databricks tokens in CE: CI/CD and orchestration must be simulated (documented steps, local GitHub Actions for tests only).
+- SCD2 management is manual: track changes with effective dates and handle historical data in the application logic.
+
+### Feature 5.2 (DA) – Advanced Segmentation & Dynamic Dashboards  
+
+**User Story**  
+As a Data Analyst, I want to implement advanced segmentation logic and dynamic drill-through dashboards so that business stakeholders can interactively explore customer behavior (RFM segments, churn risk, CLV tiers) across multiple dimensions.
+
+**Learning Resources**  
+- [Power BI What-if parameters](https://learn.microsoft.com/en-us/power-bi/transform-model/desktop-what-if)  
+- [Drillthrough in Power BI](https://learn.microsoft.com/en-us/power-bi/create-reports/desktop-drillthrough)  
+
+**Key Concepts**  
+- Advanced segmentation = grouping customers dynamically by RFM, churn risk, CLV tiers.  
+- Drill-through dashboards = allowing navigation from high-level KPIs (GMV, AOV) into segment-level details.  
+- Dynamic filters = enabling end-users to adjust thresholds (e.g., recency window, churn probability cutoff) with What-if parameters.  
+
+**Acceptance Criteria**  
+- Dashboard includes an interactive segmentation view: customers bucketed by RFM, churn risk, CLV.  
+- Dynamic thresholds (e.g., inactivity > 90 days vs > 120 days) controlled by What-if parameters.  
+- Drill-through implemented: from executive KPIs → customer segment → individual customer record.  
+- Dashboard published in Fabric and linked to Gold `customer_360` and `customer_scores_gold`.  
+- Documentation in README with screenshots and explanation of the segmentation logic.  
+
+**Tasks**  
+1. Define dynamic segmentation rules (RFM buckets, churn cutoff, CLV tiers).  
+2. Implement What-if parameters in Power BI for recency window and churn cutoff.  
+3. Create drill-through pages for customer segments and individual records.  
+4. Connect dashboards to Gold `customer_360` and `customer_scores_gold`.  
+5. Document segmentation rules and dashboard navigation in README. 
+
+### Feature 5.3 (DS) – Survival & Probabilistic Models for Churn and CLV  
+
+**User Story**  
+As a Data Scientist, I want to implement advanced survival analysis and probabilistic models so that stakeholders gain deeper insights into customer lifetime and churn timing, beyond standard classification/regression.  
+
+**Learning Resources**  
+- [Survival Analysis in Python (lifelines)](https://lifelines.readthedocs.io/en/latest/)  
+- [BG/NBD – step-by-step derivation (Fader, Hardie & Lee, 2019, PDF)](https://www.brucehardie.com/notes/039/bgnbd_derivation__2019-11-06.pdf)  
+- [Gamma–Gamma model of monetary value (Fader & Hardie, 2013, PDF)](https://www.brucehardie.com/notes/025/gamma_gamma.pd)
+- [Sequential Deep Learning with PyTorch](https://pytorch.org/tutorials/beginner/basics/intro.html)  
+- [BTYD models notebook on Databricks](https://www.databricks.com/notebooks/Customer%20Lifetime%20Value%20Virtual%20Workshop/02%20The%20BTYD%20Models.htm)
+
+**Key Concepts**  
+- **Survival models** predict *time until churn*, producing hazard curves and probabilities per customer.  
+- **BG/NBD & Gamma-Gamma models** estimate CLV using probabilistic purchase frequency and monetary value.  
+- **Sequential deep learning (optional)** models customer purchase history as a sequence for richer churn signals.  
+
+**Acceptance Criteria**  
+- Train a Cox Proportional Hazards or BG/NBD model for churn timing.  
+- Fit Gamma-Gamma or Bayesian model for CLV distribution.  
+- Visualize survival curves and CLV probability distributions for segments.  
+- Compare survival/CLV outputs against RFM-based baselines.  
+- Document in README with plots and interpretation (e.g., "50% of Segment A expected to churn within 6 months").  
+
+**Tasks**  
+1. Prepare survival dataset (event = churn, duration = days since last purchase).  
+2. Train Cox model or Kaplan-Meier survival curves using `lifelines`.  
+3. Implement BG/NBD and Gamma-Gamma CLV model with the `lifetimes` package.  
+4. Generate visualizations (hazard curves, CLV distributions).  
+5. (Optional) Prototype a sequential NN model (LSTM) for churn prediction.  
+6. Document findings and compare with baseline tree-based models.  
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -463,7 +676,6 @@ As a Data Analyst, I want Power BI dashboards published through Fabric so execut
 
 ---
 
-## Optional Extensions
 - Advanced ML: Neural Nets, Gradient Boosted Trees  
 - MLOps: CI/CD pipelines, model drift detection  
 - Portfolio polish: publish repo + blog posts
