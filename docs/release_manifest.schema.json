@@ -1,0 +1,68 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Release Manifest (Gold export → Fabric)",
+  "type": "object",
+  "required": ["dataset", "version", "created_ts", "tables"],
+  "properties": {
+    "dataset": { "type": "string", "description": "Logical dataset/release name, e.g., gold_release" },
+    "version": { "type": "string", "description": "Semantic version or timestamp tag for the release, e.g., 2024.09.15" },
+    "created_ts": { "type": "string", "format": "date-time" },
+    "source_snapshot": {
+      "type": "object",
+      "description": "Provenance details from Databricks/Delta",
+      "properties": {
+        "delta_version": { "type": "integer" },
+        "git_commit": { "type": "string" },
+        "notes": { "type": "string" }
+      }
+    },
+    "tables": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "schema", "files", "row_count"],
+        "properties": {
+          "name": { "type": "string", "description": "Table name exported (e.g., sales_daily_gold)" },
+          "schema": {
+            "type": "array",
+            "description": "Column schema contract",
+            "items": {
+              "type": "object",
+              "required": ["name", "dtype", "nullable"],
+              "properties": {
+                "name": { "type": "string" },
+                "dtype": { "type": "string", "description": "Spark/Delta logical type as exported" },
+                "nullable": { "type": "boolean" }
+              }
+            }
+          },
+          "partitions": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "List of partition columns (if any)"
+          },
+          "files": {
+            "type": "array",
+            "description": "Physical Parquet files included in this table export",
+            "items": {
+              "type": "object",
+              "required": ["path", "size_bytes"],
+              "properties": {
+                "path": { "type": "string" },
+                "size_bytes": { "type": "integer" },
+                "md5": { "type": "string" }
+              }
+            }
+          },
+          "row_count": { "type": "integer" },
+          "checksums": {
+            "type": "object",
+            "description": "Optional per-table checksum values (e.g., sum over numeric columns)",
+            "additionalProperties": { "type": "string" }
+          },
+          "notes": { "type": "string" }
+        }
+      }
+    }
+  }
+}

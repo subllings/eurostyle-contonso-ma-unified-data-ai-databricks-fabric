@@ -1,27 +1,42 @@
 # EuroStyle–Contoso M&A – Product Backlog (Databricks & Fabric)
 
+
 ---
 
 ## Platform Architecture – Free vs Paid (Databricks ↔ Microsoft Fabric)
+This project was built in class on free/trial tiers. Below is how the prototype constraints differ from a paid, production-ready setup. Names are explicit to avoid ambiguity.
 
-This section highlights the **architectural constraints** of the EuroStyle–Contoso M&A prototype (built in class on free tiers) versus how the same design would be implemented in an **enterprise-grade paid setup**.
+Definitions (naming clarity)
+- Databricks Free (formerly Community Edition): always‑free classroom workspace (no Unity Catalog, limited features).
+- Azure Databricks Free Trial: time‑limited Azure workspace with constrained features/quotas.
+- Microsoft Fabric Trial (Tenant trial): time‑limited Fabric capacity for evaluation.
+- Microsoft Fabric Free (F2): always‑free small capacity for learning/testing.
+- Paid (Enterprise): Azure Databricks (Premium/Enterprise) + Microsoft Fabric Capacity (e.g., F‑skus/Premium) with standard enterprise capabilities.
 
-| Aspect | Free / Trial (Prototype in class) | Paid / Enterprise (Production-ready) |
-|--------|-----------------------------------|---------------------------------------|
-| **Landing zone** | Manual upload into Fabric Lakehouse `/Files` | ADLS Gen2 landing zone (raw/bronze/silver/gold), accessible via Shortcuts |
-| **Storage format** | Parquet files with `_SUCCESS` + `release_manifest.json` uploaded manually | Delta tables written by DLT/Jobs with atomic publish + manifest |
-| **Data contract** | Convention: `/release/gold/{table}/{date}/vX.Y.Z/` with Parquet + JSON manifest | Same pathing, but automated; schema/hash validation enforced by Jobs & Fabric Pipelines |
-| **Identity & Security** | User credentials; minimal workspace-level access | Managed Identity/Service Principals + Key Vault; RBAC in ADLS + Unity Catalog policies |
-| **Catalog / Governance** | Hive metastore ad-hoc; manual schema docs | Unity Catalog: lineage, tags (PII), fine-grained access control |
-| **Orchestration** | Manual export from Databricks, manual trigger in Fabric Pipeline | Databricks Workflows/Jobs for ETL + ML; Fabric Data Factory Pipelines scheduled or Event Grid-triggered |
-| **Integration with Fabric** | Export → manual upload → Fabric Pipeline copies Parquet into Lakehouse tables | Fabric Shortcuts to ADLS (zero-copy Direct Lake); or Fabric Pipelines copy if schema reshaping needed; Delta Sharing optional |
-| **Power BI mode** | Early sprints: DirectQuery to Databricks Bronze/Silver; Later: Direct Lake once data copied into Fabric | Direct Lake as default; fallback DirectQuery to Databricks SQL Warehouse or Import mode for snapshots |
-| **Environments** | Single shared workspace | Separate Dev/Test/Prod workspaces (Databricks + Fabric); Deployment Pipelines in Fabric |
-| **CI/CD** | None (manual steps only) | GitHub Actions/Azure DevOps for Databricks notebooks, Jobs, UC; Fabric Deployment Pipelines & APIs |
-| **Monitoring** | Manual inspection of pipelines and dashboards | Azure Monitor + Log Analytics for Databricks & Fabric; alerts on SLAs, schema drift, data quality |
-| **Security model** | Basic workspace access + Power BI Row-Level Security (RLS) | Private Endpoints, RBAC at ADLS & UC level, column/row-level masking; RLS in Power BI |
+In this document, "Free (Prototype)" refers to Databricks Free (formerly Community Edition) or Azure Databricks Free Trial and Microsoft Fabric Trial/Free (F2). "Paid (Enterprise)" refers to Azure Databricks Premium/Enterprise and Microsoft Fabric Capacity with governed BI.
+
+Aspect | Free / Trial (Prototype in class) | Paid / Enterprise (Production‑ready)
+---|---|---
+Workspace & Compute | Databricks Free or Azure Databricks Free Trial; single/small clusters; session timeouts | Azure Databricks Premium/Enterprise; autoscaling clusters; Jobs/Workflows
+Storage/Lakehouse | Local workspace storage; manual Parquet exports | ADLS Gen2 with Unity Catalog external locations; governed Delta Lake
+Governance/Catalog | No Unity Catalog | Unity Catalog (data/AI governance, lineage, privileges)
+Scheduling/Orchestration | No Jobs API/DLT in Databricks Free; manual notebook runs | Databricks Jobs/Workflows; Delta Live Tables (DLT); REST/SDK automation
+ML lifecycle | MLflow tracking local to runs; limited/no central registry in Databricks Free | MLflow Tracking + Model Registry; batch/real‑time model serving
+Data movement (to Fabric) | Manual download from Databricks → manual upload to Fabric Lakehouse Files | Automated pipelines: Fabric Data Pipelines/Azure Data Factory; OneLake shortcuts; secure connectors
+Fabric capacity & BI | Microsoft Fabric Trial/Free (F2); limited capacity/duration; Direct Lake basic use | Fabric Capacity (F‑skus/Premium); Deployment Pipelines; RLS at scale; ALM/lineage
+Security | Basic workspace ACLs; no Private Link/VNET; minimal governance | AAD, service principals, Key Vault, Private Link/VNET, Sensitivity labels
+CI/CD | Documented manual steps | Azure DevOps/GitHub Actions; Databricks Repos; Fabric Deployment Pipelines rules
+SLA & Scale | No SLA; small volumes; possible throttling | Enterprise SLAs; horizontal scaling; performance tuning features
+Cost | $0 (time‑limited trials) | Metered DBUs and Fabric capacity; enterprise licensing
+
+Practical implications in this repo
+- Where we state "manual transfer (Free)", it means: Databricks Free or Azure Databricks Free Trial → download Parquet + manifest → upload to Microsoft Fabric Lakehouse /Files.
+– Where we state "no Jobs/DLT", it refers to Databricks Free limitations; in Paid, use Jobs/Workflows and/or DLT for scheduled pipelines.
+- "No Unity Catalog" in Free implies relying on naming conventions; in Paid, define UC catalogs/schemas, permissions, and external locations.
 
 ---
+
+ 
 
 ## Sprint Planning Matrix (4.5 days per sprint)
 
@@ -30,11 +45,13 @@ It provides a clear mapping of **who delivers what, and when**, ensuring no role
 
 | Sprint | Data Engineer (DE) | Data Scientist (DS) | Data Analyst (DA) |
 |--------|---------------------|---------------------|-------------------|
-| **0 (0.5d)** | Set up Databricks workspace and folder structure; define ingestion paths for EuroStyle & Contoso | Define hypotheses for churn (inactivity >90 days) and Customer Lifetime Value (CLV); identify required features | Define initial KPI Catalog v0.1 (GMV, AOV, margin, churn rate); map differences EuroStyle vs Contoso |
-| **1 (4.5d)** | Ingest EuroStyle & Contoso raw CSVs into Bronze Delta tables; add metadata (`ingest_ts`, `source_system`) | Perform **Exploratory Data Analysis (EDA)** on Bronze (Contoso first): distributions, missing values, brand overlap; draft churn & CLV definitions | Build "First Look Dashboard" (Contoso first) with Bronze KPIs: **GMV (Gross Merchandise Value)**, **AOV (Average Order Value)**, order counts |
-| **2 (4.5d)** | Transform Bronze → Silver: deduplication, schema harmonization, standardize currencies, align product hierarchies | Engineer features: **RFM (Recency, Frequency, Monetary value)**, basket diversity, cross-brand overlap; track feature sets in MLflow | Redesign dashboards on Silver; compare Raw vs Silver KPIs; implement first **Row-Level Security (RLS)** rules |
-| **3 (4.5d)** | Build Gold marts: `sales_daily` (sales, GMV, AOV, margin), `category_perf`, `customer_360` with RFM base | Train baseline models: Logistic Regression (churn), Random Forest (CLV regression); log experiments in MLflow | Deliver **Executive Dashboard**: consolidated KPIs (GMV, AOV, margin), brand comparisons, North vs South splits |
-| **4 (4.5d)** | Export Gold marts to Fabric Lakehouse (Parquet + manifest, or Shortcuts); orchestrate ingestion with Fabric Data Pipelines | Run batch scoring for churn & CLV; join scored tables into Gold `customer_360`; document model performance (accuracy, AUC, RMSE) and explainability | Build full **Power BI Post-Merger Suite**: Executive + Customer Segmentation dashboards (with churn & CLV); deploy with Fabric pipelines |
+| **0 (0.5d)** | 🟥 Set up Databricks workspace and folder structure; define ingestion paths for EuroStyle & Contoso | 🟥 Define hypotheses for churn (inactivity >90 days) and Customer Lifetime Value (CLV); identify required features | 🟩 🟨 Define initial KPI Catalog v0.1 (GMV, AOV, margin, churn rate); map differences EuroStyle vs Contoso |
+| **1 (4.5d)** | 🟥 Ingest EuroStyle & Contoso raw CSVs into Bronze Delta tables; add metadata (`ingest_ts`, `source_system`) | 🟥 Perform **Exploratory Data Analysis (EDA)** on Bronze (Contoso first): distributions, missing values, brand overlap; draft churn & CLV definitions | 🟩 🟨 Build "First Look Dashboard" (Contoso first) with Bronze KPIs: **GMV (Gross Merchandise Value)**, **AOV (Average Order Value)**, order counts |
+| **2 (4.5d)** | 🟥 Transform Bronze → Silver: deduplication, schema harmonization, standardize currencies, align product hierarchies | 🟥 Engineer features: **RFM (Recency, Frequency, Monetary value)**, basket diversity, cross-brand overlap; track feature sets in MLflow | 🟩 🟨 Redesign dashboards on Silver; compare Raw vs Silver KPIs; implement first **Row-Level Security (RLS)** rules |
+| **3 (4.5d)** | 🟥 Build Gold marts: `sales_daily` (sales, GMV, AOV, margin), `category_perf`, `customer_360` with RFM base | 🟥 Train baseline models: Logistic Regression (churn), Random Forest (CLV regression); log experiments in MLflow | 🟩 🟨 Deliver **Executive Dashboard**: consolidated KPIs (GMV, AOV, margin), brand comparisons, North vs South splits |
+| **4 (4.5d)** | 🟥→🟩 Export Gold marts to Fabric Lakehouse (Parquet + manifest, or Shortcuts); orchestrate ingestion with Fabric Data Pipelines | 🟥→🟩 Run batch scoring for churn & CLV; join scored tables into Gold `customer_360`; export to Fabric and validate metrics/skew | 🟩 🟨 Build full **Power BI Post-Merger Suite**: Executive + Customer Segmentation dashboards (with churn & CLV); deploy with Fabric pipelines |
+
+Legend: 🟥 Databricks, 🟩 Fabric, 🟨 Power BI, 🟥→🟩 Integration (handoff Databricks → Fabric)
 
 
 ---
@@ -45,12 +62,14 @@ This table lists all epics, distributed by sprint and by profile (DE, DS, DA). I
 
 | Sprint | DE (Data Engineer) | DS (Data Scientist) | DA (Data Analyst) |
 |---|---|---|---|
-| 0 | [Epic 1 – Data Foundation Platform](#epic-1) (setup: workspace, folders, ingest paths) | [Epic 3 – ML & Predictive](#epic-3) (hypotheses/requirements, MLflow init) | [Epic 2 – Analytics & BI](#epic-2) (KPI Catalog v0.1, semantic draft) |
-| 1 | [Epic 1 – Data Foundation Platform](#epic-1) (Bronze: ES+Contoso, metadata, DirectQuery) | [Epic 3 – ML & Predictive](#epic-3) (EDA: prevalence, drift, baselines) | [Epic 2 – Analytics & BI](#epic-2) (First Look – Contoso: semantic model, measures, v1 report, KPI v0.2) |
-| 2 | [Epic 1 – Data Foundation Platform](#epic-1) (Silver: dedup, FX→EUR, IDs, schema contract) | [Epic 3 – ML & Predictive](#epic-3) (Features: RFM, basket, versioning, leakage checks) | [Epic 2 – Analytics & BI](#epic-2) (Raw vs Silver: deltas, toggles, RLS v1, DQ impacts) |
-| 3 | [Epic 1 – Data Foundation Platform](#epic-1) (Gold marts: sales_daily, category_perf, customer_360) | [Epic 3 – ML & Predictive](#epic-3) (Model training: churn LR, CLV RF, calibration/CI) | [Epic 2 – Analytics & BI](#epic-2) (Executive: consolidated KPIs, brand/region, RLS) |
-| 4 | [Epic 4 – Platform Integration](#epic-4) (Fabric export: Parquet+manifest, pipeline ingest) | [Epic 3 – ML](#epic-3) (Batch scoring, join to Gold, explainability) + [Epic 4](#epic-4) (Export/validation) | [Epic 2 – Analytics](#epic-2) (Segmentation) + [Epic 4](#epic-4) (Power BI Suite, pipeline promotion) |
-| 5 (optional) | [Epic 5 – Optional Extensions](#epic-5) (Data Vault light; E2E deployment sim) | [Epic 5 – Optional Extensions](#epic-5) (Survival/BG‑NBD; export/validation) | [Epic 5 – Optional Extensions](#epic-5) (Dynamic dashboards: what‑if/drill; deployment pipeline) |
+| 0 | 🟥 [Epic 1 – Data Foundation Platform](#epic-1) (setup: workspace, folders, ingest paths) | 🟥 [Epic 3 – ML & Predictive](#epic-3) (hypotheses/requirements, MLflow init) | 🟩 🟨 [Epic 2 – Analytics & BI](#epic-2) (KPI Catalog v0.1, semantic draft) |
+| 1 | 🟥 [Epic 1 – Data Foundation Platform](#epic-1) (Bronze: ES+Contoso, metadata, DirectQuery) | 🟥 [Epic 3 – ML & Predictive](#epic-3) (EDA: prevalence, drift, baselines) | 🟩 🟨 [Epic 2 – Analytics & BI](#epic-2) (First Look – Contoso: semantic model, measures, v1 report, KPI v0.2) |
+| 2 | 🟥 [Epic 1 – Data Foundation Platform](#epic-1) (Silver: dedup, FX→EUR, IDs, schema contract) | 🟥 [Epic 3 – ML & Predictive](#epic-3) (Features: RFM, basket, versioning, leakage checks) | 🟩 🟨 [Epic 2 – Analytics & BI](#epic-2) (Raw vs Silver: deltas, toggles, RLS v1, DQ impacts) |
+| 3 | 🟥 [Epic 1 – Data Foundation Platform](#epic-1) (Gold marts: sales_daily, category_perf, customer_360) | 🟥 [Epic 3 – ML & Predictive](#epic-3) (Model training: churn LR, CLV RF, calibration/CI) | 🟩 🟨 [Epic 2 – Analytics & BI](#epic-2) (Executive: consolidated KPIs, brand/region, RLS) |
+| 4 | 🟥→🟩 [Epic 4 – Platform Integration](#epic-4) (Fabric export: Parquet+manifest, pipeline ingest) | 🟥→🟩 [Epic 3 – ML](#epic-3) (Batch scoring, join to Gold, explainability) + [Epic 4](#epic-4) (Export/validation) | 🟩 🟨 [Epic 2 – Analytics](#epic-2) (Segmentation) + [Epic 4](#epic-4) (Power BI Suite, pipeline promotion) |
+| 5 (optional) | 🟥 [Epic 5 – Optional Extensions](#epic-5) (Data Vault light; E2E deployment sim) | 🟥 [Epic 5 – Optional Extensions](#epic-5) (Survival/BG‑NBD; export/validation) | 🟩 🟨 [Epic 5 – Optional Extensions](#epic-5) (Dynamic dashboards: what‑if/drill; deployment pipeline) |
+
+Legend: 🟥 Databricks, 🟩 Fabric, 🟨 Power BI, 🟥→🟩 Integration (handoff DBX→Fabric)
 
 Notes
 - Optional extensions (Epic 5.x) are scheduled under Sprint 5 (optional) based on team capacity.
@@ -64,11 +83,13 @@ This table lists all features, distributed by sprint and by profile (DE, DS, DA)
 | Sprint | DE (Data Engineer) | DS (Data Scientist) | DA (Data Analyst) |
 |---|---|---|---|
 | 0 | — | — | — |
-| 1 | [1.1 Raw Data Ingestion](#feature-1-1) (Bronze Delta with ingest_ts/source_system; DQ summary; schema dictionary; runbook) | [3.1 EDA, baselines & MLflow setup](#feature-3-1) (EDA readout; baselines; leakage/risk log; MLflow init) | [2.1 First Look – Contoso](#feature-2-1) (semantic model; named measures; v1 report) |
-| 2 | [1.2 Silver Cleaning & Harmonization](#feature-1-2) (idempotent writes; Silver schema contract; FX normalization with ECB snapshot; DQ before/after) | [3.1 EDA summary & risk log](#feature-3-1); [3.2 Feature Engineering](#feature-3-2) (RFM; basket/cross‑brand; versioned feature tables; leakage checks; consumption contract) | [2.2 Raw vs Silver – Contoso + EuroStyle](#feature-2-2) (side‑by‑side KPIs; delta measures; RLS draft; bookmarks/toggles) |
-| 3 | [1.3 Gold Business Marts](#feature-1-3) (sales_daily; customer_360; category_perf; margin proxy/notes) | [3.3 Model Training](#feature-3-3) (LR churn; RF CLV; calibration/CIs; segment evaluation; registry notes) | [2.3 Executive Post‑Merger Dashboard](#feature-2-3) (GMV/AOV/margin; brand & region splits; RLS configured; perf tuned) |
-| 4 | [4.1 Export Gold to Fabric](#feature-4-1) (Parquet + manifest/Shortcuts; Fabric Pipeline ingest; connectivity validated) | [3.4 Batch Scoring & Integration](#feature-3-4), [4.3 Scoring Export & Validation](#feature-4-3) (batch scoring churn/CLV; join to customer_360; export to Fabric; validate metrics/skew) | [2.4 Customer Segmentation](#feature-2-4), [4.2 Power BI Suite](#feature-4-2) (Executive + Segmentation dashboards; RLS; pipeline Dev→Test; publish suite) |
-| 5 (optional) | [5.1 Simplified Data Vault](#feature-5-1); [5.4 E2E Deployment](#feature-5-4) (Hubs/Links/Sats; manual SCD2; deployment docs/pipeline outline) | [5.3 Survival/Probabilistic Models](#feature-5-3); [5.4 E2E Deployment](#feature-5-4) (Cox/KM; BG/NBD + Gamma‑Gamma; compare; scoring pipeline docs) | [5.2 Advanced Segmentation](#feature-5-2); [5.4 E2E Deployment](#feature-5-4) (dynamic parameters; drill‑through; segment pages; publish/promotion scripts) |
+| 1 | 🟥 [1.1 Raw Data Ingestion](#feature-1-1) (Bronze Delta with ingest_ts/source_system; DQ summary; schema dictionary; runbook) | 🟥 [3.1 EDA, baselines & MLflow setup](#feature-3-1) (EDA readout; baselines; leakage/risk log; MLflow init) | 🟩 🟨 [2.1 First Look – Contoso](#feature-2-1) (semantic model; named measures; v1 report) |
+| 2 | 🟥 [1.2 Silver Cleaning & Harmonization](#feature-1-2) (idempotent writes; Silver schema contract; FX normalization with ECB snapshot; DQ before/after) | 🟥 [3.1 EDA summary & risk log](#feature-3-1); 🟥 [3.2 Feature Engineering](#feature-3-2) (RFM; basket/cross‑brand; versioned feature tables; leakage checks; consumption contract) | 🟩 🟨 [2.2 Raw vs Silver – Contoso + EuroStyle](#feature-2-2) (side‑by‑side KPIs; delta measures; RLS draft; bookmarks/toggles) |
+| 3 | 🟥 [1.3 Gold Business Marts](#feature-1-3) (sales_daily; customer_360; category_perf; margin proxy/notes) | 🟥 [3.3 Model Training](#feature-3-3) (LR churn; RF CLV; calibration/CIs; segment evaluation; registry notes) | 🟩 🟨 [2.3 Executive Post‑Merger Dashboard](#feature-2-3) (GMV/AOV/margin; brand & region splits; RLS configured; perf tuned) |
+| 4 | 🟥→🟩 [4.1 Export Gold to Fabric](#feature-4-1) (Parquet + manifest/Shortcuts; Fabric Pipeline ingest; connectivity validated) | 🟥→🟩 [3.4 Batch Scoring & Integration](#feature-3-4), 🟥→🟩 [4.3 Scoring Export & Validation](#feature-4-3) (batch scoring churn/CLV; join to customer_360; export to Fabric; validate metrics/skew) | 🟩 🟨 [2.4 Customer Segmentation](#feature-2-4), 🟩 🟨 [4.2 Power BI Suite](#feature-4-2) (Executive + Segmentation dashboards; RLS; pipeline Dev→Test; publish suite) |
+| 5 (optional) | 🟥 [5.1 Simplified Data Vault](#feature-5-1); 🟥 [5.4 E2E Deployment](#feature-5-4) (Hubs/Links/Sats; manual SCD2; deployment docs/pipeline outline) | 🟥 [5.3 Survival/Probabilistic Models](#feature-5-3); 🟥→🟩 [5.4 E2E Deployment](#feature-5-4) (Cox/KM; BG/NBD + Gamma‑Gamma; compare; scoring pipeline docs) | 🟩 🟨 [5.2 Advanced Segmentation](#feature-5-2); 🟩 🟨 [5.4 E2E Deployment](#feature-5-4) (dynamic parameters; drill‑through; segment pages; publish/promotion scripts) |
+
+Legend: 🟥 Databricks, 🟩 Fabric, 🟨 Power BI, 🟥→🟩 Integration (handoff DBX→Fabric)
 
 Notes
 - Optional extensions (5.x) are grouped in Sprint 5 (optional): 5.1 (DE), 5.2 (DA), 5.3 (DS), and 5.4 (All, cross‑role).
@@ -125,7 +146,7 @@ The project will follow an agile approach adapted to the constraints of Databric
 
 ### Collaboration model
 
-- Databricks Community Edition has no shared workspace → each engineer works in their own environment.
+- Databricks Free (formerly Community Edition) has no shared workspace → each engineer works in their own environment.
 - Synchronization: code and notebooks are synced through GitHub.
 - Source of truth: the Kanban board ensures coordination, visibility, and accountability across roles.
 
@@ -1429,6 +1450,7 @@ For your information
 - Row count summary and optional checksums.  
 - Fabric Data Pipeline mapping (screenshots or config) and created Delta tables.  
 - Quickstart README: export paths, manual transfer steps (Free Edition), ingestion steps, validation checklist, and troubleshooting.  
+- Schema contract: see `docs/release_manifest.schema.json` for the release manifest fields.  
 
 **User Stories (breakdown)**  
 - As a DE, I export Gold marts with a reproducible Parquet+manifest contract.  
@@ -1452,6 +1474,7 @@ For your information
  - Error handling: if a table fails ingest, isolate by table; correct data types/mappings; re-run ingestion only for the affected folder.  
  - Rowcount/checksums: keep a tiny CSV summary next to the manifest; use it during Fabric QA to quickly compare pre/post counts.  
  - Documentation: update a short README with paths, table names, schema links, and troubleshooting steps; link to the Fabric Pipeline and Lakehouse items.  
+   - See also `docs/DA_BI_README.md` and `docs/fabric_lakehouse_qa.sql` for DA handoff and QA queries.  
 
 
 ---
@@ -1501,6 +1524,7 @@ As a Data Analyst, I want Power BI dashboards published through Fabric so execut
 - RLS role definitions and group mappings documentation.  
 - Fabric Deployment Pipeline configuration and promotion evidence.  
 - Short README with dataset connections, parameters, and troubleshooting notes.  
+- DA handoff pack: `docs/DA_BI_README.md` with links and QA checklist.  
 
 **User Stories (breakdown)**  
 - As an Executive/Marketing, I access executive and segmentation dashboards with RLS applied.  
@@ -1530,7 +1554,7 @@ As a Data Analyst, I want Power BI dashboards published through Fabric so execut
 
 ---
 <a id="feature-4-3"></a>
-## Feature 4.3: Model Scoring Export & Validation in Fabric (Sprint 4)  
+### Feature 4.3: Model Scoring Export & Validation in Fabric (Sprint 4)  
 **User Story**:  
 As a Data Scientist, I want churn and CLV scores exported from Databricks into Fabric so that business dashboards can consume and validate predictive insights.  
 
@@ -1576,6 +1600,7 @@ As a Data Scientist, I want churn and CLV scores exported from Databricks into F
 - Parquet export + `_SUCCESS` + `scores_manifest.json`.  
 - Fabric Data Pipeline mapping config/evidence and QA validation report.  
 - Short README detailing schema, transfer steps, and dashboard binding verification.  
+- Schema contract: see `docs/scores_manifest.schema.json`; Fabric QA: see `docs/fabric_lakehouse_qa.sql`.  
 
 **User Stories (breakdown)**  
 - As a DS/DE, I export scored tables with manifest and validate Fabric ingestion.  
@@ -1751,7 +1776,7 @@ Free Edition Limitations (Databricks Free Edition + Fabric Student)
 - No Unity Catalog: no centralized governance, lineage, or fine-grained policies; rely on naming conventions and workspace scopes.
 - Limited compute and session lifetime: keep data volumes modest; avoid heavy SHAP or deep nets on large samples.
 - Limited optimization features: if OPTIMIZE/Z-ORDER options are unavailable, compact data via write patterns (e.g., coalesce/repartition) and keep file sizes reasonable.
-- No Airflow jobs in Fabric free/student and no Databricks tokens in CE: CI/CD and orchestration must be simulated (documented steps, local GitHub Actions for tests only).
+- No Airflow jobs in Fabric free/student and no Databricks tokens in Databricks Free: CI/CD and orchestration must be simulated (documented steps, local GitHub Actions for tests only).
 - SCD2 management is manual: track changes with effective dates and handle historical data in the application logic.
 
 <a id="feature-5-2"></a>
@@ -2183,7 +2208,7 @@ As a project team (DE, DA, DS), we want to simulate an end-to-end deployment pip
 | API | Application Programming Interface |
 | AUC | Area Under the ROC Curve |
 | BG/NBD | Beta Geometric / Negative Binomial Distribution |
-| CE | Community Edition (Databricks) |
+| CE | Former Community Edition (Databricks) — now referred to as Databricks Free |
 | CI/CD | Continuous Integration / Continuous Delivery |
 | CLV | Customer Lifetime Value |
 | CR | Conversion Rate |
