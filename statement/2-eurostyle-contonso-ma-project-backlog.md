@@ -1150,12 +1150,21 @@ As a Data Scientist, I want RFM and behavioral features to build churn & CLV mod
 - [RFM Analysis](https://clevertap.com/blog/rfm-analysis/)  
 - [Feature Engineering Guide](https://www.databricks.com/glossary/feature-engineering)  
 - [MLflow Tracking Features](https://docs.databricks.com/aws/en/mlflow/tracking)  
+ - [Delta Lake: table versioning and time travel](https://docs.delta.io/latest/delta-utility.html#time-travel)  
+ - [Databricks Feature Engineering/Store](https://docs.databricks.com/en/machine-learning/feature-store/index.html)  
+ - [Great Expectations: data quality checks](https://docs.greatexpectations.io/docs/)  
+ - [Evidently AI: data/drift reports](https://docs.evidentlyai.com/)  
+ - [scikit-learn preprocessing (impute/scale/transform)](https://scikit-learn.org/stable/modules/preprocessing.html)  
+ - [scikit-learn feature selection (mutual information, variance, etc.)](https://scikit-learn.org/stable/modules/feature_selection.html)  
 
 **Key Concepts**:  
 - **RFM** = **Recency, Frequency, Monetary** value (classic segmentation method).  
 - Basket diversity = how many unique categories a customer buys from.  
 - Cross-brand shopping = customers who purchased both EuroStyle & Contoso.  
 - Features must be logged and versioned for reproducibility.  
+ - As‑of date (T): derive features only using events that happened before T (or T‑Δ) to avoid leakage.  
+ - Versioned Delta patterns: persist features with metadata columns (version, created_ts, source_snapshot, as_of_date).  
+ - Train‑only fit: imputers/scalers must be fit on TRAIN split and applied to VAL/TEST consistently.  
 
 **Acceptance Criteria**:  
 - **RFM** metrics computed for all customers.  
@@ -1166,35 +1175,68 @@ As a Data Scientist, I want RFM and behavioral features to build churn & CLV mod
  - Leakage checks performed and documented for engineered features.  
  - If COGS is missing, the agreed CLV proxy approach is documented (see Gold notes) and reflected in downstream features.  
  - Sanity checks: high-correlation features identified and deduplicated; extreme cardinality/constant fields excluded; imputation/log transforms documented; all preprocessing fit on TRAIN only.
+ - Data quality checks (nulls, ranges, freshness) pass for the feature tables; results stored as artifacts.  
+ - Data dictionary updated for each feature (definition, window, unit, null policy).  
+ - Join keys verified against Gold (`customer_360_gold`) with row counts and uniqueness checks.  
 
 **Tasks**:  
-- Compute **RFM (Recency, Frequency, Monetary value)** metrics.  
-- Add basket diversity & cross-brand shopping signals.  
-- Track feature sets in MLflow.  
- - Persist feature tables as versioned Delta (e.g., `silver.features_rfm_v1`) including schema/version metadata.  
- - Define and document the scoring schema and join keys with DE/DA for integration into `customer_360`/Gold; propose refresh cadence.  
- - Train first simple baselines on sample data and log to MLflow; compare against rule-based/RFM yardsticks.  
- - Document leakage assessment and run a quick feature-importance sanity check.  
- - Run correlation screening and cardinality checks; document imputation strategy; ensure transformations are fit on TRAIN only.
+1) Fix an as‑of date (T) and feature windows; record source snapshot/Delta versions.  
+2) Compute RFM anchored at T (Recency days since last tx ≤ T; Frequency count in last 365d; Monetary sum/avg).  
+3) Add basket diversity (distinct categories in last 12m) and intensity ratios (category share).  
+4) Add cross‑brand features (has_both_brands, brand_count, brand_switches).  
+5) Run a leakage checklist for all engineered features; ensure they use only pre‑T information.  
+6) Correlation and mutual‑information screening; deduplicate highly similar features; log decisions.  
+7) Cardinality and constant checks; drop extreme high‑card/constant fields; set thresholds and document.  
+8) Define imputation/log transforms; fit on TRAIN only; persist transform params (e.g., means/medians) as artifacts.  
+9) Persist features to Delta as versioned tables (e.g., `silver.features_rfm_v1`, `silver.customer_features_v1`) with metadata columns (version, created_ts, source_snapshot, as_of_date).  
+10) Track feature set metadata in MLflow (params: version, feature_count; artifacts: schema JSON, data dictionary).  
+11) Define consumption contract with DE/DA (schema, business keys, refresh cadence) for integration into `customer_360_gold`; validate joinability and counts.  
+12) Train quick baselines on sample data using the features; log metrics to MLflow; compare to rule/RFM yardsticks.  
+13) Run data quality checks (Great Expectations/Evidently) on feature tables (nulls, ranges, freshness); save reports.  
+14) Register access and documentation for the feature tables (owners, permissions, table comments).  
 
 **User Stories (breakdown)**  
 - As a DS, I compute and persist RFM and behavior features with versioning.  
 - As a DS, I remove redundant/highly correlated features and document preprocessing.  
 - As a DS, I define a consumption contract with DE/DA for scoring integration.
 
-### Sprint day plan (4.5 days)
-- **Day 1:** Compute RFM with a fixed as‑of date; persist `v1` Delta with metadata (version, created_ts, source snapshot); register for team access.  
-- **Day 2:** Add basket diversity (distinct categories) and cross‑brand flags; ensure only pre‑as‑of window info to avoid leakage.  
-- **Day 3:** Run correlation/cardinality screening; drop constant/high‑card features; document imputation/log transforms (fit on TRAIN only).  
-- **Day 4:** Define consumption contract (schema, keys, cadence) with DE/DA; train quick baselines and log to MLflow for sanity.  
-- **Day 4.5:** Buffer; finalize feature tables and docs.
+**Deliverables**:  
+- Versioned Delta tables: `silver.features_rfm_v1`, `silver.customer_features_v1` (with version, created_ts, source_snapshot, as_of_date).  
+- MLflow run(s) with feature set params (version, feature_count) and artifacts (schema.json, data_dictionary.csv).  
+- Data quality reports (GE/Evidently) and correlation heatmap; screening decisions log.  
+- Consumption contract doc: schema, keys, join examples to `customer_360_gold`, refresh cadence.  
+- Leakage checklist results and preprocessing spec (imputations/transforms with train‑fit note).  
+ - Feature engineering notebook artifact: `notebooks/feature_3_2_feature_engineering.ipynb` (synthetic fallback; Delta write attempted if Spark available).  
 
-#### Mini notes — Feature 3.2 (per day)
-- Day 1: Use a fixed as-of date; persist `v1` features with version metadata; document source snapshot.
-- Day 2: Add basket diversity and cross-brand features; avoid leakage (pre-as-of info only).
-- Day 3: Run correlation/cardinality screens; drop constants/high-card fields; note imputations.
-- Day 4: Define consumption contract (schema, keys, cadence) with DE/DA; train quick baselines.
-- Day 4.5: Version the feature table; note joins and refresh cadence in README.
+### Sprint day plan (4.5 days)
+- Day 1 [Tasks 1–2, 9 (init)]: Compute RFM anchored at as‑of T; create `v1` Delta with metadata (version, created_ts, source_snapshot); register table.  
+- Day 2 [Tasks 3–5, 9 (final)]: Add basket diversity and cross‑brand features; verify no leakage (pre‑T only); finalize versioned table(s).  
+- Day 3 [Tasks 6–8, 13]: Run correlation/MI and cardinality screens; define imputations/log transforms (fit on TRAIN only); run data quality checks and save reports.  
+- Day 4 [Tasks 10–12, 11]: Track feature set in MLflow; define consumption contract and validate joinability to `customer_360_gold`; train quick baselines and log metrics.  
+- Day 4.5 [Polish]: Finalize docs, register ownership/permissions, and publish the README notes.  
+
+#### Notes — Feature 3.2 (day-by-day + how-to)
+Note: Days can overlap—persist `v1` early, then iterate.
+
+- Day 1 — RFM and versioning  
+   - Do: Compute RFM at a fixed as‑of date; persist `v1` with metadata.  
+   - How‑to: Use only events ≤ T; add metadata columns (version, created_ts, source_snapshot, as_of_date). Record the Delta version/snapshot used.  
+
+- Day 2 — Behavior features and leakage  
+   - Do: Add basket diversity and cross‑brand features; ensure pre‑T only.  
+   - How‑to: Define 12‑month windows anchored at T; run a leakage checklist before saving.  
+
+- Day 3 — Screening and preprocessing  
+   - Do: Correlation/MI screening; cardinality/constant checks; define imputations/transforms.  
+   - How‑to: Fit imputers/scalers on TRAIN only; log thresholds and dropped columns; export a correlation heatmap.  
+
+- Day 4 — Consumption contract and baselines  
+   - Do: Draft schema/keys/refresh cadence with DE/DA; train quick baselines; log to MLflow.  
+   - How‑to: Validate joins to `customer_360_gold` (row counts, uniqueness); log feature set metadata (version, feature_count) to MLflow.  
+
+- Day 4.5 — Publish  
+   - Do: Finalize docs, register ownership/permissions, publish README.  
+   - How‑to: Include data dictionary entries for each feature and links to quality reports and MLflow runs.  
 
 ---
 
@@ -1204,44 +1246,66 @@ As a Data Scientist, I want RFM and behavioral features to build churn & CLV mod
 As a Data Scientist, I want baseline models for churn and CLV so I can evaluate predictive power.  
 
 **Learning Resources**:  
-- [MLlib Classification](https://spark.apache.org/docs/latest/ml-classification-regression.html)  
-- [MLflow Experiment Tracking](https://mlflow.org/docs/latest/tracking.html)  
-- [Model Evaluation Metrics](https://scikit-learn.org/stable/modules/model_evaluation.html)  
+- Spark MLlib: [Classification & Regression](https://spark.apache.org/docs/latest/ml-classification-regression.html)  
+- scikit-learn: [Model evaluation](https://scikit-learn.org/stable/modules/model_evaluation.html), [Calibration](https://scikit-learn.org/stable/modules/calibration.html), [Imbalanced data](https://scikit-learn.org/stable/modules/classes.html#module-sklearn.utils.class_weight)  
+- MLflow: [Experiment Tracking](https://mlflow.org/docs/latest/tracking.html), [Model Registry](https://mlflow.org/docs/latest/model-registry.html)  
+- Reliability/uncertainty: [Bootstrap confidence intervals](https://scikit-learn.org/stable/auto_examples/model_selection/plot_confidence_interval.html)  
 
 **Key Concepts**:  
-- Logistic Regression = baseline classification model for churn (yes/no).  
-- Random Forest = regression model for **CLV (predicting value)**.  
-- Model evaluation uses **Accuracy, AUC (Area Under Curve)** for churn, **RMSE (Root Mean Squared Error)** for CLV.  
+- Churn = binary classification (baseline: Logistic Regression).  
+- CLV = regression (baseline: Random Forest Regressor).  
+- Evaluate churn with AUC, AUCPR, accuracy, precision/recall @K; evaluate CLV with RMSE, MAE, R<sup>2</sup>, MAPE.  
+- Calibration matters for churn probabilities (Brier score, reliability curve); choose operating thresholds by business objective (e.g., capture X% of churners).  
+- Reproducibility: fixed seeds, pinned versions, and saved splits from Feature 3.1; train-only transforms from Feature 3.2.  
+- Segment-wise evaluation (brand, region, lifecycle) to detect blind spots.  
 
 **Acceptance Criteria**:  
-- **Logistic Regression** churn model trained and logged.  
-- Random Forest **CLV** regression trained and logged.  
-- Experiments tracked in MLflow with metrics and parameters.  
- - Sanity checks: models outperform baselines (e.g., AUC > baseline with 95% CI); calibration curve assessed (Brier score or reliability plot); seeds fixed for reproducibility.
+- Churn LR and CLV RF baselines trained on TRAIN, validated on VALID, and tested on TEST aligned with Feature 3.1 splits.  
+- For churn, model beats baseline classifier with 95% CI on AUC (CI not overlapping baseline). Calibration reported with Brier score and reliability plot.  
+- For CLV, model reports RMSE, MAE, R<sup>2</sup> with bootstrap 95% CIs and outperforms mean baseline.  
+- Segment-wise metrics (brand/region) computed and logged; any material gaps noted with next steps.  
+- MLflow logs: params, metrics, ROC/PR curves, calibration curve, feature importance/permutation importances; artifacts saved; run IDs and experiment name documented.  
+- Seeds fixed; code and data versions captured; no leakage (train-only fit for imputers/scalers, as-of filtering).  
 
-**Tasks**:  
-- **Train Logistic Regression** for churn.  
-- Train **Random Forest for CLV**.  
-- Log all experiments in **MLflow**.  
- - Compute baseline metrics and confidence intervals; generate calibration plots; fix random seeds; save artifacts.
+**Tasks (numbered)**:  
+1) Load Feature 3.2 dataset(s) and 3.1 split artifacts; verify shapes and label presence; check class balance.  
+2) Establish baselines: churn majority-class and CLV mean predictor; compute baseline metrics.  
+3) Build churn pipeline: train-only imputers/scalers + Logistic Regression (class_weight as needed); train on TRAIN.  
+4) Evaluate churn on VALID/TEST: AUC, AUCPR, accuracy; plot ROC/PR; compute thresholds @K (e.g., top 10%).  
+5) Calibrate churn probabilities (Platt or Isotonic) on VALID; report Brier score and reliability curve; re-evaluate on TEST.  
+6) Bootstrap CIs for churn metrics (e.g., AUC, AUCPR) with 500 resamples; log CIs.  
+7) Build CLV model: Random Forest Regressor (or Gradient Boosting if RF unavailable); train on TRAIN.  
+8) Evaluate CLV on VALID/TEST: RMSE, MAE, R<sup>2</sup> (and MAPE if nonzero targets); bootstrap 95% CIs.  
+9) Light tuning (1–2 hyperparams each) using VALID; document chosen params; avoid overfitting.  
+10) Segment-wise metrics: brand/region deciles for churn; error by segment for CLV; summarize deltas vs global.  
+11) Feature importance: permutation importances (or SHAP if available) for both models; log plots.  
+12) Persist artifacts: metrics CSV, ROC/PR images, calibration plot, importances; serialize pipelines; log to MLflow; record run IDs.  
+13) Reproducibility check: re-run on fixed seed; metrics within tolerance; note environment versions.  
+14) Draft scoring contract preview (inputs/outputs) for Feature 3.4; align column names and dtypes.  
+15) Handoff summary: write a short model card (purpose, data, metrics, risks, thresholds).  
 
-**User Stories (breakdown)**  
-- As a DS, I deliver churn and CLV models that beat baselines with evidence.  
-- As a DS, I log metrics/params/artifacts in MLflow, including calibration and CI.
+**Deliverables**  
+- Notebook: `notebooks/feature_3_3_model_training.ipynb` (synthetic fallback supported).  
+- MLflow runs for churn and CLV, with metrics, params, and artifacts (ROC/PR, calibration, importances).  
+- Artifacts folder: metrics summary CSVs, calibration and importance plots, chosen thresholds, segment metrics.  
+- Model card(s) and a brief readme with run IDs and seed/version info.  
 
 ### Sprint day plan (4.5 days)
-- **Day 1:** Train churn LR baseline with fixed split/seed; log pipeline, metrics, and artifacts; check class balance and thresholds.  
-- **Day 2:** Train CLV Random Forest baseline; handle skew (winsorize/log if needed); log feature importance and errors.  
-- **Day 3:** Light tuning; bootstrap CIs; calibration (Brier/reliability plot); select operating points.  
-- **Day 4:** Segment‑wise eval (brand/region); record results; register models/names and document versioning.  
-- **Day 4.5:** Buffer; review and hand‑off for scoring.
+- Day 1 [Tasks 1–4]: Data load, baselines, churn LR train + initial evaluation.  
+- Day 2 [Tasks 5–8]: Calibration + CIs for churn; train/evaluate CLV RF with CIs.  
+- Day 3 [Tasks 9–11]: Light tuning, segment-wise metrics, importances.  
+- Day 4 [Tasks 12–14]: Persist/MLflow logging, reproducibility check, scoring contract.  
+- Day 4.5 [Task 15]: Model card + handoff.  
 
-#### Mini notes — Feature 3.3 (per day)
-- Day 1: Train LR churn baseline with fixed split; check class balance; log to MLflow.
-- Day 2: Train RF for CLV; handle skew (winsorize/log); log importance and error metrics.
-- Day 3: Light tuning; bootstrap CIs; calibration (Brier/reliability plot).
-- Day 4: Segment-wise eval (brand/region); register models and document versions.
-- Day 4.5: Summarize results vs baselines; decide next scoring steps.
+#### Notes — Feature 3.3 (day-by-day + how-to)
+- Calibration: Fit on VALID to avoid optimistic bias; prefer Isotonic if enough data; log pre/post Brier and save a reliability plot image for the run.  
+- Thresholds: Pick operating points from VALID based on business goals (e.g., top 10% recall of churners or maximize F1); never pick thresholds on TEST.  
+- CIs: Use bootstrap with stratification for churn and simple bootstrap for CLV; report median and 2.5/97.5 percentiles; store seeds and sample sizes in the artifact.  
+- Imbalanced churn: use class_weight="balanced" as a starting point; compare to threshold tuning on VALID; emphasize AUCPR and recall@K when churn rate is low.  
+- Segment checks: compute metrics by brand/region/lifecycle; flag any segment with >5% AUC drop vs global; capture in a CSV artifact and note remediation ideas.  
+- CLV skew: winsorize/log-transform targets in training only if heavy tails; always report MAE alongside RMSE; consider MAPE only for strictly positive targets.  
+- Leakage guardrails: ensure all imputers/scalers fit on TRAIN only; confirm features are computed using data ≤ as‑of date; rerun the leakage checklist from 3.1 if in doubt.  
+- Determinism: fix seeds in split, model, numpy/random; pin package versions in the notebook header; log data snapshot/Delta version and MLflow run IDs in the model card.  
 
 ---
 
@@ -1251,48 +1315,64 @@ As a Data Scientist, I want baseline models for churn and CLV so I can evaluate 
 As a Data Scientist, I want to score churn/CLV and join them into Customer 360 so Analysts can use them.  
 
 **Learning Resources**:  
-- [MLflow Model Registry](https://mlflow.org/docs/latest/model-registry.html)  
-- [Databricks Batch Scoring](https://docs.databricks.com/machine-learning/model-inference/index.html)  
-- [Getting Started with Databricks - Building a Forecasting Model on Databricks](https://community.databricks.com/t5/get-started-guides/getting-started-with-databricks-building-a-forecasting-model-on/ta-p/69301)
-- [Responsible AI with the Databricks Data Intelligence Platform](https://www.databricks.com/blog/responsible-ai-databricks-data-intelligence-platform)
-- [Explainability Methods](https://christophm.github.io/interpretable-ml-book/)  
+- MLflow: [Model Registry](https://mlflow.org/docs/latest/model-registry.html), [Loading models for inference](https://mlflow.org/docs/latest/models.html#model-deployment)  
+- Databricks: [Batch inference patterns](https://docs.databricks.com/machine-learning/model-inference/index.html), [Delta MERGE](https://docs.databricks.com/delta/merge.html)  
+- Explainability: [Interpretable ML](https://christophm.github.io/interpretable-ml-book/)  
+- Data quality & drift: [Evidently](https://docs.evidentlyai.com/) (PSI, drift), Great Expectations for schema checks  
 
 **Key Concepts**:  
-- Batch scoring = apply trained models to full customer base.  
-- Scores stored in Gold (`customer_scores_gold`).  
-- Document model performance with **Accuracy, AUC, RMSE**.  
-- Explainability = feature importance to justify predictions.  
+- Idempotent batch scoring: partition by `as_of_date` and write with MERGE/overwrite-by-partition; include `_SUCCESS`/manifest when exporting.  
+- Stable scoring contract: keys, dtypes, nullability, plus metadata (`model_version`, `feature_version`, `as_of_date`, `scored_ts`).  
+- Train/serve skew: compare scoring inputs vs training distribution (PSI or simple quantiles).  
+- Explainability at scoring time: global importances and simple per-row explanations if feasible.  
 
 **Acceptance Criteria**:  
-- Churn probabilities and CLV values scored for all customers.  
-- Scored datasets joined into `customer_360_gold`.  
-- **Model performance documented** (Accuracy, AUC, RMSE).  
-- Feature importance/explainability shared with analysts.  
- - Sanity checks: contract of scoring schema validated (keys, types, nullability); train/serve skew check executed; model + feature versions recorded; small E2E test on 1k rows passes (bounded scores, low nulls).
+- `customer_scores_gold` created with schema: `customer_id`, `churn_score` (0–1), `churn_bucket` (e.g., decile), `clv_pred` (≥0), `model_version`, `feature_version`, `as_of_date`, `scored_ts`.  
+- Write is idempotent and partition-aware (no duplicates across re-runs); primary key uniqueness validated.  
+- Train/serve skew report produced and logged; bounds checks pass (no NaNs, churn within [0,1], non-negative CLV).  
+- Join with `customer_360_gold` validated (counts and keys) and documented for DA.  
+- Model and feature versions, plus MLflow run IDs, recorded in readme.  
 
-**Tasks**:  
-- Batch scoring → `customer_scores_gold`.  
-- Publish scored tables to Gold marts.  
-- Document performance (Accuracy, AUC, RMSE) and explainability.  
- - Validate train/serve schema alignment; record versions; run sample E2E assertions on scored outputs.
+**Tasks (numbered)**:  
+1) Freeze model artifacts/versions and feature set version; record MLflow run IDs and URIs.  
+2) Load Feature 3.2 table(s) at target `as_of_date`; validate schema matches scoring contract.  
+3) Build loaders: MLflow pyfunc or direct deserialization for churn and CLV models; set seeds for determinism.  
+4) Score churn probabilities and CLV values in batches/partitions; handle memory with repartition/coalesce.  
+5) Derive `churn_bucket` (e.g., deciles or business thresholds) and any auxiliary flags needed by DA.  
+6) Train/serve skew: compare key features to training distributions (PSI or quantile deltas); log artifacts.  
+7) Assemble output DataFrame with required columns and metadata (`as_of_date`, timestamps, versions).  
+8) Write `customer_scores_gold` idempotently (overwrite partition or MERGE on `customer_id` + `as_of_date`); validate uniqueness.  
+9) Join into `customer_360_gold` or create a view for DA; verify row counts and key coverage.  
+10) Explainability: compute and log global importances; include a small per-row example if feasible.  
+11) Quality checks: null rates ≤ thresholds; bounds (0–1 churn, ≥0 CLV); dtypes match contract; save a QA report.  
+12) Register table/view, set permissions, and document location; add a consumption snippet for DA/BI.  
+13) Write a short operational runbook: inputs, outputs, schedule, idempotency strategy, and recovery steps.  
+14) Optional export manifest for Fabric ingestion (paths, schema, `_SUCCESS`).  
 
-**User Stories (breakdown)**  
-- As a DS, I score and publish churn/CLV with schema and versioning contracts.  
-- As a DS, I validate train/serve skew and run E2E checks before hand‑off to DA.
+**Deliverables**  
+- Notebook: `notebooks/feature_3_4_batch_scoring.ipynb` (synthetic fallback supported).  
+- `customer_scores_gold` table/view with schema contract and version columns.  
+- Skew/QA report artifacts; explainability summary; consumption guide (paths, sample queries).  
+- Runbook with idempotency and recovery steps; versions and run IDs documented.  
 
 ### Sprint day plan (4.5 days)
-- **Day 1:** Freeze model versions; prepare scoring pipeline (UDFs/loader) and output schema contract (keys, types, nullability).  
-- **Day 2:** Run batch scoring; partition to manage scale; write idempotently; persist `customer_scores_gold`.  
-- **Day 3:** Join into `customer_360_gold`; QA nulls/distributions; verify counts and keys.  
-- **Day 4:** Train/serve skew checks (PSI/simple comparisons); add explainability notes (feature importances); finalize schema/versions.  
-- **Day 4.5:** Buffer; align with DA; publish tables and links.
+- Day 1 [Tasks 1–3]: Freeze versions, load features, implement model loaders.  
+- Day 2 [Tasks 4–7]: Batch scoring, buckets, skew check, assemble output.  
+- Day 3 [Tasks 8–9]: Persist `customer_scores_gold` and join/validate in `customer_360_gold`.  
+- Day 4 [Tasks 10–13]: Explainability, QA report, permissions, and runbook.  
+- Day 4.5 [Task 14]: Optional Fabric export manifest and polish docs.  
 
-#### Mini notes — Feature 3.4 (per day)
-- Day 1: Freeze model and feature versions; define output schema; write a tiny E2E test plan.
-- Day 2: Batch score with partitions; write idempotently; persist `customer_scores_gold`.
-- Day 3: Join into `customer_360_gold`; validate counts/keys; sanity-check distributions.
-- Day 4: Check train/serve skew (PSI/simple compares); add feature importances/explainability notes.
-- Day 4.5: Publish outputs and docs; align with DA on dashboard bindings.
+#### Notes — Feature 3.4 (day-by-day + how-to)
+- Idempotency: prefer overwrite-by-partition (as_of_date) or MERGE on key + date; always validate no duplicates post-write.  
+- Skew checks: PSI is nice-to-have; simple side-by-side histograms/quantiles often suffice; store the report as an artifact.  
+- Resource use: repartition/coalesce appropriately; avoid collecting to driver; cache when reusing feature DataFrames.  
+- Contracts: put the schema (name, dtype, nullability) in a markdown/JSON and link it; enforce with a schema validator if possible.  
+- Handoff: supply DA with the table/view name, data dictionary, refresh cadence, and example queries.  
+ - Schema evolution: avoid adding/removing columns mid-release; if needed, bump `feature_version` and reflect it in the contract and view.  
+ - Retries & checkpoints: wrap batch scoring in small partitions with retries; write to a temp location then atomically swap/merge into Gold.  
+ - Partitioning: use `as_of_date` partitioning; for large volumes, add secondary partitioning (e.g., brand) cautiously to avoid small-file problems.  
+ - Monitoring: record per-batch row counts, null rates, and write durations; keep a lightweight log table for operational visibility.  
+ - Quick SQL tests: count distinct keys, check score bounds (0–1, >=0), and verify recent `as_of_date`; include sample queries in the README for DA.  
 
 ---
 
@@ -1324,33 +1404,54 @@ For your information
 - **Delta in Fabric** = ingestion into tables ready for Direct Lake mode.  
 
 **Acceptance Criteria**  
-- Gold marts exported as Parquet with manifest and success marker.  
-- **Export tested using manual download from Databricks Free Edition and manual upload into Fabric Lakehouse (no automated integration possible in free tier).**  
-- Fabric Data Pipeline ingests and creates Delta tables.  
-- Datasets are queryable in Power BI.  
+- Gold marts exported as Parquet with schema-stable contract, release `manifest.json`, and `_SUCCESS` marker.  
+- Manual export path validated for Free Edition: files manually downloaded from Databricks and uploaded to Fabric Lakehouse `/Files/dropzone/...`.  
+- Fabric Data Pipeline ingests to Delta tables with correct dtypes, partitioning (if applicable), and primary keys validated.  
+- Row counts and optional checksums match source within tolerance; sampling spot-checks pass.  
+- Datasets are queryable from Power BI (Direct Lake) and a tiny visual loads without refresh errors.  
 
-**Tasks**  
-- Export Gold marts as Parquet + manifest.  
-- **Manually download files from Databricks Free Edition and upload them into Fabric Lakehouse `/Files/dropzone/...`.**  
-- Ingest with Fabric Data Pipeline → Delta tables.  
+**Tasks (numbered)**  
+1) List Gold tables to export (e.g., `sales_daily_gold`, `customer_360_gold`, `customer_scores_gold`) and confirm owners.  
+2) Define export layout: base path per table, partitioning (if any), file size targets, and naming (snake_case, datestamps).  
+3) Generate Parquet files; coalesce to 128–512MB per file; write `_SUCCESS`.  
+4) Compute row counts per table/partition; optionally compute file-level checksums (md5) and store alongside.  
+5) Create `release_manifest.json` capturing dataset name, version, tables, schema (name, dtype, nullability), partitions, file lists, counts, checksums, created_ts, and source snapshot (Delta version or commit).  
+6) Dry-run export on one small table; locally verify Parquet opens and schema matches expectations.  
+7) Download artifacts from Databricks Free Edition and manually upload to Fabric Lakehouse `/Files/dropzone/<release>/...`.  
+8) In Fabric Data Pipelines: configure file source → Lakehouse table mappings; set column types; create Delta tables.  
+9) Validate ingestion: compare counts vs manifest; check nullability/dtypes; ensure partition columns are correct.  
+10) Create/verify shortcuts or views if needed for Power BI; test Direct Lake connectivity with a basic visual.  
+11) Capture evidence (screenshots/links), store manifest and a README with steps, and note any edge cases.  
+12) Document re-run/idempotency guidance and ownership (who exports, who ingests, cadence).  
+
+**Deliverables**  
+- Export folder structure per table with Parquet files, `_SUCCESS`, and `release_manifest.json`.  
+- Row count summary and optional checksums.  
+- Fabric Data Pipeline mapping (screenshots or config) and created Delta tables.  
+- Quickstart README: export paths, manual transfer steps (Free Edition), ingestion steps, validation checklist, and troubleshooting.  
 
 **User Stories (breakdown)**  
 - As a DE, I export Gold marts with a reproducible Parquet+manifest contract.  
 - As a DE, I ingest them into Fabric Lakehouse tables via Data Pipelines.  
 
 ### Sprint day plan (4.5 days)
-- **Day 1:** Define export contract (paths, `_SUCCESS`, `release_manifest.json`, schema); dry‑run on one small table and verify re‑ingest.  
-- **Day 2:** Package all Gold marts; coalesce to reasonable file sizes; compute row counts and optional checksums; bundle manifest.  
-- **Day 3:** Manually transfer to Fabric Lakehouse `/Files`; configure Data Pipeline mappings and create Delta tables.  
-- **Day 4:** Validate counts/schemas post‑ingest; test Power BI connectivity (Direct Lake) and basic visuals.  
-- **Day 4.5:** Buffer; document steps, limitations, and troubleshooting.
+- Day 1 [Tasks 1–6]: Define contract, schema, manifest fields; dry‑run on one small table and verify re‑ingest.  
+- Day 2 [Tasks 7–9]: Package all Gold marts; manual transfer; configure Data Pipeline mappings and create Delta tables.  
+- Day 3 [Tasks 9–10]: Validate counts/schemas; test Power BI connectivity (Direct Lake) and basic visuals.  
+- Day 4 [Tasks 11–12]: Capture evidence and finalize docs, ownership, and re-run guidance.  
+- Day 4.5 [Polish]: Troubleshooting notes and hand-off.  
 
-#### Mini notes — Feature 4.1 (per day)
-- Day 1: Define export paths and manifest fields; do a tiny dry-run end-to-end.
-- Day 2: Coalesce files to reasonable sizes; compute counts/checksums; finalize manifest.
-- Day 3: Manual transfer to Fabric `/Files`; map columns in Data Pipeline.
-- Day 4: Validate counts/schemas; test Direct Lake connectivity with a simple visual.
-- Day 4.5: Document manual steps and limits for Free tier; add troubleshooting tips.
+#### Notes — Feature 4.1 (day-by-day + how-to)
+- Exports: prefer stable column order and names; avoid schema drift between releases; add version tags into the manifest.  
+- File sizing: coalesce to 128–512MB; too many small files degrade ingestion performance.  
+- Manual transfer (Free): download from Databricks workspace file browser; upload to Fabric Lakehouse `/Files/dropzone/<release>/...`.  
+- Ingestion: map data types explicitly in Data Pipelines; verify any partition columns; document Lakehouse table names.  
+- Validation: row counts within tolerance; quick SQL in Lakehouse to sanity check; a simple Power BI visual confirms connectivity.  
+ - Manifest details: include `dataset`, `version`, `tables`, `schema` (name, dtype, nullability), `partitions`, `files`, `row_counts`, optional `checksums`, `created_ts`, and `source_snapshot` (Delta version).  
+ - Temp staging: export to a dated staging folder first; review counts/checksums; then mark release by copying to `/dropzone/<release>` and writing `_SUCCESS`.  
+ - Error handling: if a table fails ingest, isolate by table; correct data types/mappings; re-run ingestion only for the affected folder.  
+ - Rowcount/checksums: keep a tiny CSV summary next to the manifest; use it during Fabric QA to quickly compare pre/post counts.  
+ - Documentation: update a short README with paths, table names, schema links, and troubleshooting steps; link to the Fabric Pipeline and Lakehouse items.  
 
 
 ---
@@ -1382,24 +1483,50 @@ As a Data Analyst, I want Power BI dashboards published through Fabric so execut
 - Build Executive Dashboard (EuroStyle + Contoso).  
 - Build Customer Segmentation Dashboard (with churn & CLV).  
 - Deploy dashboards via Fabric pipelines.  
+ 
+**Tasks (numbered)**:  
+1) Set up Fabric workspace artifacts (Lakehouse, semantic model) and connect to Gold tables.  
+2) Build Executive pages: theme, navigation, KPI cards (GMV, AOV, margin) with consistent currency formats and tooltips.  
+3) Build Segmentation pages: connect to `customer_scores_gold`; define relationships (customer/date); design segments and slicers.  
+4) Validate cross-highlighting behavior and performance; avoid excessively high-cardinality slicers.  
+5) Define RLS roles (e.g., `BrandManager` brand filter, `Executive` unrestricted); map to security groups.  
+6) Test RLS with "View as" for both roles; verify measures behave correctly and visuals respect filters.  
+7) Prepare Fabric Deployment Pipeline (Dev → Test); parameterize dataset connections if needed.  
+8) Promote to Test; validate dataset parameters, refresh, and fix any broken lineage.  
+9) Polish visuals, accessibility (titles/alt text), and page performance (optimize visuals, fields).  
+10) Document sharing (audience, app access), dataset/dashboards URLs, and pipeline links; capture screenshots for hand-off.  
+
+**Deliverables**  
+- Published dashboards (Executive and Segmentation) with stable URLs.  
+- RLS role definitions and group mappings documentation.  
+- Fabric Deployment Pipeline configuration and promotion evidence.  
+- Short README with dataset connections, parameters, and troubleshooting notes.  
 
 **User Stories (breakdown)**  
 - As an Executive/Marketing, I access executive and segmentation dashboards with RLS applied.  
 - As a DA, I deploy via Fabric pipelines across stages.  
 
 ### Sprint day plan (4.5 days)
-- **Day 1:** Build Executive pages (theme, navigation, KPI cards); ensure consistent formats and tooltips.  
-- **Day 2:** Build Segmentation pages; integrate scored tables; validate cross‑highlighting behavior.  
-- **Day 3:** Configure RLS roles and map to groups; validate with "View as".  
-- **Day 4:** Promote via Fabric Deployment Pipeline Dev → Test; validate connections and parameters.  
-- **Day 4.5:** Buffer; polish visuals, documentation, and sharing settings.
+- Day 1 [Tasks 1–3]: Build Executive and initial Segmentation pages; ensure consistent formats and tooltips.  
+- Day 2 [Tasks 3–4]: Integrate scored tables; validate cross‑highlighting and performance.  
+- Day 3 [Tasks 5–6]: Configure RLS roles and test with "View as".  
+- Day 4 [Tasks 7–8]: Promote Dev → Test; validate connections and parameters; fix lineage.  
+- Day 4.5 [Tasks 9–10]: Polish visuals, documentation, sharing settings, and capture screenshots.  
 
-#### Mini notes — Feature 4.2 (per day)
-- Day 1: Apply a report theme (colors/number formats); add navigation (buttons/bookmarks); place KPI cards for GMV, AOV, margin; set formats (currency/decimal) and standard tooltips; hide technical columns.
-- Day 2: Add Segmentation pages; connect to `customer_scores_gold`; confirm relationships (customer/date); test cross-highlighting between segment charts and KPI cards; avoid high-cardinality slicers.
-- Day 3: Create roles (e.g., `BrandManager` filters brand='Contoso'); map roles to security groups; test with "View as" for both manager and exec; verify measures behave correctly under RLS.
-- Day 4: Use Fabric Deployment Pipeline to promote Dev→Test; validate dataset parameters (Lakehouse, workspace); refresh and check all visuals; log any broken lineage.
-- Day 4.5: Review sharing (audience, app access); add README pointers (dataset, dashboards, pipeline URL); capture screenshots for hand‑off.
+#### Notes — Feature 4.2 (day-by-day + how-to)
+- Formatting: apply a consistent theme; standardize currency/decimal formats; hide technical columns from visuals.  
+- Relationships: confirm model relationships (customer/date); ensure cross-filtering direction supports intended interactions.  
+- RLS: keep role filters simple; test DAX measures under each role; verify row-level filters don't break totals.  
+- Promotion: parameterize Lakehouse/workspace if needed; after promotion, refresh datasets and verify lineage.  
+- Sharing: use Fabric App audiences; include a README with URLs and owner contacts.  
+ - Semantic model hygiene: use a star schema; hide surrogate/technical keys; keep measures in a dedicated Measures table; adopt clear naming (e.g., GMV, AOV, Margin%).  
+ - Measures and DAX: create explicit measures (avoid implicit); set format strings and descriptive tooltips; add a proper Date table and mark it as Date; disable Auto date/time.  
+ - Performance: limit visuals per page; avoid high-cardinality slicers; pre-aggregate if needed; test with Performance Analyzer; prefer Direct Lake-friendly patterns (no overly complex composite models).  
+ - RLS best practices: apply filters on dimension tables (not facts); avoid bi-directional relationships with RLS; minimize number of roles; document role intent and filters.  
+ - Promotion specifics: configure Deployment Pipeline rules to rebind Lakehouse/workspace per stage; after promotion, rebind, refresh, and validate in Lineage view; log any broken items.  
+ - Governance & sharing: apply sensitivity labels if required; certify/endorse the dataset; publish an App with distinct audiences and a short "How to use" page.  
+ - Accessibility: ensure color contrast, meaningful titles/alt text, logical tab order; validate on small screens; prefer text + icons over color-only cues.  
+ - Ops runbook: list owners, refresh cadence, known dependencies, and a quick troubleshooting checklist (failed refresh, missing permissions, broken lineage).  
 
 ---
 <a id="feature-4-3"></a>
@@ -1433,23 +1560,50 @@ As a Data Scientist, I want churn and CLV scores exported from Databricks into F
 - Ingest with Fabric Data Pipeline → Delta tables.  
 - Validate alignment of predictions between Databricks and Fabric dashboards.   
 
+**Tasks (numbered)**:  
+1) Confirm scored output schemas and partitions; align with DA on fields/buckets needed in dashboards.  
+2) Run batch scoring using fixed model/feature versions; write to Gold `customer_scores_gold`.  
+3) Export to Parquet + `_SUCCESS` and generate `scores_manifest.json` with schema, files, counts, versions, and created_ts.  
+4) Manually transfer Parquet + manifest from Databricks Free to Fabric Lakehouse `/Files/<release>/scores/...`.  
+5) Configure Fabric Data Pipeline mappings to create/overwrite Delta tables for scores; set types and keys.  
+6) Validate counts, nullability, and value ranges (0–1 churn, ≥0 CLV); capture a QA report.  
+7) Bind dashboards to ingested tables; refresh visuals; confirm segments and KPIs align with Databricks samples.  
+8) Document validations (types/time zones/rounding) and capture before/after screenshots.  
+9) Finalize evidence links, ownership, and re-run guidance.  
+
+**Deliverables**  
+- `customer_scores_gold` in Databricks and Fabric Lakehouse Delta tables.  
+- Parquet export + `_SUCCESS` + `scores_manifest.json`.  
+- Fabric Data Pipeline mapping config/evidence and QA validation report.  
+- Short README detailing schema, transfer steps, and dashboard binding verification.  
+
 **User Stories (breakdown)**  
 - As a DS/DE, I export scored tables with manifest and validate Fabric ingestion.  
 - As a DA, I confirm dashboards consume the new tables consistently.  
 
 ### Sprint day plan (4.5 days)
-- **Day 1:** Define scored output schemas/partitions and export plan (manifest fields, `_SUCCESS`); confirm table list with DA.  
-- **Day 2:** Export Parquet + manifest; upload to Fabric `/Files`; configure Pipeline mappings for each table.  
-- **Day 3:** Validate Lakehouse tables (schema/row counts) and Power BI bindings; refresh visuals.  
-- **Day 4:** Document validations and edge cases (type coercions, time zones, rounding); capture before/after metrics.  
-- **Day 4.5:** Buffer; finalize evidence links and ownership.
+- Day 1 [Tasks 1–3]: Define schema and export plan; run batch scoring; write Gold and export with manifest.  
+- Day 2 [Tasks 4–5]: Transfer to Fabric `/Files`; configure mappings and create Delta tables.  
+- Day 3 [Tasks 6–7]: Validate Lakehouse tables and bind dashboards; refresh visuals.  
+- Day 4 [Tasks 8–9]: Document validations, edge cases, and finalize evidence/ownership.  
+- Day 4.5 [Polish]: Close the loop with DA and capture links/screenshots.  
 
-#### Mini notes — Feature 4.3 (per day)
-- Day 1: Confirm scored schema (keys/types); list export fields and `_SUCCESS`.
-- Day 2: Export Parquet+manifest; upload to Fabric; configure mappings per table.
-- Day 3: Validate row counts and dashboard bindings; refresh visuals.
-- Day 4: Log validation notes (types/time zones/rounding); record pre/post metrics.
-- Day 4.5: Link evidence and owners; close the loop with DA.
+#### Notes — Feature 4.3 (day-by-day + how-to)
+- Scores schema: include `model_version`, `feature_version`, `as_of_date`, `scored_ts`; define buckets if used in visuals.  
+- Transfer: Free Edition requires manual download/upload; maintain the same folder structure under `/Files/<release>/`.  
+- Ingestion: prefer overwrite for a release; validate dtypes and key uniqueness in the Lakehouse.  
+- Alignment: compare sample predictions between Databricks and Fabric after ingestion; check rounding/time zone impacts.  
+- Evidence: keep a short checklist with counts, value bounds, and a link to the dashboard that uses the ingested table.  
+ - Versioning & lineage: record MLflow run IDs, model registry versions, feature set version, and training data snapshot/Delta version in the `scores_manifest.json`.  
+ - Bucketing reproducibility: if using deciles/thresholds, include bucket edges in the manifest so Fabric reproduces the same buckets; avoid recomputing deciles on a different population.  
+ - Manifest fields (scores): `table`, `schema` (name, dtype, nullability), `files`, `row_counts`, optional `checksums`, `model_version`, `feature_version`, `created_ts`, `as_of_date`, `run_ids`, and sample size used for spot checks.  
+ - Dtype/time zone mapping: map floating scores to DOUBLE/DECIMAL consistently; store timestamps in UTC; document any conversions (UTC → local) and rounding rules used in dashboards.  
+ - QA in Fabric (quick SQLs): check distinct `customer_id`, null rates, bounds (`0<=churn_score<=1`, `clv_pred>=0`), distribution by `churn_bucket`, and latest `as_of_date`. Keep a small SQL snippet in the README.  
+ - Spot checks: randomly sample 100 rows before/after ingestion and compare values within a small tolerance (e.g., 1e-6 for floats); save the diff summary as an artifact.  
+ - Error triage & rollback: keep releases in versioned folders; if ingestion for a table fails, fix dtype/mapping and re-run only that table; maintain a `current` pointer (shortcut or view) to the latest good release.  
+ - Security/PII: export only needed columns (`customer_id`, scores, versions, dates); avoid leaking raw attributes not required by dashboards.  
+ - Dashboard alignment: confirm measures/format strings (percentage/decimal places) and time zone usage match between Databricks samples and Fabric visuals to avoid perceived discrepancies.  
+ - Evidence package: link to manifest, Pipeline run, Lakehouse table, and dashboard; attach screenshots of a validation visual and the QA report.  
 
 
 ---
