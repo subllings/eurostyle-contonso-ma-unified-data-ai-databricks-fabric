@@ -23,27 +23,18 @@ This section highlights the **architectural constraints** of the EuroStyle–Con
 
 ---
 
-This backlog defines the learning and delivery path of the EuroStyle–Contoso M&A case,  
-structured into five sprints (0 → 4).  
-It begins with a high-level Sprint Planning Matrix (overview of DE, DA, DS roles),  
-followed by detailed Epics, Features, and User Stories with tasks and learning resources.
-
----
-
-
 ## Sprint Planning Matrix (4.5 days per sprint)
 
-This matrix summarizes the focus and concrete deliverables of each role  
-— **Data Engineer (DE)**, **Data Analyst (DA)**, and **Data Scientist (DS)** — across all sprints.  
+This matrix summarizes the focus and concrete deliverables of each role — **Data Engineer (DE)**, **Data Scientist (DS)**, and **Data Analyst (DA)** — across all sprints.  
 It provides a clear mapping of **who delivers what, and when**, ensuring no role is idle.
 
-| Sprint | Data Engineer (DE) | Data Analyst (DA) | Data Scientist (DS) |
-|--------|---------------------|-------------------|----------------------|
-| **0 (0.5d)** | Set up Databricks workspace and folder structure; define ingestion paths for EuroStyle & Contoso | Define initial KPI catalog (GMV, AOV, margin, churn rate); map differences EuroStyle vs Contoso | Define hypotheses for churn (inactivity >90 days) and Customer Lifetime Value (CLV); identify required features |
-| **1 (4.5d)** | Ingest EuroStyle & Contoso raw CSVs into Bronze Delta tables; add metadata (`ingest_ts`, `source_system`) | Build "First Look Dashboard" with Bronze KPIs: **GMV (Gross Merchandise Value)**, **AOV (Average Order Value)**, order counts | Perform **Exploratory Data Analysis (EDA)** on Bronze: distributions, missing values, brand overlap; draft churn & CLV definitions |
-| **2 (4.5d)** | Transform Bronze → Silver: deduplication, schema harmonization, standardize currencies, align product hierarchies | Redesign dashboards on Silver; compare Raw vs Silver KPIs; implement first **Row-Level Security (RLS)** rules | Engineer features: **RFM (Recency, Frequency, Monetary value)**, basket diversity, cross-brand overlap; track feature sets in MLflow |
-| **3 (4.5d)** | Build Gold marts: `sales_daily` (sales, GMV, AOV, margin), `category_perf`, `customer_360` with RFM base | Deliver **Executive Dashboard**: consolidated KPIs (GMV, AOV, margin), brand comparisons, North vs South splits | Train baseline models: Logistic Regression (churn), Random Forest (CLV regression); log experiments in MLflow |
-| **4 (4.5d)** | Export Gold marts to Fabric Lakehouse (Parquet + manifest, or Shortcuts); orchestrate ingestion with Fabric Data Pipelines | Build full **Power BI Post-Merger Suite**: Executive + Customer Segmentation dashboards (with churn & CLV); deploy with Fabric pipelines | Run batch scoring for churn & CLV; join scored tables into Gold `customer_360`; document model performance (accuracy, AUC, RMSE) and explainability |
+| Sprint | Data Engineer (DE) | Data Scientist (DS) | Data Analyst (DA) |
+|--------|---------------------|---------------------|-------------------|
+| **0 (0.5d)** | Set up Databricks workspace and folder structure; define ingestion paths for EuroStyle & Contoso | Define hypotheses for churn (inactivity >90 days) and Customer Lifetime Value (CLV); identify required features | Define initial KPI Catalog v0.1 (GMV, AOV, margin, churn rate); map differences EuroStyle vs Contoso |
+| **1 (4.5d)** | Ingest EuroStyle & Contoso raw CSVs into Bronze Delta tables; add metadata (`ingest_ts`, `source_system`) | Perform **Exploratory Data Analysis (EDA)** on Bronze (Contoso first): distributions, missing values, brand overlap; draft churn & CLV definitions | Build "First Look Dashboard" (Contoso first) with Bronze KPIs: **GMV (Gross Merchandise Value)**, **AOV (Average Order Value)**, order counts |
+| **2 (4.5d)** | Transform Bronze → Silver: deduplication, schema harmonization, standardize currencies, align product hierarchies | Engineer features: **RFM (Recency, Frequency, Monetary value)**, basket diversity, cross-brand overlap; track feature sets in MLflow | Redesign dashboards on Silver; compare Raw vs Silver KPIs; implement first **Row-Level Security (RLS)** rules |
+| **3 (4.5d)** | Build Gold marts: `sales_daily` (sales, GMV, AOV, margin), `category_perf`, `customer_360` with RFM base | Train baseline models: Logistic Regression (churn), Random Forest (CLV regression); log experiments in MLflow | Deliver **Executive Dashboard**: consolidated KPIs (GMV, AOV, margin), brand comparisons, North vs South splits |
+| **4 (4.5d)** | Export Gold marts to Fabric Lakehouse (Parquet + manifest, or Shortcuts); orchestrate ingestion with Fabric Data Pipelines | Run batch scoring for churn & CLV; join scored tables into Gold `customer_360`; document model performance (accuracy, AUC, RMSE) and explainability | Build full **Power BI Post-Merger Suite**: Executive + Customer Segmentation dashboards (with churn & CLV); deploy with Fabric pipelines |
 
 
 ---
@@ -54,12 +45,12 @@ This table lists all epics, distributed by sprint and by profile (DE, DS, DA). I
 
 | Sprint | DE (Data Engineer) | DS (Data Scientist) | DA (Data Analyst) |
 |---|---|---|---|
-| 0 | Epic 1 – Data Foundation Platform (setup) | Epic 3 – ML & Predictive (hypotheses/scope) | Epic 2 – Analytics & BI (KPI catalog) |
-| 1 | Epic 1 – Data Foundation Platform | Epic 3 – ML & Predictive (EDA) | Epic 2 – Analytics & BI (First Look) |
-| 2 | Epic 1 – Data Foundation Platform (Silver) | Epic 3 – ML & Predictive (Features) | Epic 2 – Analytics & BI (Raw vs Silver) |
-| 3 | Epic 1 – Data Foundation Platform (Gold marts) | Epic 3 – ML & Predictive (Model training) | Epic 2 – Analytics & BI (Executive) |
-| 4 | Epic 4 – Platform Integration (Fabric) | Epic 3 – ML (Batch scoring) + Epic 4 (Export/Validation) | Epic 2 – Analytics (Segmentation) + Epic 4 (Power BI Suite) |
-| 5 (optional) | Epic 5 – Optional Extensions (DE: Data Vault light; All: E2E deployment) | Epic 5 – Optional Extensions (DS: advanced models; All: export/validation) | Epic 5 – Optional Extensions (DA: dynamic dashboards; All: deployment pipeline) |
+| 0 | [Epic 1 – Data Foundation Platform](#epic-1) (setup) | [Epic 3 – ML & Predictive](#epic-3) (hypotheses/scope) | [Epic 2 – Analytics & BI](#epic-2) (KPI Catalog v0.1) |
+| 1 | [Epic 1 – Data Foundation Platform](#epic-1) | [Epic 3 – ML & Predictive](#epic-3) (EDA) | [Epic 2 – Analytics & BI](#epic-2) (First Look – Contoso) |
+| 2 | [Epic 1 – Data Foundation Platform](#epic-1) (Silver) | [Epic 3 – ML & Predictive](#epic-3) (Features) | [Epic 2 – Analytics & BI](#epic-2) (Raw vs Silver – Contoso + EuroStyle) |
+| 3 | [Epic 1 – Data Foundation Platform](#epic-1) (Gold marts) | [Epic 3 – ML & Predictive](#epic-3) (Model training) | [Epic 2 – Analytics & BI](#epic-2) (Executive) |
+| 4 | [Epic 4 – Platform Integration](#epic-4) (Fabric) | [Epic 3 – ML](#epic-3) (Batch scoring) + [Epic 4](#epic-4) (Export/Validation) | [Epic 2 – Analytics](#epic-2) (Segmentation) + [Epic 4](#epic-4) (Power BI Suite) |
+| 5 (optional) | [Epic 5 – Optional Extensions](#epic-5) (DE: Data Vault light; All: E2E deployment) | [Epic 5 – Optional Extensions](#epic-5) (DS: advanced models; All: export/validation) | [Epic 5 – Optional Extensions](#epic-5) (DA: dynamic dashboards; All: deployment pipeline) |
 
 Notes
 - Optional extensions (Epic 5.x) are scheduled under Sprint 5 (optional) based on team capacity.
@@ -73,11 +64,11 @@ This table lists all features, distributed by sprint and by profile (DE, DS, DA)
 | Sprint | DE (Data Engineer) | DS (Data Scientist) | DA (Data Analyst) |
 |---|---|---|---|
 | 0 | — | — | — |
-| 1 | 1.1 Raw Data Ingestion | 3.1 Exploratory Analysis (start) | 2.1 First Look Dashboard |
-| 2 | 1.2 Silver Cleaning & Harmonization | 3.1 EDA (cont.), 3.2 Feature Engineering | 2.2 Raw vs Silver Dashboard |
-| 3 | 1.3 Gold Business Marts | 3.3 Model Training | 2.3 Executive Post‑Merger Dashboard |
-| 4 | 4.1 Export Gold to Fabric | 3.4 Batch Scoring & Integration, 4.3 Scoring Export & Validation | 2.4 Customer Segmentation, 4.2 Power BI Suite |
-| 5 (optional) | 5.1 Simplified Data Vault; 5.4 E2E Deployment (cross‑role) | 5.3 Survival/Probabilistic Models; 5.4 E2E Deployment (cross‑role) | 5.2 Advanced Segmentation; 5.4 E2E Deployment (cross‑role) |
+| 1 | [1.1 Raw Data Ingestion](#feature-1-1) | [3.1 EDA, baselines & MLflow setup](#feature-3-1) | [2.1 First Look – Contoso](#feature-2-1) (semantic model, measures, v1 report) |
+| 2 | [1.2 Silver Cleaning & Harmonization](#feature-1-2) | [3.1 EDA summary & risk log](#feature-3-1); [3.2 Feature Engineering](#feature-3-2) | [2.2 Raw vs Silver – Contoso + EuroStyle](#feature-2-2) |
+| 3 | [1.3 Gold Business Marts](#feature-1-3) | [3.3 Model Training](#feature-3-3) | [2.3 Executive Post‑Merger Dashboard](#feature-2-3) |
+| 4 | [4.1 Export Gold to Fabric](#feature-4-1) | [3.4 Batch Scoring & Integration](#feature-3-4), [4.3 Scoring Export & Validation](#feature-4-3) | [2.4 Customer Segmentation](#feature-2-4), [4.2 Power BI Suite](#feature-4-2) |
+| 5 (optional) | [5.1 Simplified Data Vault](#feature-5-1); [5.4 E2E Deployment](#feature-5-4) (cross‑role) | [5.3 Survival/Probabilistic Models](#feature-5-3); [5.4 E2E Deployment](#feature-5-4) (cross‑role) | [5.2 Advanced Segmentation](#feature-5-2); [5.4 E2E Deployment](#feature-5-4) (cross‑role) |
 
 Notes
 - Optional extensions (5.x) are grouped in Sprint 5 (optional): 5.1 (DE), 5.2 (DA), 5.3 (DS), and 5.4 (All, cross‑role).
@@ -127,16 +118,24 @@ The project will follow an agile approach adapted to the constraints of Databric
 - Synchronization: code and notebooks are synced through GitHub.
 - Source of truth: the Kanban board ensures coordination, visibility, and accountability across roles.
 
+### KPI Catalog versioning
+
+- v0.1 (Sprint 0): initial KPI list and business definitions captured by DA; note EuroStyle vs Contoso differences.
+- v0.2 (Sprint 1): refined definitions with named measures, formats, and a mini data dictionary; aligned to the Contoso-first dashboard.
+- v1.0 (Sprint 3–4): consolidated, brand‑agnostic definitions validated on Gold marts; margin notes clarified (COGS or proxy); final naming and display standards.
+
 
 
 ---
 
 
+<a id="epic-1"></a>
 ## Epic 1 – Data Foundation Platform
 **Goal**: Build a robust Medallion architecture (Bronze → Silver → Gold) unifying EuroStyle & Contoso.
 
 ---
 
+<a id="feature-1-1"></a>
 ### Feature 1.1: Raw Data Ingestion (Sprint 1)
 **User Story**:  
 As a Data Engineer, I want to ingest EuroStyle and Contoso CSVs into Bronze so the teams can start analyzing real data.  
@@ -168,6 +167,7 @@ As a Data Engineer, I want to ingest EuroStyle and Contoso CSVs into Bronze so t
 
 ---
 
+<a id="feature-1-2"></a>
 ### Feature 1.2: Silver Cleaning & Harmonization (Sprint 2)
 **User Story**:  
 As a Data Engineer, I want Silver tables with clean, harmonized schemas so Analysts and Scientists can trust the data.  
@@ -202,6 +202,7 @@ As a Data Engineer, I want Silver tables with clean, harmonized schemas so Analy
 
 ---
 
+<a id="feature-1-3"></a>
 ### Feature 1.3: Gold Business Marts (Sprint 3)
 **User Story**:  
 As a Data Engineer, I want Gold marts for sales and customers so the business gets reliable KPIs.  
@@ -262,12 +263,14 @@ FROM silver.sales_clean;
 
 ---
 
+<a id="epic-2"></a>
 ## Epic 2 – Analytics & Business Intelligence
 **Goal**: Provide dashboards for executives and marketing with unified KPIs.
 
 ---
 
-### Feature 2.1: First Look Dashboard (Sprint 1)
+<a id="feature-2-1"></a>
+### Feature 2.1: First Look – Contoso (Sprint 1)
 **User Story**:  
 As a Data Analyst, I want KPIs from Bronze so I can deliver a "First Look" dashboard.  
 
@@ -282,21 +285,52 @@ As a Data Analyst, I want KPIs from Bronze so I can deliver a "First Look" dashb
 - GMV (Gross Merchandise Value) = total sales value.  
 - AOV (Average Order Value) = GMV / number of orders.  
 - Dashboards at this stage focus on **"quick wins"** with limited transformations.  
+ - Dataset sequence: start with Contoso in Sprint 1 to deliver the first dashboard quickly; add EuroStyle in Sprint 2 for Raw vs Silver comparisons and consolidated views.
+
+Scope (Sprint 1)
+- Dataset: Contoso only, from Bronze (DirectQuery to Databricks).
+- Grain: day-level KPIs (GMV, AOV, Orders) with ability to drill into top products/categories.
+- Visuals (minimal viable): KPI cards (GMV, AOV, Orders), line chart (GMV by day), table (Top 10 products or categories).
+- Measures: named DAX measures for GMV, AOV, Orders; no logic embedded in visuals.
+- Filters: date range slicer (and brand fixed to Contoso at this stage).
+
+Out of scope (Sprint 1)
+- Silver cleaning/harmonization and FX normalization (addressed in Sprint 2).
+- EuroStyle integration (added in Sprint 2).
+- RLS enforcement (only a draft matrix is prepared in Sprint 1).
+- Advanced DAX (e.g., time intelligence beyond simple day-level trends).
+
+Deliverables
+- Report: "First Look – Contoso" (PBIX or Fabric report) with 1 landing page + 1 detail page.
+- KPI Catalog v0.2 (refining v0.1): GMV, AOV, Orders defined with DAX measure names and display formats; mini data dictionary (fields, units, formats) in the repo.
+- Performance notes: 2–3 quick wins captured from Performance Analyzer.
 
 **Acceptance Criteria**:  
 - Dashboard created in Power BI with GMV, AOV, and order counts.  
 - Data source connected directly to Databricks Bronze (DirectQuery).  
 - First insights available even before cleaning.  
    - Note: In Power BI Desktop, authenticate to Databricks using a Personal Access Token (Authentication method = Token). Use Server Hostname and HTTP Path from the cluster's JDBC/ODBC settings.
+ - KPI Catalog v0.2 drafted (refining v0.1): business definitions, grain, and initial DAX formula templates with measure names.  
+ - Semantic model established: tables imported, relationships defined, key columns sorted/hidden, display folders, and basic formatting (thousands separators, currency).  
+ - Named measures created for GMV, AOV, Orders (no hard-coded logic in visuals).  
+ - Performance pass executed (Performance Analyzer) and at least two quick wins documented (e.g., reduce slicers, disable unnecessary interactions).  
+ - Accessibility basics: color contrast checked and alt text set on key visuals.  
+ - Mini data dictionary for exposed fields added to the repo.
 
 **Tasks**:  
 - Compute **GMV (Gross Merchandise Value)**.  
 - Compute **AOV (Average Order Value)**.  
 - Build dashboard with Raw/Bronze metrics.  
+ - Model work: define relationships (star-like), hide technical columns, set sort-by columns, configure formats and display folders.  
+ - Create named measures (GMV, AOV, Orders) and a landing page wireframe with 2–3 visuals.  
+ - Run Performance Analyzer; document and apply quick improvements (e.g., reduce visuals on a page, limit bidirectional filters).  
+ - Draft KPI Catalog and a lightweight data dictionary (fields, definitions, units).  
+ - Prepare a draft RLS matrix (who sees what) for future sprints; no enforcement yet.
 
 ---
 
-### Feature 2.2: Raw vs Silver Dashboard (Sprint 2)
+<a id="feature-2-2"></a>
+### Feature 2.2: Raw vs Silver – Contoso + EuroStyle (Sprint 2)
 **User Story**:  
 As a Data Analyst, I want to compare KPIs Raw vs Silver to highlight data cleaning impact.  
 
@@ -308,19 +342,31 @@ As a Data Analyst, I want to compare KPIs Raw vs Silver to highlight data cleani
 - Silver = cleaned, harmonized data.  
 - Comparing Raw vs Silver highlights impact of deduplication, standardization, and harmonization.  
 - Useful to **build trust** in the cleaning process.  
+ - Dataset scope: Contoso + EuroStyle; compare Raw vs Silver per brand and quantify differences; keep visuals consistent across brands.
 
 **Acceptance Criteria**:  
 - Dashboard compares Raw vs Silver KPIs: GMV, AOV, return rates.  
 - Documentation highlights the differences (e.g., reduced duplicates).  
 - Stakeholders understand the value of Silver over Raw.  
    - Note: Online Retail II captures returns (credit notes/negative quantities). If the Contoso dataset lacks explicit returns, either simulate a conservative return flag or exclude return-rate comparisons for Contoso and document the limitation.
+ - Comparison measures implemented (e.g., `GMV_raw`, `GMV_silver`, `GMV_delta`, `AOV_delta`, `return_rate_delta`) with clear labeling.  
+ - Side-by-side (or toggle/bookmark) view implemented to switch between Raw and Silver.  
+ - At least three material data-quality impacts quantified (e.g., % duplicate reduction, FX normalization impact on GMV).  
+ - First RLS pass configured on Silver (brand-level roles) and validated on 1–2 visuals.  
+ - Azure DevOps cards created for top data-quality fixes, linked in the dashboard/readme.
 
 **Tasks**:  
 - Create dashboard with GMV, AOV, return rates (before/after cleaning).  
 - Document and present differences.  
+ - Build DAX measures for Raw vs Silver comparisons and deltas; ensure consistent formatting and tooltips.  
+ - Implement bookmarks/toggles for Raw vs Silver views; annotate differences.  
+ - Quantify impacts (duplicates removed, currency standardization effects, schema harmonization effects).  
+ - Configure and test RLS roles on Silver (brand managers vs executives).  
+ - Log Azure DevOps items for identified data-quality issues and link them from the report/README.
 
 ---
 
+<a id="feature-2-3"></a>
 ### Feature 2.3: Executive Post-Merger Dashboard (Sprint 3)
 **User Story**:  
 As an Executive, I want consolidated GMV, AOV, and margin so I can track EuroStyle + Contoso performance.  
@@ -347,6 +393,7 @@ As an Executive, I want consolidated GMV, AOV, and margin so I can track EuroSty
 
 ---
 
+<a id="feature-2-4"></a>
 ### Feature 2.4: Customer Segmentation Dashboard (Sprint 4)
 **User Story**:  
 As a Marketing Manager, I want to see customer segments & churn risk so I can design campaigns.  
@@ -376,11 +423,13 @@ As a Marketing Manager, I want to see customer segments & churn risk so I can de
 
 ---
 
+<a id="epic-3"></a>
 ## Epic 3 – Machine Learning & Predictive Analytics
 **Goal**: Develop churn and Customer Lifetime Value (CLV) models using merged Customer 360.
 
 ---
 
+<a id="feature-3-1"></a>
 ### Feature 3.1: Exploratory Analysis (Sprint 1–2)
 **User Story**:  
 As a Data Scientist, I want to perform **Exploratory Data Analysis (EDA)** to understand customer behavior and overlaps.  
@@ -394,19 +443,29 @@ As a Data Scientist, I want to perform **Exploratory Data Analysis (EDA)** to un
 - **EDA (Exploratory Data Analysis)** = profiling data to find patterns, missing values, distributions.  
 - Churn definition = customers inactive for more than 90 days.  
 - **CLV (Customer Lifetime Value)** = net margin expected per customer over a defined horizon (e.g., 12 months).  
+ - Dataset sequence: analyze Contoso first in Sprint 1 to establish baselines; integrate EuroStyle in Sprint 2 to study overlaps and brand differences.
 
 **Acceptance Criteria**:  
 - Missing values, outliers, and overlaps documented.  
 - Clear churn definition (>90 days inactivity).  
 - Draft **CLV** formula validated with business stakeholders.  
+ - EDA profiling summary produced (notebook and 1–2 page readout) with top data-quality issues and EuroStyle vs Contoso overlaps.  
+ - Data risk log created (PII handling, potential label leakage, notable gaps) and shared with team.  
+ - Baseline yardsticks defined: simple rule-based churn heuristic and RFM segmentation for comparison.  
+ - Experiment scaffolding ready: MLflow experiment initialized; evaluation protocol (splits/CV, metrics: AUC for churn, RMSE for CLV) documented in repo.  
 
 **Tasks**:  
 - Perform **EDA** on Bronze (distributions, missing values, overlaps).  
 - Define churn = inactivity > 90 days.  
 - Draft **CLV** definition (12 months net margin).  
+ - Publish an EDA summary with visuals and a prioritized data-quality issue list.  
+ - Create and fill a leakage checklist; exclude leaky fields from labels/features.  
+ - Implement simple baselines (rule-based churn risk, RFM segments) and record baseline performance.  
+ - Initialize MLflow experiment; define train/validation/test split strategy and log runs with metrics/params.  
 
 ---
 
+<a id="feature-3-2"></a>
 ### Feature 3.2: Feature Engineering (Sprint 2)
 **User Story**:  
 As a Data Scientist, I want RFM and behavioral features to build churn & CLV models.  
@@ -426,14 +485,23 @@ As a Data Scientist, I want RFM and behavioral features to build churn & CLV mod
 - **RFM** metrics computed for all customers.  
 - Basket diversity & cross-brand features available in Silver/Gold.  
 - Feature sets tracked in **MLflow** or Delta tables.  
+ - Features persisted as versioned Delta tables with metadata (version, created_ts, source snapshot) for reproducibility.  
+ - Joinability/consumption contract drafted with DE/DA (score schema, business keys, refresh cadence).  
+ - Leakage checks performed and documented for engineered features.  
+ - If COGS is missing, the agreed CLV proxy approach is documented (see Gold notes) and reflected in downstream features.  
 
 **Tasks**:  
 - Compute **RFM (Recency, Frequency, Monetary value)** metrics.  
 - Add basket diversity & cross-brand shopping signals.  
 - Track feature sets in MLflow.  
+ - Persist feature tables as versioned Delta (e.g., `silver.features_rfm_v1`) including schema/version metadata.  
+ - Define and document the scoring schema and join keys with DE/DA for integration into `customer_360`/Gold; propose refresh cadence.  
+ - Train first simple baselines on sample data and log to MLflow; compare against rule-based/RFM yardsticks.  
+ - Document leakage assessment and run a quick feature-importance sanity check.  
 
 ---
 
+<a id="feature-3-3"></a>
 ### Feature 3.3: Model Training (Sprint 3)
 **User Story**:  
 As a Data Scientist, I want baseline models for churn and CLV so I can evaluate predictive power.  
@@ -460,6 +528,7 @@ As a Data Scientist, I want baseline models for churn and CLV so I can evaluate 
 
 ---
 
+<a id="feature-3-4"></a>
 ### Feature 3.4: Batch Scoring & Integration (Sprint 4)
 **User Story**:  
 As a Data Scientist, I want to score churn/CLV and join them into Customer 360 so Analysts can use them.  
@@ -490,11 +559,13 @@ As a Data Scientist, I want to score churn/CLV and join them into Customer 360 s
 
 ---
 
+<a id="epic-4"></a>
 ## Epic 4 – Platform Integration (Databricks ↔ Fabric)
 **Goal**: Demonstrate end-to-end integration between Databricks and Microsoft Fabric, even on Free Editions.
 
 ---
 
+<a id="feature-4-1"></a>
 ### Feature 4.1: Export Gold to Fabric (Sprint 4)
 **User Story**:  
 As a Data Engineer, I want Gold marts exported to Fabric so dashboards can consume them via Direct Lake.  
@@ -529,6 +600,7 @@ For your information
 
 ---
 
+<a id="feature-4-2"></a>
 ### Feature 4.2: Power BI Suite (Sprint 4)
 **User Story**:  
 As a Data Analyst, I want Power BI dashboards published through Fabric so executives can access the post-merger suite.  
@@ -557,6 +629,7 @@ As a Data Analyst, I want Power BI dashboards published through Fabric so execut
 - Deploy dashboards via Fabric pipelines.  
 
 ---
+<a id="feature-4-3"></a>
 ## Feature 4.3: Model Scoring Export & Validation in Fabric (Sprint 4)  
 **User Story**:  
 As a Data Scientist, I want churn and CLV scores exported from Databricks into Fabric so that business dashboards can consume and validate predictive insights.  
@@ -590,8 +663,10 @@ As a Data Scientist, I want churn and CLV scores exported from Databricks into F
 
 ---
 
+<a id="epic-5"></a>
 ## Optional Extensions
 
+<a id="feature-5-1"></a>
 ### Feature 5.1 (DE) – Simplified Data Vault in Silver  
 
 **User Story**  
@@ -716,6 +791,7 @@ Free Edition Limitations (Databricks Free Edition + Fabric Student)
 - No Airflow jobs in Fabric free/student and no Databricks tokens in CE: CI/CD and orchestration must be simulated (documented steps, local GitHub Actions for tests only).
 - SCD2 management is manual: track changes with effective dates and handle historical data in the application logic.
 
+<a id="feature-5-2"></a>
 ### Feature 5.2 (DA) – Advanced Segmentation & Dynamic Dashboards  
 
 **User Story**  
@@ -744,6 +820,7 @@ As a Data Analyst, I want to implement advanced segmentation logic and dynamic d
 4. Connect dashboards to Gold `customer_360` and `customer_scores_gold`.  
 5. Document segmentation rules and dashboard navigation in README. 
 
+<a id="feature-5-3"></a>
 ### Feature 5.3 (DS) – Survival & Probabilistic Models for Churn and CLV  
 
 **User Story**  
@@ -776,6 +853,7 @@ As a Data Scientist, I want to implement advanced survival analysis and probabil
 5. (Optional) Prototype a sequential NN model (LSTM) for churn prediction.  
 6. Document findings and compare with baseline tree-based models.  
 
+<a id="feature-5-4"></a>
 ### Feature 5.4 (All) – End-to-End Deployment (Databricks + Fabric)
 
 **User Story**  
