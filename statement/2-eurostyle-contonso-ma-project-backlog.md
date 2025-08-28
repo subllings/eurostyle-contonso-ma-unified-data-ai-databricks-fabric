@@ -434,8 +434,9 @@ As a Data Analyst, I want Power BI dashboards published through Fabric so execut
 
 **Learning Resources**:  
 - [Power BI Service](https://learn.microsoft.com/en-us/power-bi/fundamentals/)  
-- [Direct Lake in Fabric](https://learn.microsoft.com/en-us/fabric/data-warehouse/direct-lake-overview)  
-- [Row-Level Security (RLS)](https://learn.microsoft.com/en-us/power-bi/admin/service-security-row-level-security)  
+- [Understand medallion lakehouse architecture for Microsoft Fabric with OneLake](https://learn.microsoft.com/en-us/fabric/onelake/onelake-medallion-lakehouse-architecture)
+- [Data Factory documentation in Microsoft Fabric](https://learn.microsoft.com/en-us/fabric/data-factory/)  
+- [Row-Level Security (RLS)](https://learn.microsoft.com/en-us/fabric/data-warehouse/row-level-security)  
 
 **Key Concepts**:  
 - **Executive Dashboard** = EuroStyle vs Contoso, unified GMV/AOV/margin view.  
