@@ -782,7 +782,7 @@ As a project team (DE, DA, DS), we want to simulate an end-to-end deployment pip
 
 ## Educational note (BeCode Data Analytics & AI Bootcamp)
 
-This Business Case is provided solely for educational purposes as part of the BeCode Data Analytics & AI Bootcamp. Names, datasets, and scenarios are illustrative for training only and are not production guidance.
+This Product Backlog is provided solely for educational purposes as part of the BeCode Data Analytics & AI Bootcamp. Names, datasets, and scenarios are illustrative for training only and are not production guidance.
 
 
 

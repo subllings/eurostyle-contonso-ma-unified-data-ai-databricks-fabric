@@ -77,5 +77,5 @@ Note on FX (Foreign Exchange): Amounts from different source currencies are conv
 
 ## Educational note (BeCode Data Analytics & AI Bootcamp)
 
-This Business Case is provided solely for educational purposes as part of the BeCode Data Analytics & AI Bootcamp. Names, datasets, and scenarios are illustrative for training only and are not production guidance.
+This repository is provided solely for educational purposes as part of the BeCode Data Analytics & AI Bootcamp. Names, datasets, and scenarios are illustrative for training only and are not production guidance.
 
