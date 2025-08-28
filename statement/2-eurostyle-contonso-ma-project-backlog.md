@@ -57,6 +57,42 @@ This backlog follows Agile methodology with hierarchical organization:
 - **User Stories**: Specific user needs and outcomes
 - **Tasks**: Technical implementation items
 
+Note – Working board (Kanban)
+- Platform: Azure DevOps Boards.
+- Columns: Backlog → Selected for Sprint → In Progress → In Review → Done (optional: Blocked).
+- Ownership: Product Owner prioritizes; Scrum Master maintains flow; each DE/DA/DS member updates cards daily and links notebooks/tables/dashboards.
+
+<a id="agility"></a>
+## Agility in the EuroStyle–Contoso Prototype
+
+The project will follow an agile approach adapted to the constraints of Databricks Free Edition and Microsoft Fabric free/student capacity. Even if the technical environments are not shared, the agile mindset remains central: short sprints, incremental delivery, and continuous improvement.
+
+### Roles and responsibilities
+
+- Product Owner: responsible for the backlog and prioritization. Normally this role is taken by a data analyst; if none is available, a data engineer may temporarily assume it.
+- Scrum Master: runs the agile process, maintains the Kanban board, enforces WIP limits, and facilitates ceremonies. The role rotates among data engineers each sprint.
+- Team Members (DE/DA/DS): update card status daily, link deliverables (notebooks, data tables, dashboards), and participate in reviews and retrospectives.
+
+### Backlog and Kanban
+
+- Platform: Azure DevOps Boards.
+- Columns: Backlog → Selected for Sprint → In Progress → In Review → Done (optional: "Blocked").
+- Card content: each card describes a deliverable (not a personal to‑do) and includes Acceptance Criteria, Definition of Done, and links to code/dashboards. Use sub‑tasks when several members collaborate.
+
+### Sprint cadence
+
+- Duration: 4.5 days per sprint.
+- Day 1 – Sprint Planning: select cards from the backlog into scope.
+- Daily – Stand‑up: each member reports progress, blockers, and next steps.
+- Final day – Sprint Review: present completed deliverables to stakeholders.
+- Immediately after – Retrospective: reflect on what worked, what didn't, and actions to improve.
+
+### Collaboration model
+
+- Databricks Community Edition has no shared workspace → each engineer works in their own environment.
+- Synchronization: code and notebooks are synced through GitHub.
+- Source of truth: the Kanban board ensures coordination, visibility, and accountability across roles.
+
 
 
 ---
