@@ -27,7 +27,7 @@ To address this, the CMO and CDAO requested a **prototype platform** combining *
 - **Data Engineering (Databricks)**: Build reproducible Medallion pipelines, harmonize schemas, create unified Gold marts, export to Fabric Lakehouse.  
 - **Data Analytics (Fabric/Power BI)**: Deliver comparative dashboards (EuroStyle vs Contoso) and unified post-merger dashboards with RLS.  
 - **Data Science (Databricks MLflow)**: Train churn and Customer Lifetime Value (CLV) models, publish scored datasets into Customer 360°.  
-  - Note: Margin requires Cost of Goods Sold (COGS; direct costs to acquire/produce items, e.g., purchase cost, manufacturing, inbound freight); if not available in datasets, treat margin as a stretch goal or clearly label estimates until cost data is present.
+
 
 ---
 
