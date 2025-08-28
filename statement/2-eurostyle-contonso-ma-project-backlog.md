@@ -101,8 +101,8 @@ As a Data Engineer, I want Silver tables with clean, harmonized schemas so Analy
 
 **Learning Resources**:  
 - [Schema Evolution in Delta](https://docs.databricks.com/delta/delta-batch.html#table-schema-evolution)  
-- [Data Quality Framework](https://docs.databricks.com/lakehouse/data-quality.html)  
-- [PySpark DataFrame API](https://spark.apache.org/docs/latest/api/python/reference/pyspark.sql/dataframe.html)  
+- [Data Quality Management](https://www.databricks.com/discover/pages/data-quality-management)  
+- [PySpark DataFrame API](https://api-docs.databricks.com/python/pyspark/latest/pyspark.sql/api/pyspark.sql.DataFrame.html)  
 
 **Key Concepts**:  
 - Silver = cleaned and standardized layer.  
@@ -131,7 +131,7 @@ As a Data Engineer, I want Silver tables with clean, harmonized schemas so Analy
 As a Data Engineer, I want Gold marts for sales and customers so the business gets reliable KPIs.  
 
 **Learning Resources**:  
-- [Star Schema Design](https://docs.databricks.com/lakehouse/data-modeling.html)  
+- [Star Schema Design](https://www.databricks.com/glossary/star-schema)  
 - [Performance Optimization in Delta](https://docs.databricks.com/optimizations/index.html)  
 - [RFM Analysis Basics](https://clevertap.com/blog/rfm-analysis/)  
 
