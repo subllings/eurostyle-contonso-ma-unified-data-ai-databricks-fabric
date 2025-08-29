@@ -89,7 +89,7 @@ This table lists all features, distributed by sprint and by profile (DE, DS, DA)
 | 4 | 🟥→🟩 [4.1 Export Gold to Fabric](#feature-4-1) (Parquet + manifest/Shortcuts; Fabric Pipeline ingest; connectivity validated) | 🟥→🟩 [3.4 Batch Scoring & Integration](#feature-3-4), 🟥→🟩 [4.3 Scoring Export & Validation](#feature-4-3) (batch scoring churn/CLV; join to customer_360; export to Fabric; validate metrics/skew) | 🟩 🟨 [2.4 Customer Segmentation](#feature-2-4), 🟩 🟨 [4.2 Power BI Suite](#feature-4-2) (Executive + Segmentation dashboards; RLS; pipeline Dev→Test; publish suite) |
 | 5 (optional) | 🟥 [5.1 Simplified Data Vault](#feature-5-1); 🟥→🟩 [5.4 Orchestration & E2E Deployment](#feature-5-4) (Airflow DAG + Fabric fallback; manifests/_SUCCESS; QA & notifications) | 🟥 [5.3 Survival/Probabilistic Models](#feature-5-3); 🟥→🟩 [5.4 Orchestration & E2E Deployment](#feature-5-4) (batch scoring export → Fabric ingest; alignment QA) | 🟩 🟨 [5.2 Advanced Segmentation](#feature-5-2); 🟩 🟨 [5.4 Orchestration & E2E Deployment](#feature-5-4) (promotion via Fabric pipelines/app; RLS/share checks) |
 
-Legend: 🟥 Databricks, 🟩 Fabric, 🟨 Power BI, 🟥→🟩 Integration (handoff DBX→Fabric)
+Legend: 🟥 Databricks, 🟩 Fabric, 🟨 Power BI, 🟥→🟩 Integration (handoff Databricks → Fabric)
 
 Notes
 - Optional extensions (5.x) are grouped in Sprint 5 (optional): 5.1 (DE), 5.2 (DA), 5.3 (DS), and 5.4 (All, cross‑role).

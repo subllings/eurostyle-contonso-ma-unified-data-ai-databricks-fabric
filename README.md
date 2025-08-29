@@ -75,18 +75,7 @@ In a production environment, this would be automated and governed using:
 - [Business Case](https://github.com/subllings/eurostyle-contonso-ma-unified-data-ai-databricks-fabric/blob/main/statement/1-eurostyle-contonso-ma-business-case.md)  
 - [Product Backlog](https://github.com/subllings/eurostyle-contonso-ma-unified-data-ai-databricks-fabric/blob/main/statement/2-eurostyle-contonso-ma-project-backlog.md)  
 
-## Data Quality Issues (links)
-
-- Source of truth: Azure DevOps Boards (tag: `DQ`).
-- Paste links to active DQ tickets here during sprints for quick navigation.
-- Examples:
-  - DQ: EuroStyle vs Bronze count variance 2.3% on 2025‑08‑01 — [DevOps link TBD]
-  - DQ: Missing FX rates for PLN on 2025‑08‑02 — [DevOps link TBD]
-
-## Docs
-
-- KPI Catalog Template: ./docs/kpi-catalog-template.md  
-- Data Dictionary Template: ./docs/data-dictionary-template.md
+---
 
 ## Educational note (BeCode Data Analytics & AI Bootcamp)
 
