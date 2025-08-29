@@ -87,7 +87,7 @@ This table lists all features, distributed by sprint and by profile (DE, DS, DA)
 | 2 | 🟥 [1.2 Silver Cleaning & Harmonization](#feature-1-2) (idempotent writes; Silver schema contract; FX normalization with ECB snapshot; DQ before/after) | 🟥 [3.1 EDA summary & risk log](#feature-3-1); 🟥 [3.2 Feature Engineering](#feature-3-2) (RFM; basket/cross‑brand; versioned feature tables; leakage checks; consumption contract) | 🟩 🟨 [2.2 Raw vs Silver – Contoso + EuroStyle](#feature-2-2) (side‑by‑side KPIs; delta measures; RLS draft; bookmarks/toggles) |
 | 3 | 🟥 [1.3 Gold Business Marts](#feature-1-3) (sales_daily; customer_360; category_perf; margin proxy/notes) | 🟥 [3.3 Model Training](#feature-3-3) (LR churn; RF CLV; calibration/CIs; segment evaluation; registry notes) | 🟩 🟨 [2.3 Executive Post‑Merger Dashboard](#feature-2-3) (GMV/AOV/margin; brand & region splits; RLS configured; perf tuned) |
 | 4 | 🟥→🟩 [4.1 Export Gold to Fabric](#feature-4-1) (Parquet + manifest/Shortcuts; Fabric Pipeline ingest; connectivity validated) | 🟥→🟩 [3.4 Batch Scoring & Integration](#feature-3-4), 🟥→🟩 [4.3 Scoring Export & Validation](#feature-4-3) (batch scoring churn/CLV; join to customer_360; export to Fabric; validate metrics/skew) | 🟩 🟨 [2.4 Customer Segmentation](#feature-2-4), 🟩 🟨 [4.2 Power BI Suite](#feature-4-2) (Executive + Segmentation dashboards; RLS; pipeline Dev→Test; publish suite) |
-| 5 (optional) | 🟥 [5.1 Simplified Data Vault](#feature-5-1); 🟥 [5.4 E2E Deployment](#feature-5-4) (Hubs/Links/Sats; manual SCD2; deployment docs/pipeline outline) | 🟥 [5.3 Survival/Probabilistic Models](#feature-5-3); 🟥→🟩 [5.4 E2E Deployment](#feature-5-4) (Cox/KM; BG/NBD + Gamma‑Gamma; compare; scoring pipeline docs) | 🟩 🟨 [5.2 Advanced Segmentation](#feature-5-2); 🟩 🟨 [5.4 E2E Deployment](#feature-5-4) (dynamic parameters; drill‑through; segment pages; publish/promotion scripts) |
+| 5 (optional) | 🟥 [5.1 Simplified Data Vault](#feature-5-1); 🟥→🟩 [5.4 Orchestration & E2E Deployment](#feature-5-4) (Airflow DAG + Fabric fallback; manifests/_SUCCESS; QA & notifications) | 🟥 [5.3 Survival/Probabilistic Models](#feature-5-3); 🟥→🟩 [5.4 Orchestration & E2E Deployment](#feature-5-4) (batch scoring export → Fabric ingest; alignment QA) | 🟩 🟨 [5.2 Advanced Segmentation](#feature-5-2); 🟩 🟨 [5.4 Orchestration & E2E Deployment](#feature-5-4) (promotion via Fabric pipelines/app; RLS/share checks) |
 
 Legend: 🟥 Databricks, 🟩 Fabric, 🟨 Power BI, 🟥→🟩 Integration (handoff DBX→Fabric)
 
@@ -2034,6 +2034,68 @@ Note on numbering: Tasks are grouped by workflow (prep → train → validate �
       - Diagnostics: QQ plots of monetary, KS on inter‑purchase times, posterior checks; lift vs RFM.
    - Sequential deep learning (optional, for comparison)
       - Sequence building: sessionized purchases; embeddings for product/brand/channel; positional encodings; masking.
+
+
+<a id="feature-5-4"></a>
+### Feature 5.4 (All) – Orchestration & E2E Deployment (Airflow + Fabric)
+
+**User Story**  
+As a Data Engineer, I want to orchestrate the end‑to‑end Databricks → Fabric workflow so releases are reproducible, observable, and easy to re‑run. Airflow is used as an external orchestrator, with a native Fabric Data Pipeline fallback when Airflow is not available.
+
+**Learning Resources**  
+- Apache Airflow — DAGs, operators, retries, SLAs: https://airflow.apache.org/  
+- Airflow Providers (Azure/AAD/HTTP operators): https://airflow.apache.org/docs/apache-airflow-providers/  
+- Microsoft Fabric — Data Pipelines: https://learn.microsoft.com/fabric/data-factory/  
+- Fabric Lakehouse overview: https://learn.microsoft.com/fabric/data-engineering/lakehouse-overview  
+- Databricks — reliable Delta exports (Parquet, manifests, MERGE/replaceWhere): https://learn.microsoft.com/azure/databricks/delta/
+
+**Key Concepts**  
+- Two orchestration modes:
+   - External (Airflow): define a DAG that (1) runs Databricks jobs/notebooks to produce Parquet + manifest + _SUCCESS, (2) transfers/places artifacts for Fabric, (3) triggers a Fabric Data Pipeline ingestion, and (4) runs light QA and notifications.
+   - Native (Fabric): use Fabric Data Pipelines to orchestrate ingest and promotion; Databricks steps are documented/manual in Free tier.
+- Free/Trial constraints: Databricks Free and Fabric Trial/Free typically lack enterprise automation (tokens/Jobs/DLT). When APIs/creds aren't available, simulate steps with manual tasks clearly called out in the runbook and DAG (e.g., a "Manual step" sensor or external task marker).
+- Contracts first: rely on release manifests and `_SUCCESS` markers from Features 4.1/4.3 to keep orchestration idempotent and testable.
+
+**Acceptance Criteria**  
+- An Airflow DAG exists (or a skeleton with placeholders) that models the E2E flow: export → transfer/place → Fabric ingest → QA → notify.  
+- Each step is idempotent, with success markers and clear rerun behavior; retries and failure paths are defined.  
+- A native Fabric fallback path is documented (Data Pipeline-only orchestration) for environments without Airflow.  
+- A short runbook describes secrets, environment variables, parameters, and manual steps for Free/Trial constraints.  
+- Evidence: one dry‑run (or simulated run) captured with logs/screenshots and a QA checklist (row counts vs manifest).
+
+**Tasks (15 tasks, numbered)**  
+1) Decide orchestration mode(s) in scope: Airflow external, Fabric native fallback, or both; document constraints (Free/Trial vs Enterprise).  
+2) Define orchestration contract: inputs (Gold tables), export artifacts (Parquet, `_SUCCESS`, `release_manifest.json`/`scores_manifest.json`), and success/failure signals per stage.  
+3) Parameterize export notebooks/jobs in Databricks (date window, release version); ensure idempotent writes (MERGE/`replaceWhere`) and `_SUCCESS` markers (Feature 4.1/4.3).  
+4) Create a small QA script/notebook to compute row counts and optional checksums pre/post export; write results next to the manifest.  
+5) Initialize an Airflow DAG (daily or on‑demand) with default args (retries/backoff, SLA, owner); add a "manual gate" boolean param for Free mode.  
+6) Implement task "dbx_export" (Databricks): preferred path is Databricks Jobs/API; Free mode uses a placeholder operator with instructions to run the notebook manually and drop artifacts to the export folder.  
+7) Implement task "place_artifacts_for_fabric": in Enterprise, automate transfer (e.g., to staging/OneLake/Blob); in Free mode, document manual upload to Fabric Lakehouse `/Files/dropzone/<release>/...` and add a sensor/wait step.  
+8) Implement task "trigger_fabric_ingest": call Fabric Data Pipeline (API/UI). If API access isn't available, mark this as a manual step with a checklist and a confirmation flag in the DAG.  
+9) Implement task "wait_for_fabric_ingest": poll status (API) or use a time‑boxed sensor in Free mode; log outcome and timings.  
+10) Implement task "post_ingest_qa": compare Lakehouse counts vs manifest; verify schema/dtypes and latest partition/date; record a QA report artifact.  
+11) Implement notifications: success/failure messages to email/Teams/Slack (provider available) with links to manifest, pipeline run, and dashboard.  
+12) Document secrets/creds: where tokens/Service Principals would live in Enterprise; provide Free‑safe alternatives (manual steps, local env vars).  
+13) Publish an operations runbook: parameters, schedules, rerun/rollback steps, ownership, and common failure modes; link to Features 4.1/4.3 contracts.  
+14) Provide a native Fabric pathway: a Data Pipeline definition (source: `/Files/dropzone/<release>/...` → Lakehouse tables) and promotion steps; list rules to rebind across stages.  
+15) Capture evidence: one dry‑run (or simulated Free run) with logs/screenshots, QA checklist, and links; open backlog tickets for any gaps (e.g., API enablement, secrets vault).
+
+**User Stories (breakdown)**  
+- As a DE, I can re‑run the E2E flow deterministically via an Airflow DAG or with a documented Fabric pipeline fallback.  
+- As a DA/DS, I rely on manifests and QA checks to trust that data in Fabric matches Databricks exports.  
+- As an operator, I have a runbook for parameters, retries, and rollback.
+
+**Sprint day plan (4.5 days)**  
+- Day 1 [Tasks 1–4]: Choose mode(s), finalize contracts, parameterize exports, and produce QA pre/post scripts.  
+- Day 2 [Tasks 5–7]: Scaffold Airflow DAG with export and artifact‑placement steps; wire manual/sensor gates for Free mode.  
+- Day 3 [Tasks 8–10]: Trigger/poll Fabric ingest; implement post‑ingest QA and record a results file; handle typical errors.  
+- Day 4 [Tasks 11–14]: Add notifications; write secrets/creds guidance; draft runbook; define the Fabric‑only orchestration fallback and promotion notes.  
+- Day 4.5 [Task 15]: Perform a dry‑run/simulation; capture evidence; open follow‑up backlog items (e.g., automate transfer in Enterprise).
+
+#### Notes — Airflow vs Fabric (when to use what)
+- Start with Fabric Data Pipelines when orchestrating only inside Fabric and manual export from Databricks is acceptable (Free mode).  
+- Use Airflow when you need cross‑platform orchestration (Databricks + Fabric + QA + notifications) or plan to evolve to enterprise automation (Jobs/Service Principals, CI/CD).  
+- Keep orchestration steps contract‑driven (manifests, `_SUCCESS`) to simplify testing, retries, and promotion.
       - Architectures: LSTM/GRU or Transformer encoder; objectives: horizon churn (BCE) and next‑k purchase count (Poisson/NB) multi‑task.
       - Regularization: dropout, weight decay; early stopping on temporal validation; calibration via temperature scaling.
 
@@ -2175,74 +2237,7 @@ Note on numbering: Tasks are grouped by workflow (prep → train → validate �
    - Data drift → weekly PSI and recalibration; freeze FX and timezones; document schema changes.
 
 
-<a id="feature-5-4"></a>
-### Feature 5.4 (All) – End-to-End Deployment (Databricks + Fabric)
-
-**User Story**  
-As a project team (DE, DA, DS), we want to simulate an end-to-end deployment pipeline across Databricks and Microsoft Fabric so that data pipelines, ML models, and dashboards can be versioned, validated, and promoted, even if some steps remain manual in Free Editions.
-
-**Learning Resources**  
-- [Databricks Repos and GitHub integration](https://learn.microsoft.com/en-us/azure/databricks/repos)  
-- [CI/CD on Databricks with GitHub Actions](https://learn.microsoft.com/en-us/azure/databricks/dev-tools/ci-cd)  
-- [Fabric Deployment Pipelines](https://learn.microsoft.com/en-us/power-bi/create-reports/deployment-pipelines-overview)  
-- [Row-level security in Fabric](https://learn.microsoft.com/en-us/fabric/data-warehouse/tutorial-row-level-security)  
-
-
-**Key Concepts**  
-- **Databricks (Enterprise)**: normally supports CI/CD with Jobs, Workflows, Unity Catalog, and GitHub Actions.  
-- **Databricks Free Edition**: lacks Jobs API, Unity Catalog, and secure tokens → deployment is **manual** (export notebooks, run pipelines interactively).  
-- **Fabric Free/Student**: supports Lakehouse + Dashboards + Deployment Pipelines, but capacity and automation are limited.  
-- **CI/CD Simulation**: GitHub Actions runs schema checks and produces artifacts (notebooks, PBIX, configs), but "CD" (deployment) is **manual** in Free tiers.  
-
-**Acceptance Criteria**  
-- A Fabric deployment pipeline created with Dev and Test stages.  
-- Gold marts (sales_daily, customer_360, customer_scores_gold) exported from Databricks Free Edition and ingested into Fabric Dev, then promoted to Test.  
-- At least one Power BI dashboard published and promoted across stages.  
-- RLS validated across environments.  
-- **Export and deployment steps explicitly documented as manual for Free Edition (Databricks exports, Fabric promotions).**  
-- Documentation highlights which steps are automated vs. manual.  
-- Limitations of Databricks Free Edition explicitly listed in README.  
-
-**Tasks**  
-1. **Databricks**  
-   - Export Gold marts as Parquet + `_SUCCESS`.  
-   - **Manually download files from Databricks Free Edition and upload them into Fabric Lakehouse.**  
-   - (Optional in Enterprise) integrate with GitHub Actions + Jobs API for automated runs.  
-2. **Fabric**  
-   - Configure Deployment Pipeline (Dev + Test).  
-   - Ingest Gold marts into Lakehouse Dev → promote to Test.  
-   - Connect dashboards to Test Lakehouse and validate KPIs.  
-   - Apply RLS rules in Test.  
-3. **CI/CD Simulation**  
-   - Create GitHub Actions workflow that runs schema checks or linting on notebooks.  
-   - Store artifacts (exported notebooks, dashboards) in GitHub for reproducibility.  
-   - **Document manual promotion steps in Free Edition instead of automated CD.**  
-4. **Documentation**  
-   - Write README section:  
-     - "Databricks Enterprise vs Free Edition deployment"  
-     - "Fabric deployment steps in Free Edition (manual)"  
-     - Screenshots of Fabric pipeline promotions.  
-
-**Databricks Free Edition Limitations (explicit)**  
-
-**User Stories (breakdown)**  
-- As a team, we simulate CI for checks and execute manual CD with documented steps.  
-- As stakeholders, we can trace artifacts and promotions across environments.  
-
-### Sprint day plan (4.5 days)
-- **Day 1:** Structure repo/artifacts; define CI checks (lint notebooks, schema checks, docs build); decide version tags.  
-- **Day 2:** Produce/export artifacts (notebooks, PBIX, configs); tag versions; include manifests and changelogs.  
-- **Day 3:** Set up Fabric pipeline (Dev); perform manual deployment steps; configure rules/parameters.  
-- **Day 4:** Promote to Test; validate RLS, data bindings, and KPIs; capture issues.  
-- **Day 4.5:** Capture screenshots and finalize documentation (what's automated vs manual).
-- No Jobs API → cannot schedule or trigger pipelines automatically.  
-- No Unity Catalog → no centralized governance or lineage.  
-- Limited compute → must work on small datasets.  
-- Manual export/import only → users must download Parquet from DBFS and upload into Fabric.  
-- GitHub Actions usable for **static checks only** (no direct deployment).  
-
-
----
+*** End Patch
 
 ## Acronyms
 

@@ -35,7 +35,7 @@ The **Chief Marketing Officer (CMO)** and **Chief Data & Analytics Officer (CDAO
 
 ## Project Objectives
 
-### Data Engineering
+### Data Engineer 
 - Build a reproducible **Medallion pipeline** (Bronze → Silver → Gold).  
   - **Bronze**: ingest EuroStyle and Contoso raw files exactly as delivered.  
   - **Silver**: clean and harmonize schemas (products, customers, orders).  
@@ -43,7 +43,7 @@ The **Chief Marketing Officer (CMO)** and **Chief Data & Analytics Officer (CDAO
 - Maintain mapping tables to align product hierarchies and customer identifiers across brands.  
 - Ensure reproducibility so the same process can be re-run as new data arrives.  
 
-### Data Analytics
+### Data Analyst
 - Deliver dashboards that serve two complementary views:
   - **Comparative view**: EuroStyle vs. Contoso performance side-by-side.
   - **Unified view**: consolidated KPIs across both brands, including  
@@ -54,7 +54,7 @@ The **Chief Marketing Officer (CMO)** and **Chief Data & Analytics Officer (CDAO
 - Implement **Row-Level Security (RLS)** so managers only see their own brand, while executives access the consolidated view.
 - Provide clarity on key business questions: market share by region, margin gaps, and customer behavior differences North vs. South.
 
-### Data Science
+### Data Scientist
 - Develop predictive models for **churn** and **Customer Lifetime Value (CLV)** across both brands.
 - Conduct **Exploratory Data Analysis (EDA)** on the Silver layer to detect overlaps and purchase patterns.
 - Engineer features such as **RFM scores (Recency, Frequency, Monetary value)**, churn indicators, and cross-sell signals.
@@ -86,67 +86,8 @@ The **Chief Marketing Officer (CMO)** and **Chief Data & Analytics Officer (CDAO
 
 
 
----
 
 
-## Sprint Structure (High-Level)
-
-The project is organized into five sprints, each delivering specific outcomes across Databricks, Fabric, and Power BI.  
-
-
-| Sprint | Duration | Focus (M&A Context) | Key Deliverables | Platforms |
-|--------|----------|----------------------|------------------|-----------|
-| **0** | 0.5 day | Setup & Planning | Workspace setup, schema documentation, backlog refinement, KPI catalog | Databricks (workspace) · Fabric (semantic model draft) |
-| **1** | 4.5 days | Bronze & First Insights | Bronze ingestion (EuroStyle + Contoso), Raw KPIs dashboard | Databricks (Bronze tables) · Power BI (DirectQuery dashboard) |
-| **2** | 4.5 days | Silver & Harmonization | Cleaned Silver, schema alignment, Raw vs Silver dashboard | Databricks (Silver tables) · Power BI (Silver dashboard) |
-| **3** | 4.5 days | Gold & Post-Merger Views | Unified Gold marts, executive consolidated dashboard | Databricks (Gold marts) · Fabric/Power BI (exec dashboards) |
-| **4** | 4.5 days | MLflow & Fabric Integration | Churn/CLV scoring, export to Fabric, Power BI Post-Merger Suite | Databricks (MLflow models, scored tables) · Fabric (Lakehouse, Direct Lake) · Power BI (Post-Merger Suite) |
-
-**Note – Sprint 1 (Bronze in Databricks):**  
-You expose your Bronze tables via the `hive_metastore` (or SQL views).  
-In Power BI Desktop: *Get Data → Databricks* → provide **Server Hostname** and **HTTP Path** (found in cluster JDBC/ODBC settings). Authenticate using a Databricks Personal Access Token (Authentication method = Token).
-
----
-
-
-## Roles per Sprint (EuroStyle–Contoso M&A)
-
-It shows what **Data Engineers (DE)**, **Data Scientists (DS)**, and **Data Analysts (DA)** contribute at every stage of the project,  
-and specifies the **platforms** (Databricks, Fabric, Power BI) where their work is implemented.
-
-| Sprint | Data Engineer (DE) | Data Scientist (DS) | Data Analyst (DA) | Platforms |
-|---|---|---|---|---|
-| **0** | Set up Databricks workspace & folders; define ingestion paths for EuroStyle + Contoso | Define churn/CLV hypotheses, identify data requirements, prepare MLflow experiments | Document KPI catalog (EuroStyle vs Contoso), map differences, design draft semantic model | DE: Databricks · DS: Databricks (MLflow) · DA: Fabric/Power BI |
-| **1** | Ingest EuroStyle + Contoso raw CSVs into Bronze Delta; add metadata & data quality checks | EDA on Bronze (distributions, missing values, overlap) | Build "First Look Dashboard" with Raw/Bronze KPIs (GMV, AOV, order counts) | DE: Databricks (Bronze) · DS: Databricks · DA: Power BI (DirectQuery to Databricks SQL) |
-| **2** | Transform Bronze → Silver (deduplication, schema harmonization, currency alignment) | Feature engineering (RFM, overlap, basket diversity) with MLflow tracking | Redesign dashboard with Silver data; show Raw vs Silver KPIs; define RLS/governance | DE: Databricks (Silver) · DS: Feature store/MLflow · DA: Power BI |
-| **3** | Create Gold marts (`sales_daily`, `category_perf`, unified `customer_360`) | Train baseline churn/CLV models (LR, RF); log runs in MLflow | Executive Post-Merger Dashboard (consolidated view, brand/geography splits) | DE: Databricks (Gold) · DS: MLflow · DA: Fabric/Power BI (Gold marts) |
-| **4** | Export Gold marts → Fabric Lakehouse (Shortcuts/Parquet); orchestrate | Batch scoring of churn/CLV; publish scores into Gold; register models | Unified Power BI dashboards with RLS, Customer Segmentation + Churn, deployment pipelines | DE: Databricks + Fabric · DS: Databricks + Fabric · DA: Power BI/Fabric |
-
-
-
----
-
-### Platform Context
-
-This prototype is built using **Databricks Free Edition** together with **Microsoft Fabric Free/Trial**.  
-While both free tiers impose limitations, they are sufficient to demonstrate the full integration of Databricks (for Medallion architecture and MLflow) and Fabric (for Lakehouse, Direct Lake, and Power BI dashboards).
-
-
-
-#### Constraints vs. Viability
-
-| Aspect              | Free Tier Constraints                                        | How the Solution Still Works |
-|---------------------|--------------------------------------------------------------|-------------------------------|
-| **Databricks cluster** | Auto-stops after ~2h, limited performance                 | Acceptable for Bronze/Silver exploration; clusters can be restarted when needed |
-| **Storage**         | No ADLS Gen2 integration in Free Edition                     | Data exported as Parquet + manifest; uploaded manually to Fabric Lakehouse |
-| **Fabric capacity** | Limited to trial capacity; not production-scale              | Enough to validate Direct Lake, semantic models, and Power BI dashboards |
-| **Orchestration**   | Manual triggers, limited scheduling                          | Pipelines in Fabric ensure ingestion and refresh; manual Databricks export is acceptable for demo |
-| **Security & RBAC** | No enterprise-level governance in free tiers                 | Role-based access simulated at dashboard level (Power BI RLS) |
-| **BI mode**         | DirectQuery on Databricks cluster in Sprint 1–Sprint 2; Direct Lake only later | Demonstrates end-to-end journey from raw Bronze (DirectQuery) to governed Fabric (Direct Lake) |
-
-
-
-In other words, although the free editions lack enterprise features (ADLS integration, automation, large-scale performance), they allow us to deliver a **working prototype** of a unified EuroStyle–Contoso post-merger platform, showcasing ingestion, harmonization, analytics, and predictive modeling across Databricks and Fabric.
 
 
 
@@ -256,6 +197,9 @@ Recommendations
 ## Detailed Deliverables
 
 For full details of tasks, acceptance criteria, and technical specifications, see the [Product Backlog](https://github.com/subllings/eurostyle-contonso-ma-unified-data-ai-databricks-fabric/blob/main/statement/2-eurostyle-contonso-ma-project-backlog.md).
+
+Note de référence
+- Le Sprint Planning Matrix, l'Epic‑to‑Sprint and Role Mapping, et le Feature‑to‑Sprint and Role Mapping sont maintenus dans ce document de backlog (voir le lien ci‑dessus).
 
 ---
 
