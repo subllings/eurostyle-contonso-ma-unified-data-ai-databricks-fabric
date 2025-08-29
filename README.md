@@ -1,5 +1,7 @@
 # EuroStyle–Contoso M&A – Unified Data & AI Platform with Databricks & Microsoft Fabric
 
+This case shows how Databricks and Microsoft Fabric can unify two retailers' fragmented systems into a single, governed, and AI-driven platform, giving executives consistent KPIs, real-time dashboards, and predictive insights after a complex M&A.
+
 ## Business Context
 
 In 2025, EuroStyle (Northern Europe) acquired Contoso Retail (Southern Europe).  
@@ -28,7 +30,9 @@ To address this, the CMO and CDAO requested a **prototype platform** combining *
 - **Data Analytics (Fabric/Power BI)**: Deliver comparative dashboards (EuroStyle vs Contoso) and unified post-merger dashboards with RLS.  
 - **Data Science (Databricks MLflow)**: Train churn and Customer Lifetime Value (CLV) models, publish scored datasets into Customer 360°.  
 
+---
 
+![picture 3](images/35d18433840be028b76217bbce653993e80e81add498968cc9f7bf81ecca2b62.png)  
 
 
 ---
@@ -60,11 +64,19 @@ Icon legend: 🟥 Databricks, 🟥→🟩 Databricks & Fabricks integration, �
 
 ---
 
+![picture 5](images/7af569d43b6533c9745fe0f1e39cd23dfe1139d482a5924b550c92d3e489d88b.png)  
+
+
+---
 
 ## References
 
 - [Business Case](https://github.com/subllings/eurostyle-contonso-ma-unified-data-ai-databricks-fabric/blob/main/statement/1-eurostyle-contonso-ma-business-case.md)  
 - [Product Backlog](https://github.com/subllings/eurostyle-contonso-ma-unified-data-ai-databricks-fabric/blob/main/statement/2-eurostyle-contonso-ma-project-backlog.md)  
+
+
+
+
 
 ---
 

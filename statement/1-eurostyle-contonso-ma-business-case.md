@@ -2,7 +2,7 @@
 
 ## Business Case
 
-EuroStyle is a European online fashion retailer operating in the UK, France, Germany, and the Benelux.  
+**EuroStyle** is a European online fashion retailer operating in the UK, France, Germany, and the Benelux.  
 In early 2025, EuroStyle acquired **Contoso Retail**, a Spanish and Italian fashion chain with a strong customer base in Southern Europe.
 
 Together, the two brands now serve **over 350 000 customers** and manage a combined portfolio of more than **80 000 SKUs** across apparel, footwear, and accessories.
