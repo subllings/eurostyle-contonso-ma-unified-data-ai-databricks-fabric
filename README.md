@@ -29,17 +29,7 @@ To address this, the CMO and CDAO requested a **prototype platform** combining *
 - **Data Science (Databricks MLflow)**: Train churn and Customer Lifetime Value (CLV) models, publish scored datasets into Customer 360°.  
 
 
----
 
-## Sprint Structure
-
-| Sprint | Focus | Key Deliverables | Platforms |
-|--------|-------|------------------|-----------|
-| **0** | Setup | Workspace, backlog, KPI catalog | Databricks + Fabric |
-| **1** | Bronze | Ingest EuroStyle + Contoso, Raw KPIs dashboard | Databricks (Bronze), Power BI (DirectQuery) |
-| **2** | Silver | Clean & harmonize schemas, Raw vs Silver dashboard | Databricks (Silver), Power BI |
-| **3** | Gold | Gold marts + executive dashboard | Databricks (Gold), Fabric + Power BI |
-| **4** | ML + Export | Churn & CLV scoring, export Gold to Fabric, Post-Merger Suite | Databricks (MLflow), Fabric Lakehouse, Power BI |
 
 ---
 
@@ -61,11 +51,12 @@ In a production environment, this would be automated and governed using:
 
 | Level | Data Engineer | Data Scientist | Data Analyst | Objective |
 |-------|---------------|----------------|--------------|-----------|
-| Essentials | Bronze ingestion | Churn & CLV hypotheses | Raw KPIs dashboard | First insights |
-| Robustness | Silver harmonization, Gold marts | Feature engineering (RFM, overlap) | Silver dashboards + RLS | Reliable reporting |
-| Advanced | Gold marts enriched with scores | Baseline churn & CLV models | Predictive KPIs dashboards | Predictive insights |
-| Mastery | Reusable pipelines & exports | Finalized models + metrics (Accuracy, AUC, RMSE) | Executive storytelling dashboards | Portfolio-ready prototype |
+| Essentials | 🟥 Bronze ingestion | 🟥 Churn & CLV hypotheses | 🟨 Raw KPIs dashboard | First insights |
+| Robustness | 🟥 Silver harmonization, Gold marts | 🟥 Feature engineering (RFM, overlap) | 🟩 🟨 Silver dashboards + RLS | Reliable reporting |
+| Advanced | 🟥 Gold marts enriched with scores | 🟥 Baseline churn & CLV models | 🟩 🟨 Predictive KPIs dashboards | Predictive insights |
+| Mastery | 🟥→🟩 Reusable pipelines & exports | 🟥 Finalized models + metrics (Accuracy, AUC, RMSE) | 🟩 🟨 Executive storytelling dashboards | Portfolio-ready prototype |
 
+Icon legend: 🟥 Databricks, 🟥→🟩 handoff (Databricks & Fabricks integration), 🟩 Fabric, 🟨 Power BI.
 
 ---
 
