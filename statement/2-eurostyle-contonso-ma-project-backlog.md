@@ -69,7 +69,7 @@ This table lists all epics, distributed by sprint and by profile (DE, DS, DA). I
 | 4 | 🟥→🟩 [Epic 4 – Platform Integration](#epic-4) (Fabric export: Parquet+manifest, pipeline ingest) | 🟥→🟩 [Epic 3 – ML](#epic-3) (Batch scoring, join to Gold, explainability) + [Epic 4](#epic-4) (Export/validation) | 🟩 🟨 [Epic 2 – Analytics](#epic-2) (Segmentation) + [Epic 4](#epic-4) (Power BI Suite, pipeline promotion) |
 | 5 (optional) | 🟥 [Epic 5 – Optional Extensions](#epic-5) (Data Vault light; E2E deployment sim) | 🟥 [Epic 5 – Optional Extensions](#epic-5) (Survival = time‑to‑churn; probabilistic repeat‑purchase model (Beta‑Geometric (BG)/Negative Binomial Distribution (NBD)) to estimate Customer Lifetime Value (CLV); export scores to Fabric and run validation checks (QA)) | 🟩 🟨 [Epic 5 – Optional Extensions](#epic-5) (Dynamic dashboards: what‑if/drill; deployment pipeline) |
 
-Legend: 🟥 Databricks, 🟩 Fabric, 🟨 Power BI, 🟥→🟩 Integration (handoff DBX→Fabric)
+Legend: 🟥 Databricks, 🟩 Fabric, 🟨 Power BI, 🟥→🟩 Integration (handoff Databricks → Fabric)
 
 Notes
 - Optional extensions (Epic 5.x) are scheduled under Sprint 5 (optional) based on team capacity.
@@ -206,21 +206,21 @@ As a Data Engineer, I want to ingest EuroStyle and Contoso CSVs into Bronze so t
  - Azure DevOps DQ tickets opened for any raw→Bronze variance >1% or material DQ issue; links captured in README and referenced by DA in Feature 2.2.
 
 **Tasks**:  
-1) Create raw landing folders in DBFS (`/FileStore/retail/raw/contoso/`, `/FileStore/retail/raw/eurostyle/`) and document paths in the runbook.  
-2) Upload Contoso CSVs to the raw path; note file names, counts, and approximate sizes.  
-3) Ingest Contoso to Delta Bronze with lineage columns (`ingest_ts`, `source_system='CONTOSO'`) as `bronze.sales_contoso`.  
-4) Create a BI‑friendly Contoso view `bronze.v_sales_contoso` with trimmed/typed columns for Power BI DirectQuery.  
-5) Register tables/views in the metastore (Unity Catalog or workspace) and add table comments.  
-6) Validate Contoso types (dates/numerics), address corrupt records if any, and record issues.  
-7) Perform a Power BI DirectQuery smoke test to `bronze.v_sales_contoso`; capture steps/screenshot in the README.  
-8) Upload EuroStyle CSVs to the raw path and capture source metadata (provenance, obtained date).  
-9) Ingest EuroStyle to Delta Bronze with lineage columns (`ingest_ts`, `source_system='EUROSTYLE'`) as `bronze.sales_eurostyle`.  
-10) Create and check in `docs/column_mapping.csv` with `source_name, unified_name, target_type`.  
-11) Apply initial schema alignment across brands using the mapping and naming conventions (snake_case, consistent date/decimal types); update the runbook.  
-12) Reconcile raw→Bronze row counts per brand (±1% tolerance or explained variance) and persist counts to `monitor.dq_bronze_daily`.  
-13) Compute a basic DQ summary: null rates on keys, duplicate rate on `(order_id, sku, customer_id, order_date)`, top countries/currencies; publish a one‑pager.  
-14) Enforce basic Delta constraints where feasible (NOT NULL on business keys, simple CHECKs); record violations.  
-15) Implement an idempotent re‑run strategy (deterministic overwrite by date window via `replaceWhere` or `MERGE` on business keys) and verify repeatability.
+🟥 1) Create raw landing folders in DBFS (`/FileStore/retail/raw/contoso/`, `/FileStore/retail/raw/eurostyle/`) and document paths in the runbook.  
+🟥 2) Upload Contoso CSVs to the raw path; note file names, counts, and approximate sizes.  
+🟥 3) Ingest Contoso to Delta Bronze with lineage columns (`ingest_ts`, `source_system='CONTOSO'`) as `bronze.sales_contoso`.  
+🟥 4) Create a BI‑friendly Contoso view `bronze.v_sales_contoso` with trimmed/typed columns for Power BI DirectQuery.  
+🟥 5) Register tables/views in the metastore (Unity Catalog or workspace) and add table comments.  
+🟥 6) Validate Contoso types (dates/numerics), address corrupt records if any, and record issues.  
+🟨 7) Perform a Power BI DirectQuery smoke test to `bronze.v_sales_contoso`; capture steps/screenshot in the README.  
+🟥 8) Upload EuroStyle CSVs to the raw path and capture source metadata (provenance, obtained date).  
+🟥 9) Ingest EuroStyle to Delta Bronze with lineage columns (`ingest_ts`, `source_system='EUROSTYLE'`) as `bronze.sales_eurostyle`.  
+🟥 10) Create and check in `docs/column_mapping.csv` with `source_name, unified_name, target_type`.  
+🟥 11) Apply initial schema alignment across brands using the mapping and naming conventions (snake_case, consistent date/decimal types); update the runbook.  
+🟥 12) Reconcile raw→Bronze row counts per brand (±1% tolerance or explained variance) and persist counts to `monitor.dq_bronze_daily`.  
+🟥 13) Compute a basic DQ summary: null rates on keys, duplicate rate on `(order_id, sku, customer_id, order_date)`, top countries/currencies; publish a one‑pager.  
+🟥 14) Enforce basic Delta constraints where feasible (NOT NULL on business keys, simple CHECKs); record violations.  
+🟥 15) Implement an idempotent re‑run strategy (deterministic overwrite by date window via `replaceWhere` or `MERGE` on business keys) and verify repeatability.
 
 **User Stories (breakdown)**  
 - As a DA, I can connect to Contoso Bronze via DirectQuery on Day 1 to build the First Look.  
