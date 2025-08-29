@@ -305,21 +305,21 @@ As a Data Engineer, I want Silver tables with clean, harmonized schemas so Analy
  - Azure DevOps DQ tickets opened/updated for any Raw→Silver residual issues discovered (e.g., orphan facts, missing FX rates); links added to README and referenced by DA in Feature 2.2.
 
 **Tasks (15 tasks, prioritized)**:  
-1) Confirm target Silver table names and create empty schemas (or temp views) with expected columns and types for `sales_clean` and any dims (document in schema contract draft).  
-2) Define and document business keys for deduplication (e.g., `order_id + sku + customer_id + order_date`); capture edge cases (null/invalid keys).  
-3) Profile duplicate rates per brand; implement windowed dedup keeping latest by `ingest_ts`; persist intermediate results for audit.  
-4) Normalize critical types across brands (dates to DATE, money to DECIMAL(18,2)); trim/uppercase IDs; standardize country/currency codes.  
-5) Build and persist `silver.fx_rates_eur` snapshot with valuation date and source metadata (ECB suggested); validate coverage for encountered currencies.  
-6) Convert all monetary amounts to EUR by joining FX "as‑of" valuation date; implement rounding policy (HALF_UP) and document precision.  
-7) Create product and customer crosswalk CSVs in `docs/` and register Delta mapping tables; specify collision handling rules.  
-8) Normalize customer IDs across EuroStyle & Contoso using the crosswalk; resolve duplicates/collisions and record decisions.  
-9) Align product hierarchy (category/brand) via mapping; backfill missing categories where possible; flag unresolved.  
-10) Enforce referential checks (orphans) using anti‑joins; fix or quarantine with reason codes and counts.  
-11) Implement idempotent write strategy: `MERGE` on BKs or deterministic `replaceWhere` by date window; prove re‑run yields same end state.  
-12) Add Delta constraints where feasible (NOT NULL on BKs, simple CHECK constraints); evaluate impact and violations.  
-13) Partitioning/optimization: choose partition columns (e.g., `order_date`); consider OPTIMIZE/Z‑ORDER for common predicates; document choices.  
-14) Publish the Silver schema contract (names, types, nullability) and mapping rules; include FX rounding/fallback policies.  
-15) Produce a DQ report (pre/post metrics: duplicate reduction %, nulls reduced %, FX conversion coverage, orphan counts); attach queries.  
+🟥 1) Confirm target Silver table names and create empty schemas (or temp views) with expected columns and types for `sales_clean` and any dims (document in schema contract draft).  
+🟥 2) Define and document business keys for deduplication (e.g., `order_id + sku + customer_id + order_date`); capture edge cases (null/invalid keys).  
+🟥 3) Profile duplicate rates per brand; implement windowed dedup keeping latest by `ingest_ts`; persist intermediate results for audit.  
+🟥 4) Normalize critical types across brands (dates to DATE, money to DECIMAL(18,2)); trim/uppercase IDs; standardize country/currency codes.  
+🟥 5) Build and persist `silver.fx_rates_eur` snapshot with valuation date and source metadata (ECB suggested); validate coverage for encountered currencies.  
+🟥 6) Convert all monetary amounts to EUR by joining FX "as‑of" valuation date; implement rounding policy (HALF_UP) and document precision.  
+🟥 7) Create product and customer crosswalk CSVs in `docs/` and register Delta mapping tables; specify collision handling rules.  
+🟥 8) Normalize customer IDs across EuroStyle & Contoso using the crosswalk; resolve duplicates/collisions and record decisions.  
+🟥 9) Align product hierarchy (category/brand) via mapping; backfill missing categories where possible; flag unresolved.  
+🟥 10) Enforce referential checks (orphans) using anti‑joins; fix or quarantine with reason codes and counts.  
+🟥 11) Implement idempotent write strategy: `MERGE` on BKs or deterministic `replaceWhere` by date window; prove re‑run yields same end state.  
+🟥 12) Add Delta constraints where feasible (NOT NULL on BKs, simple CHECK constraints); evaluate impact and violations.  
+🟥 13) Partitioning/optimization: choose partition columns (e.g., `order_date`); consider OPTIMIZE/Z‑ORDER for common predicates; document choices.  
+🟥 14) Publish the Silver schema contract (names, types, nullability) and mapping rules; include FX rounding/fallback policies.  
+🟥 15) Produce a DQ report (pre/post metrics: duplicate reduction %, nulls reduced %, FX conversion coverage, orphan counts); attach queries.  
 
 **User Stories (breakdown)**  
 - As a DE, I deliver Silver sales with duplicates removed and currencies normalized to EUR.  
@@ -474,21 +474,21 @@ FROM silver.sales_clean;
 ```
 
 **Tasks (15 tasks, numbered)**:  
-1) Define star schema contracts: fact grains, conformed dims, keys (surrogate vs natural), naming and formats (snake_case, DECIMAL scales).  
-2) Create `gold.date_dim` and populate from Silver order_date window; add `date_key` (yyyymmdd), year/month/day.  
-3) Create `gold.product_dim` with surrogate key (IDENTITY or hashed BK); populate attributes (product_code, category, brand).  
-4) Create `gold.customer_dim` with surrogate key and unified customer identifier; include `source_system` where relevant.  
-5) Specify the `gold.sales_daily` schema (keys/measures) and write the first load query (GMV, Orders, Units, Estimated Margin proxy).  
-6) Implement `gold.sales_daily` load handling returns (negative qty → returns) and label margin as proxy when COGS absent.  
-7) Add Delta constraints/checks to `gold.sales_daily` (NOT NULL on keys, non‑negative checks on units/revenue).  
-8) Define and build `gold.category_perf` (aggregations by product/category/brand/date; include GMV, Units, Orders).  
-9) Define `gold.customer_360` base schema (one row per customer) and populate core aggregates (orders, units, GMV).  
-10) Compute and attach RFM metrics to `gold.customer_360` (Recency, Frequency, Monetary) and optional RFM segment/bucket; carry `source_system`.  
-11) Make loads idempotent: choose MERGE or deterministic INSERT OVERWRITE by date/snapshot for each mart; validate repeatability.  
-12) Partitioning/optimization: choose partitioning (e.g., by date), coalesce/compact files, and note file size targets.  
-13) Validate vs Silver: reconcile counts/KPIs, run orphan/RI checks, and execute smoke queries with DA/DS; capture results.  
-14) Document schemas and assumptions: contracts for all marts, margin proxy method, and any caveats; update README.  
-15) Register helper views (e.g., top‑level selects), set table comments/permissions, and finalize hand‑off notes.  
+🟥 1) Define star schema contracts: fact grains, conformed dims, keys (surrogate vs natural), naming and formats (snake_case, DECIMAL scales).  
+🟥 2) Create `gold.date_dim` and populate from Silver order_date window; add `date_key` (yyyymmdd), year/month/day.  
+🟥 3) Create `gold.product_dim` with surrogate key (IDENTITY or hashed BK); populate attributes (product_code, category, brand).  
+🟥 4) Create `gold.customer_dim` with surrogate key and unified customer identifier; include `source_system` where relevant.  
+🟥 5) Specify the `gold.sales_daily` schema (keys/measures) and write the first load query (GMV, Orders, Units, Estimated Margin proxy).  
+🟥 6) Implement `gold.sales_daily` load handling returns (negative qty → returns) and label margin as proxy when COGS absent.  
+🟥 7) Add Delta constraints/checks to `gold.sales_daily` (NOT NULL on keys, non‑negative checks on units/revenue).  
+🟥 8) Define and build `gold.category_perf` (aggregations by product/category/brand/date; include GMV, Units, Orders).  
+🟥 9) Define `gold.customer_360` base schema (one row per customer) and populate core aggregates (orders, units, GMV).  
+🟥 10) Compute and attach RFM metrics to `gold.customer_360` (Recency, Frequency, Monetary) and optional RFM segment/bucket; carry `source_system`.  
+🟥 11) Make loads idempotent: choose MERGE or deterministic INSERT OVERWRITE by date/snapshot for each mart; validate repeatability.  
+🟥 12) Partitioning/optimization: choose partitioning (e.g., by date), coalesce/compact files, and note file size targets.  
+🟥 13) Validate vs Silver: reconcile counts/KPIs, run orphan/RI checks, and execute smoke queries with DA/DS; capture results.  
+🟥 14) Document schemas and assumptions: contracts for all marts, margin proxy method, and any caveats; update README.  
+🟥 15) Register helper views (e.g., top‑level selects), set table comments/permissions, and finalize hand‑off notes.  
 
 **User Stories (breakdown)**  
 - As a DE, I deliver `sales_daily` with GMV/AOV/margin (proxy if needed).  
@@ -653,14 +653,14 @@ Deliverables
  - Mini data dictionary for exposed fields added to the repo.
 
 **Tasks**:  
-- Compute **GMV (Gross Merchandise Value)**.  
-- Compute **AOV (Average Order Value)**.  
-- Build dashboard with Raw/Bronze metrics.  
- - Model work: define relationships (star-like), hide technical columns, set sort-by columns, configure formats and display folders.  
- - Create named measures (GMV, AOV, Orders) and a landing page wireframe with 2–3 visuals.  
- - Run Performance Analyzer; document and apply quick improvements (e.g., reduce visuals on a page, limit bidirectional filters).  
- - Draft KPI Catalog and a lightweight data dictionary (fields, definitions, units).  
- - Prepare a draft RLS matrix (who sees what) for future sprints; no enforcement yet.
+🟨 Compute **GMV (Gross Merchandise Value)**.  
+🟨 Compute **AOV (Average Order Value)**.  
+🟨 Build dashboard with Raw/Bronze metrics.  
+🟨 Model work: define relationships (star-like), hide technical columns, set sort-by columns, configure formats and display folders.  
+🟨 Create named measures (GMV, AOV, Orders) and a landing page wireframe with 2–3 visuals.  
+🟨 Run Performance Analyzer; document and apply quick improvements (e.g., reduce visuals on a page, limit bidirectional filters).  
+🟨 Draft KPI Catalog and a lightweight data dictionary (fields, definitions, units).  
+🟨 Prepare a draft RLS matrix (who sees what) for future sprints; no enforcement yet.
 
  - **Provide insights: Storytelling one‑liners (Feature 2.1)**  
     - GMV changed by X% vs last week; orders moved by Y% and AOV by Z%.  
@@ -748,25 +748,25 @@ As a Data Analyst, I want to compare KPIs Raw vs Silver to highlight data cleani
 
 **Tasks (grouped & numbered by type)**:  
 - Measures & Modeling (MM)
-   - MM1) Build DAX measures for Raw vs Silver comparisons and deltas; ensure consistent formatting and tooltips.  
-   - MM2) Implement return‑rate measures with consistent handling (negative quantities/credit notes).  
-   - MM3) Pair measures as `*_raw`, `*_silver`, `*_delta`; add optional last‑week comparators for context/tooltips.  
+   - 🟨 MM1) Build DAX measures for Raw vs Silver comparisons and deltas; ensure consistent formatting and tooltips.  
+   - 🟨 MM2) Implement return‑rate measures with consistent handling (negative quantities/credit notes).  
+   - 🟨 MM3) Pair measures as `*_raw`, `*_silver`, `*_delta`; add optional last‑week comparators for context/tooltips.  
 - Dashboard & UX (UX)
-   - UX1) Create dashboard pages with GMV, AOV, return rates (before/after cleaning).  
-   - UX2) Implement bookmarks/toggles for Raw vs Silver views; annotate differences.  
-   - UX3) Sync slicers across pages; align layouts and tooltips for comparability.  
+   - 🟨 UX1) Create dashboard pages with GMV, AOV, return rates (before/after cleaning).  
+   - 🟨 UX2) Implement bookmarks/toggles for Raw vs Silver views; annotate differences.  
+   - 🟨 UX3) Sync slicers across pages; align layouts and tooltips for comparability.  
 - Data Quality Analysis (DQ)
-   - DQ1) Quantify impacts (duplicates removed, FX normalization effects, schema harmonization effects).  
-   - DQ2) Document and present differences; summarize findings in README.  
-   - DQ3) Capture confidence note (margin proxy coverage and decision tolerance).  
+   - 🟨 DQ1) Quantify impacts (duplicates removed, FX normalization effects, schema harmonization effects).  
+   - 🟨 DQ2) Document and present differences; summarize findings in README.  
+   - 🟨 DQ3) Capture confidence note (margin proxy coverage and decision tolerance).  
 - Governance & Security (RLS)
-   - RLS1) Configure and test RLS roles on Silver (brand managers vs executives).  
+   - 🟩 RLS1) Configure and test RLS roles on Silver (brand managers vs executives).  
 - DevOps & Hygiene (OPS)
-   - OPS1) Log Azure DevOps items for identified data‑quality issues and link them from the report/README.  
+   - 🟨 OPS1) Log Azure DevOps items for identified data‑quality issues and link them from the report/README.  
 - Insights & Storytelling (INS)
-   - INS1) Draft one‑liners: GMV differs by X%; duplicates dropped by Y%; FX normalization changed totals by Z%.  
-   - INS2) AOV moved from X to Y; explain the driver (e.g., fewer inflated orders, corrected prices); note return‑rate changes and Contoso limitations.  
-   - INS3) Highlight biggest deltas (brand/region/category) and drivers (dup removal, FX to EUR, SKU mapping); add "today normal?" note and margin proxy confidence.  
+   - 🟨 INS1) Draft one‑liners: GMV differs by X%; duplicates dropped by Y%; FX normalization changed totals by Z%.  
+   - 🟨 INS2) AOV moved from X to Y; explain the driver (e.g., fewer inflated orders, corrected prices); note return‑rate changes and Contoso limitations.  
+   - 🟨 INS3) Highlight biggest deltas (brand/region/category) and drivers (dup removal, FX to EUR, SKU mapping); add "today normal?" note and margin proxy confidence.  
 
 **User Stories (breakdown)**  
 - As a DA, I compare Raw vs Silver KPIs with clear delta measures and toggles.  
@@ -863,9 +863,9 @@ As an Executive, I want consolidated GMV, AOV, and margin so I can track EuroSty
  - RLS validated in Power BI Service (View as role) and sharing permissions verified.  
 
 **Tasks**:  
-- Add brand comparison (EuroStyle vs Contoso).  
-- Add regional splits (North vs South Europe).  
-- Apply **RLS (Row-Level Security)** for managers vs executives.  
+🟨 Add brand comparison (EuroStyle vs Contoso).  
+🟨 Add regional splits (North vs South Europe).  
+🟩 Apply **RLS (Row-Level Security)** for managers vs executives.  
 
  - **Provide insights: Storytelling one‑liners (Feature 2.3)**  
     - Board view: GMV X, AOV Y, margin Z; EuroStyle vs Contoso: X% gap.  
@@ -981,21 +981,21 @@ As a Marketing Manager, I want to see customer segments & churn risk so I can de
 - Accessibility: color contrast ≥ 4.5:1, keyboard focus order set, alt text on key visuals, consistent currency/percent formats.  
 
 **Tasks**:  
-1. Map inputs and integrate DS outputs: connect to `customer_360_gold` and `customer_scores_gold`; validate relationships and row counts.  
-2. Define segmentation rules (RFM buckets, churn risk bands, CLV tiers) with defaults; align with DS.  
-3. Implement What‑if parameters (recency window, churn cutoff, CLV tier split points) and bind to measures.  
-4. Build parameter/measure tables; create field parameters for dimension and measure switching.  
-5. Design the landing page: navigation tiles, KPIs (segment counts, GMV, margin), and a methods banner.  
-6. Build segment visuals (treemaps/tables) and summary cards; ensure consistent legends and formats.  
-7. Create drill‑through pages (Segment detail, Customer detail) with Back buttons; maintain filter context.  
-8. Add tooltip pages (mini customer profile: last purchase, risk band, CLV tier).  
-9. Implement RLS roles (BrandManager, Executive) and validate with "View as" in Desktop and Service.  
-10. Optimize performance: limit visuals per page, avoid high‑cardinality slicers, consider aggregated tables if needed.  
-11. Configure bookmarks and sync slicers; verify cross‑highlighting/interactions behave as intended.  
-12. Accessibility pass: contrast, focus order, alt text, titles/tooltips, number formats.  
-13. Validation: totals vs slicers, empty/ALL segment states, mobile layout sanity.  
-14. Documentation: README with segmentation rules, thresholds, screenshots, navigation map, and RLS notes.  
-15. (Optional) Add a "Focus list" page for top‑risk/low‑CLV segments with exportable table.  
+🟨 1. Map inputs and integrate DS outputs: connect to `customer_360_gold` and `customer_scores_gold`; validate relationships and row counts.  
+🟨 2. Define segmentation rules (RFM buckets, churn risk bands, CLV tiers) with defaults; align with DS.  
+🟨 3. Implement What–if parameters (recency window, churn cutoff, CLV tier split points) and bind to measures.  
+🟨 4. Build parameter/measure tables; create field parameters for dimension and measure switching.  
+🟨 5. Design the landing page: navigation tiles, KPIs (segment counts, GMV, margin), and a methods banner.  
+🟨 6. Build segment visuals (treemaps/tables) and summary cards; ensure consistent legends and formats.  
+🟨 7. Create drill–through pages (Segment detail, Customer detail) with Back buttons; maintain filter context.  
+🟨 8. Add tooltip pages (mini customer profile: last purchase, risk band, CLV tier).  
+🟩 9. Implement RLS roles (BrandManager, Executive) and validate with "View as" in Desktop and Service.  
+🟨 10. Optimize performance: limit visuals per page, avoid high–cardinality slicers, consider aggregated tables if needed.  
+🟨 11. Configure bookmarks and sync slicers; verify cross–highlighting/interactions behave as intended.  
+🟨 12. Accessibility pass: contrast, focus order, alt text, titles/tooltips, number formats.  
+🟨 13. Validation: totals vs slicers, empty/ALL segment states, mobile layout sanity.  
+🟨 14. Documentation: README with segmentation rules, thresholds, screenshots, navigation map, and RLS notes.  
+🟨 15. (Optional) Add a "Focus list" page for top–risk/low–CLV segments with exportable table.  
 
 **User Stories (breakdown)**  
 - As a Marketing Manager, I explore segments (RFM, churn risk, CLV tiers) and drill‑through to details.  
@@ -1133,21 +1133,21 @@ As a Data Scientist, I want to perform **Exploratory Data Analysis (EDA)** to un
  - Data dictionary updated or created for key fields used in labels/features (e.g., last_activity_date, net_margin).  
 
 **Tasks**:  
-1) Load Bronze tables and sample safely for iteration (record table names, counts, and sample logic).  
-2) Generate quick profiles (distributions, missingness, outliers) and capture shapes/head/tail for reproducibility.  
-3) Map entities/joins needed for churn and CLV (customers, transactions, products, brand dimension).  
-4) Define churn = inactivity > 90 days; compute last_activity_date per customer and create label churn_90d.  
-5) Draft CLV definition (12-month net margin) and required inputs (gross revenue, returns, costs).  
-6) Create leakage checklist; flag/remove fields with future info (e.g., cancellation_date after cutoff).  
-7) Decide split protocol: time-based cutoff and/or GroupKFold by customer; freeze seed; persist split artifacts.  
-8) Implement rule-based churn baseline (e.g., inactive > X days) and compute AUC/PR‑AUC on validation.  
-9) Compute RFM features and segment customers; record segment distributions.  
-10) Compare EuroStyle vs Contoso distributions; quantify overlaps; run drift checks (e.g., PSI/KS on top features).  
-11) Initialize MLflow experiment; log baseline runs, parameters (churn_horizon, cutoff_date), and artifacts (plots/tables).  
-12) Compile prioritized data-quality issue list with owners/severity and proposed fixes (feeds Feature 3.2 and DE backlog).  
-13) Create data risk log (PII handling, leakage risks, gaps) and share in team space.  
-14) Produce and commit an EDA notebook and a 1–2 page readout; link them in this backlog.  
-15) Update data dictionary for key fields; note any ambiguous semantics to resolve with DA/DE.  
+🟥 1) Load Bronze tables and sample safely for iteration (record table names, counts, and sample logic).  
+🟥 2) Generate quick profiles (distributions, missingness, outliers) and capture shapes/head/tail for reproducibility.  
+🟥 3) Map entities/joins needed for churn and CLV (customers, transactions, products, brand dimension).  
+🟥 4) Define churn = inactivity > 90 days; compute last_activity_date per customer and create label churn_90d.  
+🟥 5) Draft CLV definition (12-month net margin) and required inputs (gross revenue, returns, costs).  
+🟥 6) Create leakage checklist; flag/remove fields with future info (e.g., cancellation_date after cutoff).  
+🟥 7) Decide split protocol: time-based cutoff and/or GroupKFold by customer; freeze seed; persist split artifacts.  
+🟥 8) Implement rule-based churn baseline (e.g., inactive > X days) and compute AUC/PR‑AUC on validation.  
+🟥 9) Compute RFM features and segment customers; record segment distributions.  
+🟥 10) Compare EuroStyle vs Contoso distributions; quantify overlaps; run drift checks (e.g., PSI/KS on top features).  
+🟥 11) Initialize MLflow experiment; log baseline runs, parameters (churn_horizon, cutoff_date), and artifacts (plots/tables).  
+🟥 12) Compile prioritized data-quality issue list with owners/severity and proposed fixes (feeds Feature 3.2 and DE backlog).  
+🟥 13) Create data risk log (PII handling, leakage risks, gaps) and share in team space.  
+🟥 14) Produce and commit an EDA notebook and a 1–2 page readout; link them in this backlog.  
+🟥 15) Update data dictionary for key fields; note any ambiguous semantics to resolve with DA/DE.  
 
 **User Stories (breakdown)**  
 - As a DS, I document churn prevalence and select a non‑leaky split protocol.  
@@ -1237,20 +1237,20 @@ As a Data Scientist, I want RFM and behavioral features to build churn & CLV mod
  - Join keys verified against Gold (`customer_360_gold`) with row counts and uniqueness checks.  
 
 **Tasks**:  
-1) Fix an as‑of date (T) and feature windows; record source snapshot/Delta versions.  
-2) Compute RFM anchored at T (Recency days since last tx ≤ T; Frequency count in last 365d; Monetary sum/avg).  
-3) Add basket diversity (distinct categories in last 12m) and intensity ratios (category share).  
-4) Add cross‑brand features (has_both_brands, brand_count, brand_switches).  
-5) Run a leakage checklist for all engineered features; ensure they use only pre‑T information.  
-6) Correlation and mutual‑information screening; deduplicate highly similar features; log decisions.  
-7) Cardinality and constant checks; drop extreme high‑card/constant fields; set thresholds and document.  
-8) Define imputation/log transforms; fit on TRAIN only; persist transform params (e.g., means/medians) as artifacts.  
-9) Persist features to Delta as versioned tables (e.g., `silver.features_rfm_v1`, `silver.customer_features_v1`) with metadata columns (version, created_ts, source_snapshot, as_of_date).  
-10) Track feature set metadata in MLflow (params: version, feature_count; artifacts: schema JSON, data dictionary).  
-11) Define consumption contract with DE/DA (schema, business keys, refresh cadence) for integration into `customer_360_gold`; validate joinability and counts.  
-12) Train quick baselines on sample data using the features; log metrics to MLflow; compare to rule/RFM yardsticks.  
-13) Run data quality checks (Great Expectations/Evidently) on feature tables (nulls, ranges, freshness); save reports.  
-14) Register access and documentation for the feature tables (owners, permissions, table comments).  
+🟥 1) Fix an as‑of date (T) and feature windows; record source snapshot/Delta versions.  
+🟥 2) Compute RFM anchored at T (Recency days since last tx ≤ T; Frequency count in last 365d; Monetary sum/avg).  
+🟥 3) Add basket diversity (distinct categories in last 12m) and intensity ratios (category share).  
+🟥 4) Add cross‑brand features (has_both_brands, brand_count, brand_switches).  
+🟥 5) Run a leakage checklist for all engineered features; ensure they use only pre‑T information.  
+🟥 6) Correlation and mutual‑information screening; deduplicate highly similar features; log decisions.  
+🟥 7) Cardinality and constant checks; drop extreme high‑card/constant fields; set thresholds and document.  
+🟥 8) Define imputation/log transforms; fit on TRAIN only; persist transform params (e.g., means/medians) as artifacts.  
+🟥 9) Persist features to Delta as versioned tables (e.g., `silver.features_rfm_v1`, `silver.customer_features_v1`) with metadata columns (version, created_ts, source_snapshot, as_of_date).  
+🟥 10) Track feature set metadata in MLflow (params: version, feature_count; artifacts: schema JSON, data dictionary).  
+🟥 11) Define consumption contract with DE/DA (schema, business keys, refresh cadence) for integration into `customer_360_gold`; validate joinability and counts.  
+🟥 12) Train quick baselines on sample data using the features; log metrics to MLflow; compare to rule/RFM yardsticks.  
+🟥 13) Run data quality checks (Great Expectations/Evidently) on feature tables (nulls, ranges, freshness); save reports.  
+🟥 14) Register access and documentation for the feature tables (owners, permissions, table comments).  
 
 **User Stories (breakdown)**  
 - As a DS, I compute and persist RFM and behavior features with versioning.  
@@ -1325,21 +1325,21 @@ As a Data Scientist, I want baseline models for churn and CLV so I can evaluate 
 - Seeds fixed; code and data versions captured; no leakage (train-only fit for imputers/scalers, as-of filtering).  
 
 **Tasks (numbered)**:  
-1) Load Feature 3.2 dataset(s) and 3.1 split artifacts; verify shapes and label presence; check class balance.  
-2) Establish baselines: churn majority-class and CLV mean predictor; compute baseline metrics.  
-3) Build churn pipeline: train-only imputers/scalers + Logistic Regression (class_weight as needed); train on TRAIN.  
-4) Evaluate churn on VALID/TEST: AUC, AUCPR, accuracy; plot ROC/PR; compute thresholds @K (e.g., top 10%).  
-5) Calibrate churn probabilities (Platt or Isotonic) on VALID; report Brier score and reliability curve; re-evaluate on TEST.  
-6) Bootstrap CIs for churn metrics (e.g., AUC, AUCPR) with 500 resamples; log CIs.  
-7) Build CLV model: Random Forest Regressor (or Gradient Boosting if RF unavailable); train on TRAIN.  
-8) Evaluate CLV on VALID/TEST: RMSE, MAE, R<sup>2</sup> (and MAPE if nonzero targets); bootstrap 95% CIs.  
-9) Light tuning (1–2 hyperparams each) using VALID; document chosen params; avoid overfitting.  
-10) Segment-wise metrics: brand/region deciles for churn; error by segment for CLV; summarize deltas vs global.  
-11) Feature importance: permutation importances (or SHAP if available) for both models; log plots.  
-12) Persist artifacts: metrics CSV, ROC/PR images, calibration plot, importances; serialize pipelines; log to MLflow; record run IDs.  
-13) Reproducibility check: re-run on fixed seed; metrics within tolerance; note environment versions.  
-14) Draft scoring contract preview (inputs/outputs) for Feature 3.4; align column names and dtypes.  
-15) Handoff summary: write a short model card (purpose, data, metrics, risks, thresholds).  
+🟥 1) Load Feature 3.2 dataset(s) and 3.1 split artifacts; verify shapes and label presence; check class balance.  
+🟥 2) Establish baselines: churn majority-class and CLV mean predictor; compute baseline metrics.  
+🟥 3) Build churn pipeline: train-only imputers/scalers + Logistic Regression (class_weight as needed); train on TRAIN.  
+🟥 4) Evaluate churn on VALID/TEST: AUC, AUCPR, accuracy; plot ROC/PR; compute thresholds @K (e.g., top 10%).  
+🟥 5) Calibrate churn probabilities (Platt or Isotonic) on VALID; report Brier score and reliability curve; re-evaluate on TEST.  
+🟥 6) Bootstrap CIs for churn metrics (e.g., AUC, AUCPR) with 500 resamples; log CIs.  
+🟥 7) Build CLV model: Random Forest Regressor (or Gradient Boosting if RF unavailable); train on TRAIN.  
+🟥 8) Evaluate CLV on VALID/TEST: RMSE, MAE, R<sup>2</sup> (and MAPE if nonzero targets); bootstrap 95% CIs.  
+🟥 9) Light tuning (1–2 hyperparams each) using VALID; document chosen params; avoid overfitting.  
+🟥 10) Segment-wise metrics: brand/region deciles for churn; error by segment for CLV; summarize deltas vs global.  
+🟥 11) Feature importance: permutation importances (or SHAP if available) for both models; log plots.  
+🟥 12) Persist artifacts: metrics CSV, ROC/PR images, calibration plot, importances; serialize pipelines; log to MLflow; record run IDs.  
+🟥 13) Reproducibility check: re-run on fixed seed; metrics within tolerance; note environment versions.  
+🟥 14) Draft scoring contract preview (inputs/outputs) for Feature 3.4; align column names and dtypes.  
+🟥 15) Handoff summary: write a short model card (purpose, data, metrics, risks, thresholds).  
 
 **Deliverables**  
 - Notebook: `notebooks/feature_3_3_model_training.ipynb` (synthetic fallback supported).  
@@ -1391,20 +1391,20 @@ As a Data Scientist, I want to score churn/CLV and join them into Customer 360 s
 - Model and feature versions, plus MLflow run IDs, recorded in readme.  
 
 **Tasks (numbered)**:  
-1) Freeze model artifacts/versions and feature set version; record MLflow run IDs and URIs.  
-2) Load Feature 3.2 table(s) at target `as_of_date`; validate schema matches scoring contract.  
-3) Build loaders: MLflow pyfunc or direct deserialization for churn and CLV models; set seeds for determinism.  
-4) Score churn probabilities and CLV values in batches/partitions; handle memory with repartition/coalesce.  
-5) Derive `churn_bucket` (e.g., deciles or business thresholds) and any auxiliary flags needed by DA.  
-6) Train/serve skew: compare key features to training distributions (PSI or quantile deltas); log artifacts.  
-7) Assemble output DataFrame with required columns and metadata (`as_of_date`, timestamps, versions).  
-8) Write `customer_scores_gold` idempotently (overwrite partition or MERGE on `customer_id` + `as_of_date`); validate uniqueness.  
-9) Join into `customer_360_gold` or create a view for DA; verify row counts and key coverage.  
-10) Explainability: compute and log global importances; include a small per-row example if feasible.  
-11) Quality checks: null rates ≤ thresholds; bounds (0–1 churn, ≥0 CLV); dtypes match contract; save a QA report.  
-12) Register table/view, set permissions, and document location; add a consumption snippet for DA/BI.  
-13) Write a short operational runbook: inputs, outputs, schedule, idempotency strategy, and recovery steps.  
-14) Optional export manifest for Fabric ingestion (paths, schema, `_SUCCESS`).  
+🟥 1) Freeze model artifacts/versions and feature set version; record MLflow run IDs and URIs.  
+🟥 2) Load Feature 3.2 table(s) at target `as_of_date`; validate schema matches scoring contract.  
+🟥 3) Build loaders: MLflow pyfunc or direct deserialization for churn and CLV models; set seeds for determinism.  
+🟥 4) Score churn probabilities and CLV values in batches/partitions; handle memory with repartition/coalesce.  
+🟥 5) Derive `churn_bucket` (e.g., deciles or business thresholds) and any auxiliary flags needed by DA.  
+🟥 6) Train/serve skew: compare key features to training distributions (PSI or quantile deltas); log artifacts.  
+🟥 7) Assemble output DataFrame with required columns and metadata (`as_of_date`, timestamps, versions).  
+🟥 8) Write `customer_scores_gold` idempotently (overwrite partition or MERGE on `customer_id` + `as_of_date`); validate uniqueness.  
+🟥 9) Join into `customer_360_gold` or create a view for DA; verify row counts and key coverage.  
+🟥 10) Explainability: compute and log global importances; include a small per-row example if feasible.  
+🟥 11) Quality checks: null rates ≤ thresholds; bounds (0–1 churn, ≥0 CLV); dtypes match contract; save a QA report.  
+🟥 12) Register table/view, set permissions, and document location; add a consumption snippet for DA/BI.  
+🟥→🟩 13) Write a short operational runbook: inputs, outputs, schedule, idempotency strategy, and recovery steps.  
+🟥→🟩 14) Optional export manifest for Fabric ingestion (paths, schema, `_SUCCESS`).  
 
 **Deliverables**  
 - Notebook: `notebooks/feature_3_4_batch_scoring.ipynb` (synthetic fallback supported).  
@@ -1468,21 +1468,21 @@ For your information
  - Datasets are queryable from Power BI (Direct Lake) and a tiny visual loads without refresh errors. Follow Ops runbook (Appendix B) for validation checklist.  
 
 **Tasks (numbered)**  
-1) List Gold tables to export (e.g., `sales_daily_gold`, `customer_360_gold`, `customer_scores_gold`) and confirm owners.  
-2) Define export layout: base path per table, partitioning (if any), file size targets, and naming (snake_case, datestamps).  
-3) Generate Parquet files; coalesce to 128–512MB per file; write `_SUCCESS`.  
-4) Compute row counts per table/partition; optionally compute file-level checksums (md5) and store alongside.  
-5) Create `release_manifest.json` capturing dataset name, version, tables, schema (name, dtype, nullability), partitions, file lists, counts, checksums, created_ts, and source snapshot (Delta version or commit).  
-6) Dry-run export on one small table; locally verify Parquet opens and schema matches expectations.  
-7) Download artifacts from Databricks Free Edition and manually upload to Fabric Lakehouse `/Files/dropzone/<release>/...`.  
-8) In Fabric Data Pipelines: configure file source → Lakehouse table mappings; set column types; create Delta tables.  
-9) Validate ingestion: compare counts vs manifest; check nullability/dtypes; ensure partition columns are correct.  
-10) Create/verify shortcuts or views if needed for Power BI; test Direct Lake connectivity with a basic visual.  
-11) Capture evidence (screenshots/links), store manifest and a README with steps, and note any edge cases.  
-12) Document re-run/idempotency guidance and ownership (who exports, who ingests, cadence).  
-13) Apply sensitivity labels and ownership metadata; add table comments/Descriptions in the Lakehouse.  
-14) Build a tiny Direct Lake smoke report (1–2 visuals) and capture Performance Analyzer notes/screenshots.  
-15) Establish versioned releases and a `current` pointer/view; document rollback steps and tolerance thresholds.  
+🟥 1) List Gold tables to export (e.g., `sales_daily_gold`, `customer_360_gold`, `customer_scores_gold`) and confirm owners.  
+🟥 2) Define export layout: base path per table, partitioning (if any), file size targets, and naming (snake_case, datestamps).  
+🟥 3) Generate Parquet files; coalesce to 128–512MB per file; write `_SUCCESS`.  
+🟥 4) Compute row counts per table/partition; optionally compute file-level checksums (md5) and store alongside.  
+🟥 5) Create `release_manifest.json` capturing dataset name, version, tables, schema (name, dtype, nullability), partitions, file lists, counts, checksums, created_ts, and source snapshot (Delta version or commit).  
+🟥 6) Dry-run export on one small table; locally verify Parquet opens and schema matches expectations.  
+🟥→🟩 7) Download artifacts from Databricks Free Edition and manually upload to Fabric Lakehouse `/Files/dropzone/<release>/...`.  
+🟩 8) In Fabric Data Pipelines: configure file source → Lakehouse table mappings; set column types; create Delta tables.  
+🟩 9) Validate ingestion: compare counts vs manifest; check nullability/dtypes; ensure partition columns are correct.  
+🟩 10) Create/verify shortcuts or views if needed for Power BI; test Direct Lake connectivity with a basic visual.  
+🟥→🟩 11) Capture evidence (screenshots/links), store manifest and a README with steps, and note any edge cases.  
+🟥→🟩 12) Document re-run/idempotency guidance and ownership (who exports, who ingests, cadence).  
+🟩 13) Apply sensitivity labels and ownership metadata; add table comments/Descriptions in the Lakehouse.  
+🟨 14) Build a tiny Direct Lake smoke report (1–2 visuals) and capture Performance Analyzer notes/screenshots.  
+🟥→🟩 15) Establish versioned releases and a `current` pointer/view; document rollback steps and tolerance thresholds.  
 
 **Deliverables**  
 - Export folder structure per table with Parquet files, `_SUCCESS`, and `release_manifest.json`.  
@@ -1621,21 +1621,21 @@ As a Data Scientist, I want churn and CLV scores exported from Databricks into F
 - Power BI dashboards (Feature 4.2) consume these tables for segmentation and risk views.  
 
 **Tasks (15 tasks, numbered)**:  
-1) Confirm scored output schemas and partitions; align with DA on fields/buckets needed in dashboards.  
-2) Fix model/feature versions; record MLflow run IDs and registry versions for traceability.  
-3) Run batch scoring in Databricks Free Edition; write outputs to Gold `customer_scores_gold` with version columns.  
-4) Validate the Gold write in Databricks (row counts, nullability); snapshot a small sample for later alignment.  
-5) Export scored tables to Parquet and write `_SUCCESS` in the release folder.  
-6) Generate `scores_manifest.json` (schema, files, counts, checksums optional, versions, run_ids, created_ts, as_of_date).  
-7) Package a versioned release structure under `/Files/<release>/scores/...` and document folder conventions.  
-8) Manually transfer Parquet + manifest from Databricks Free to Fabric Lakehouse `/Files/<release>/scores/...`.  
-9) Configure Fabric Data Pipeline mappings to create/overwrite Delta tables for scores; set dtypes and keys.  
-10) Run the pipeline; validate counts and basic bounds in the Lakehouse; fix dtype/precision mismatches.  
-11) Bind dashboards to ingested tables; refresh visuals; confirm segments/KPIs align (formatting/time zones consistent).  
-12) Run spot checks (e.g., 100 rows) between Databricks and Fabric with tolerance (e.g., 1e-6 for floats); record a QA report.  
-13) Document validations, limitations, and caveats (types/time zones/rounding); capture before/after screenshots.  
-14) Finalize evidence links, ownership, and re-run/rollback guidance; maintain versioned releases and a `current` pointer/view.  
-15) Stakeholder walkthrough with DA/DS; capture follow-ups and open DevOps items if discrepancies remain.  
+🟥 1) Confirm scored output schemas and partitions; align with DA on fields/buckets needed in dashboards.  
+🟥 2) Fix model/feature versions; record MLflow run IDs and registry versions for traceability.  
+🟥 3) Run batch scoring in Databricks Free Edition; write outputs to Gold `customer_scores_gold` with version columns.  
+🟥 4) Validate the Gold write in Databricks (row counts, nullability); snapshot a small sample for later alignment.  
+🟥 5) Export scored tables to Parquet and write `_SUCCESS` in the release folder.  
+🟥 6) Generate `scores_manifest.json` (schema, files, counts, checksums optional, versions, run_ids, created_ts, as_of_date).  
+🟥→🟩 7) Package a versioned release structure under `/Files/<release>/scores/...` and document folder conventions.  
+🟥→🟩 8) Manually transfer Parquet + manifest from Databricks Free to Fabric Lakehouse `/Files/<release>/scores/...`.  
+🟩 9) Configure Fabric Data Pipeline mappings to create/overwrite Delta tables for scores; set dtypes and keys.  
+🟩 10) Run the pipeline; validate counts and basic bounds in the Lakehouse; fix dtype/precision mismatches.  
+🟩 11) Bind dashboards to ingested tables; refresh visuals; confirm segments/KPIs align (formatting/time zones consistent).  
+🟥→🟩 12) Run spot checks (e.g., 100 rows) between Databricks and Fabric with tolerance (e.g., 1e-6 for floats); record a QA report.  
+🟥→🟩 13) Document validations, limitations, and caveats (types/time zones/rounding); capture before/after screenshots.  
+🟥→🟩 14) Finalize evidence links, ownership, and re-run/rollback guidance; maintain versioned releases and a `current` pointer/view.  
+🟥→🟩 15) Stakeholder walkthrough with DA/DS; capture follow-ups and open DevOps items if discrepancies remain.  
 
 **Deliverables**  
 - `customer_scores_gold` in Databricks and Fabric Lakehouse Delta tables.  
@@ -1859,21 +1859,21 @@ As a Data Analyst, I want to implement advanced segmentation logic and dynamic d
  - Accessibility: color contrast ≥ 4.5:1, keyboard focus order set, alt text on key visuals, consistent formats.  
 
 **Tasks**  
-1. Define dynamic segmentation rules (RFM buckets, churn cutoff, CLV tiers); document defaults.  
-2. Implement What-if parameters (recency window, churn cutoff, CLV tier cutpoints).  
-3. Build parameter/measure tables; bind measures to parameters.  
-4. Create field parameters for dimension and measure switching; wire to visuals.  
-5. Create drill-through pages (Segment detail, Customer detail) with Back buttons.  
-6. Add tooltip pages (mini profile).  
-7. Add a Methods banner (DAX) with active thresholds and snapshot.  
-8. Connect to Gold `customer_360` and `customer_scores_gold`; validate relationships/counts.  
-9. Implement and test RLS (BrandManager, Executive) in Desktop/Service.  
-10. Optimize performance (reduce visuals, aggregations if needed, avoid high-card slicers).  
-11. Configure bookmarks and sync slicers; verify interactions.  
-12. Accessibility pass (contrast, focus order, alt text, formats).  
-13. Validate cross-highlighting and edge cases (empty/ALL segments, mobile).  
-14. Document thresholds, navigation map, screenshots, RLS notes in README.  
-15. (Optional) Calculation groups for dynamic formatting/switching.  
+🟨 1. Define dynamic segmentation rules (RFM buckets, churn cutoff, CLV tiers); document defaults.  
+🟨 2. Implement What-if parameters (recency window, churn cutoff, CLV tier cutpoints).  
+🟨 3. Build parameter/measure tables; bind measures to parameters.  
+🟨 4. Create field parameters for dimension and measure switching; wire to visuals.  
+🟨 5. Create drill-through pages (Segment detail, Customer detail) with Back buttons.  
+🟨 6. Add tooltip pages (mini profile).  
+🟨 7. Add a Methods banner (DAX) with active thresholds and snapshot.  
+🟩 8. Connect to Gold `customer_360` and `customer_scores_gold`; validate relationships/counts.  
+🟩 9. Implement and test RLS (BrandManager, Executive) in Desktop/Service.  
+🟨 10. Optimize performance (reduce visuals, aggregations if needed, avoid high-card slicers).  
+🟨 11. Configure bookmarks and sync slicers; verify interactions.  
+🟨 12. Accessibility pass (contrast, focus order, alt text, formats).  
+🟨 13. Validate cross-highlighting and edge cases (empty/ALL segments, mobile).  
+🟨 14. Document thresholds, navigation map, screenshots, RLS notes in README.  
+🟨 15. (Optional) Calculation groups for dynamic formatting/switching.  
 
 **User Stories (breakdown)**  
 - As a DA, I deliver dynamic segmentation with What‑if parameters and drill‑through.  
@@ -1985,26 +1985,26 @@ As a Data Scientist, I want to implement advanced survival analysis and probabil
 - Document in README with plots and interpretation (e.g., "50% of Segment A expected to churn within 6 months").  
 
 **Tasks**  
-1. Prepare survival dataset (event = churn, duration = days since last purchase).  
-2. Train Cox model or Kaplan-Meier survival curves using `lifelines`.  
-3. Implement BG/NBD and Gamma-Gamma CLV model with the `lifetimes` package.  
-4. Generate visualizations (hazard curves, CLV distributions).  
-5. (Optional) Prototype a sequential NN model (LSTM) for churn prediction.  
-6. Document findings and compare with baseline tree-based models.  
+🟥 1. Prepare survival dataset (event = churn, duration = days since last purchase).  
+🟥 2. Train Cox model or Kaplan-Meier survival curves using `lifelines`.  
+🟥 3. Implement BG/NBD and Gamma-Gamma CLV model with the `lifetimes` package.  
+🟥 4. Generate visualizations (hazard curves, CLV distributions).  
+🟥 5. (Optional) Prototype a sequential NN model (LSTM) for churn prediction.  
+🟥 6. Document findings and compare with baseline tree-based models.  
 
-7. Fix as‑of date, churn horizon, and censoring rules; implement leakage guardrails (features from pre as‑of only; labels from forward inactivity window).  
-8. Build survival and BTYD modeling frames; persist feature views with version metadata (snapshot, schema hash).  
-9. Create temporal splits with rolling‑origin backtests; include segment‑wise evaluation (brand/region).  
-10. Validate assumptions: Cox PH tests; BG/NBD and Gamma‑Gamma convergence/identifiability; record diagnostics.  
-11. Compute metrics: C‑index, IBS, calibration/reliability plots; lift/gains for top‑N; CLV error (MAPE/RMSE).  
-12. Calibrate and set acceptance thresholds and operating points by horizon (30/60/90d).  
-13. Track runs in MLflow (params, metrics, artifacts, seeds); record data snapshot IDs and environment details.  
-14. Score full population; write `customer_scores_gold` idempotently (MERGE/replaceWhere); enforce Delta constraints (keys, bounds 0–1).  
-15. Run E2E checks: bounds/nulls/joins; BI spot‑checks in Power BI; verify "Today looks normal?" banner behavior.  
-16. Hand‑off to Feature 2.4: field list (risk bands, CLV tiers), RLS awareness, and dashboard binding notes.  
-17. Monitoring: feature drift (PSI), performance stability by brand/region, fairness checks; set weekly report and alert thresholds.  
-18. Documentation: plots, acceptance thresholds, runbook, risks/mitigations, reproducibility notes (seeds, as‑of, schema).  
-19. (Optional) Prototype sequence model (LSTM/Transformer) as comparator; document performance/calibration deltas.  
+🟥 7. Fix as‑of date, churn horizon, and censoring rules; implement leakage guardrails (features from pre as‑of only; labels from forward inactivity window).  
+🟥 8. Build survival and BTYD modeling frames; persist feature views with version metadata (snapshot, schema hash).  
+🟥 9. Create temporal splits with rolling‑origin backtests; include segment‑wise evaluation (brand/region).  
+🟥 10. Validate assumptions: Cox PH tests; BG/NBD and Gamma‑Gamma convergence/identifiability; record diagnostics.  
+🟥 11. Compute metrics: C‑index, IBS, calibration/reliability plots; lift/gains for top‑N; CLV error (MAPE/RMSE).  
+🟥 12. Calibrate and set acceptance thresholds and operating points by horizon (30/60/90d).  
+🟥 13. Track runs in MLflow (params, metrics, artifacts, seeds); record data snapshot IDs and environment details.  
+🟥 14. Score full population; write `customer_scores_gold` idempotently (MERGE/replaceWhere); enforce Delta constraints (keys, bounds 0–1).  
+🟥→🟩 15. Run E2E checks: bounds/nulls/joins; BI spot‑checks in Power BI; verify "Today looks normal?" banner behavior.  
+🟥→🟩 16. Hand‑off to Feature 2.4: field list (risk bands, CLV tiers), RLS awareness, and dashboard binding notes.  
+🟥 17. Monitoring: feature drift (PSI), performance stability by brand/region, fairness checks; set weekly report and alert thresholds.  
+🟥 18. Documentation: plots, acceptance thresholds, runbook, risks/mitigations, reproducibility notes (seeds, as‑of, schema).  
+🟥 19. (Optional) Prototype sequence model (LSTM/Transformer) as comparator; document performance/calibration deltas.  
 
 **User Stories (breakdown)**  
 - As a DS, I estimate churn timing and CLV distributions and compare to baselines.  
@@ -2108,21 +2108,21 @@ As a Data Engineer, I want to orchestrate the end‑to‑end Databricks → Fabr
 - Evidence: one dry‑run (or simulated run) captured with logs/screenshots and a QA checklist (row counts vs manifest).
 
 **Tasks (15 tasks, numbered)**  
-1) Decide orchestration mode(s) in scope: Airflow external, Fabric native fallback, or both; document constraints (Free/Trial vs Enterprise).  
-2) Define orchestration contract: inputs (Gold tables), export artifacts (Parquet, `_SUCCESS`, `release_manifest.json`/`scores_manifest.json`), and success/failure signals per stage.  
-3) Parameterize export notebooks/jobs in Databricks (date window, release version); ensure idempotent writes (MERGE/`replaceWhere`) and `_SUCCESS` markers (Feature 4.1/4.3).  
-4) Create a small QA script/notebook to compute row counts and optional checksums pre/post export; write results next to the manifest.  
-5) Initialize an Airflow DAG (daily or on‑demand) with default args (retries/backoff, SLA, owner); add a "manual gate" boolean param for Free mode.  
-6) Implement task "dbx_export" (Databricks): preferred path is Databricks Jobs/API; Free mode uses a placeholder operator with instructions to run the notebook manually and drop artifacts to the export folder.  
-7) Implement task "place_artifacts_for_fabric": in Enterprise, automate transfer (e.g., to staging/OneLake/Blob); in Free mode, document manual upload to Fabric Lakehouse `/Files/dropzone/<release>/...` and add a sensor/wait step.  
-8) Implement task "trigger_fabric_ingest": call Fabric Data Pipeline (API/UI). If API access isn't available, mark this as a manual step with a checklist and a confirmation flag in the DAG.  
-9) Implement task "wait_for_fabric_ingest": poll status (API) or use a time‑boxed sensor in Free mode; log outcome and timings.  
-10) Implement task "post_ingest_qa": compare Lakehouse counts vs manifest; verify schema/dtypes and latest partition/date; record a QA report artifact.  
-11) Implement notifications: success/failure messages to email/Teams/Slack (provider available) with links to manifest, pipeline run, and dashboard.  
-12) Document secrets/creds: where tokens/Service Principals would live in Enterprise; provide Free‑safe alternatives (manual steps, local env vars).  
-13) Publish an operations runbook: parameters, schedules, rerun/rollback steps, ownership, and common failure modes; link to Features 4.1/4.3 contracts.  
-14) Provide a native Fabric pathway: a Data Pipeline definition (source: `/Files/dropzone/<release>/...` → Lakehouse tables) and promotion steps; list rules to rebind across stages.  
-15) Capture evidence: one dry‑run (or simulated Free run) with logs/screenshots, QA checklist, and links; open backlog tickets for any gaps (e.g., API enablement, secrets vault).
+🟥→🟩 1) Decide orchestration mode(s) in scope: Airflow external, Fabric native fallback, or both; document constraints (Free/Trial vs Enterprise).  
+🟥→🟩 2) Define orchestration contract: inputs (Gold tables), export artifacts (Parquet, `_SUCCESS`, `release_manifest.json`/`scores_manifest.json`), and success/failure signals per stage.  
+🟥 3) Parameterize export notebooks/jobs in Databricks (date window, release version); ensure idempotent writes (MERGE/`replaceWhere`) and `_SUCCESS` markers (Feature 4.1/4.3).  
+🟥 4) Create a small QA script/notebook to compute row counts and optional checksums pre/post export; write results next to the manifest.  
+🟥→🟩 5) Initialize an Airflow DAG (daily or on‑demand) with default args (retries/backoff, SLA, owner); add a "manual gate" boolean param for Free mode.  
+🟥 6) Implement task "dbx_export" (Databricks): preferred path is Databricks Jobs/API; Free mode uses a placeholder operator with instructions to run the notebook manually and drop artifacts to the export folder.  
+🟥→🟩 7) Implement task "place_artifacts_for_fabric": in Enterprise, automate transfer (e.g., to staging/OneLake/Blob); in Free mode, document manual upload to Fabric Lakehouse `/Files/dropzone/<release>/...` and add a sensor/wait step.  
+🟩 8) Implement task "trigger_fabric_ingest": call Fabric Data Pipeline (API/UI). If API access isn't available, mark this as a manual step with a checklist and a confirmation flag in the DAG.  
+🟩 9) Implement task "wait_for_fabric_ingest": poll status (API) or use a time‑boxed sensor in Free mode; log outcome and timings.  
+🟩 10) Implement task "post_ingest_qa": compare Lakehouse counts vs manifest; verify schema/dtypes and latest partition/date; record a QA report artifact.  
+🟥→🟩 11) Implement notifications: success/failure messages to email/Teams/Slack (provider available) with links to manifest, pipeline run, and dashboard.  
+🟥→🟩 12) Document secrets/creds: where tokens/Service Principals would live in Enterprise; provide Free‑safe alternatives (manual steps, local env vars).  
+🟥→🟩 13) Publish an operations runbook: parameters, schedules, rerun/rollback steps, ownership, and common failure modes; link to Features 4.1/4.3 contracts.  
+🟩 14) Provide a native Fabric pathway: a Data Pipeline definition (source: `/Files/dropzone/<release>/...` → Lakehouse tables) and promotion steps; list rules to rebind across stages.  
+🟥→🟩 15) Capture evidence: one dry‑run (or simulated Free run) with logs/screenshots, QA checklist, and links; open backlog tickets for any gaps (e.g., API enablement, secrets vault).
 
 **User Stories (breakdown)**  
 - As a DE, I can re‑run the E2E flow deterministically via an Airflow DAG or with a documented Fabric pipeline fallback.  
