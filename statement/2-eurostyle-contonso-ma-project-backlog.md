@@ -1722,21 +1722,21 @@ Trade-offs and when to skip
 - Short README section explaining schema, keys, and historization policy.
 
 **Tasks (15 tasks, numbered)**  
-1) Define Data Vault standards: naming conventions, BK normalization (upper/trim), hash algorithm (e.g., sha2), delimiter policy, null handling, `record_source`, and audit columns (`load_ts`, `batch_id`).  
-2) Build `silver.customer_hub`: deduplicate/harmonize business keys, compute `customer_hk`, enforce uniqueness (constraints/checks), add lineage/audit fields.  
-3) Build `silver.product_hub`: normalize `sku/product_code`, compute `product_hk`, enforce uniqueness, and add lineage/audit fields.  
-4) Build `silver.calendar_hub`: generate required date range, decide natural vs hashed key (`date_key` vs `date_hk`), and persist attributes (year, month, day).  
-5) Implement idempotent hub loads: MERGE on BK hashes or deterministic `replaceWhere` windows; validate re-run yields identical end state.  
-6) Design `silver.sales_link`: define grain (e.g., order_line), compute `sales_lk` as hash of participating hub keys, carry minimal invariants (e.g., source_system).  
-7) Resolve FKs from cleaned sales to hubs: handle late-arriving/unknown keys with sentinel HKs, log exceptions, and persist a reconciliation table.  
-8) Load `silver.sales_link` idempotently: apply constraints (non-null HKs), RI checks (anti-joins), and uniqueness on `sales_lk`; measure violations and fix.  
-9) Design `silver.customer_satellite` (SCD2): choose descriptive attributes (country, segment), define SCD2 columns (`effective_from`, `effective_to`, `is_current`), and compute change hash.  
-10) Implement SCD2 change detection: window over BK, compare change hashes, close/open rows with correct timestamps; ensure no overlaps and time-travel correctness.  
-11) Add a second satellite (optional but recommended): `silver.product_satellite` for category/brand with SCD2 handling and change hash.  
-12) Performance & storage: choose partitioning/Z-ORDER (e.g., by `effective_from` or `order_date`), compact small files, set table properties (e.g., retention/VACUUM policy).  
-13) Data quality & RI validation: cardinality checks (1:1 hubs, 1:N link), orphan detection, duplicate rates; publish a DV QA report table with metrics per entity.  
-14) Documentation & contracts: publish DV schema contracts, Mermaid diagram (hubs/links/sats), BK→HK rules, SCD2 policy, and integration notes for Gold derivations.  
-15) Integration validation: derive a thin Gold (e.g., `sales_daily`) from DV components and reconcile KPIs vs existing Gold; write a short runbook and rollback steps.  
+🟥 1. Define Data Vault standards: naming conventions, BK normalization (upper/trim), hash algorithm (e.g., sha2), delimiter policy, null handling, `record_source`, and audit columns (`load_ts`, `batch_id`).  
+🟥 2. Build `silver.customer_hub`: deduplicate/harmonize business keys, compute `customer_hk`, enforce uniqueness (constraints/checks), add lineage/audit fields.  
+🟥 3. Build `silver.product_hub`: normalize `sku/product_code`, compute `product_hk`, enforce uniqueness, and add lineage/audit fields.  
+🟥 4. Build `silver.calendar_hub`: generate required date range, decide natural vs hashed key (`date_key` vs `date_hk`), and persist attributes (year, month, day).  
+🟥 5. Implement idempotent hub loads: MERGE on BK hashes or deterministic `replaceWhere` windows; validate re-run yields identical end state.  
+🟥 6. Design `silver.sales_link`: define grain (e.g., order_line), compute `sales_lk` as hash of participating hub keys, carry minimal invariants (e.g., source_system).  
+🟥 7. Resolve FKs from cleaned sales to hubs: handle late-arriving/unknown keys with sentinel HKs, log exceptions, and persist a reconciliation table.  
+🟥 8. Load `silver.sales_link` idempotently: apply constraints (non-null HKs), RI checks (anti-joins), and uniqueness on `sales_lk`; measure violations and fix.  
+🟥 9. Design `silver.customer_satellite` (SCD2): choose descriptive attributes (country, segment), define SCD2 columns (`effective_from`, `effective_to`, `is_current`), and compute change hash.  
+🟥 10. Implement SCD2 change detection: window over BK, compare change hashes, close/open rows with correct timestamps; ensure no overlaps and time-travel correctness.  
+🟥 11. Add a second satellite (optional but recommended): `silver.product_satellite` for category/brand with SCD2 handling and change hash.  
+🟥 12. Performance & storage: choose partitioning/Z-ORDER (e.g., by `effective_from` or `order_date`), compact small files, set table properties (e.g., retention/VACUUM policy).  
+🟥 13. Data quality & RI validation: cardinality checks (1:1 hubs, 1:N link), orphan detection, duplicate rates; publish a DV QA report table with metrics per entity.  
+🟥 14. Documentation & contracts: publish DV schema contracts, Mermaid diagram (hubs/links/sats), BK→HK rules, SCD2 policy, and integration notes for Gold derivations.  
+🟥 15. Integration validation: derive a thin Gold (e.g., `sales_daily`) from DV components and reconcile KPIs vs existing Gold; write a short runbook and rollback steps.  
 
 **User Stories (breakdown)**  
 - As a DE, I create hubs/links/satellites that integrate with existing Silver/Gold contracts.  
