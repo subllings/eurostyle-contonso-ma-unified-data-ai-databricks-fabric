@@ -86,15 +86,6 @@ The **Chief Marketing Officer (CMO)** and **Chief Data & Analytics Officer (CDAO
 
 
 
-
-
-
-
-
-
-
-
-
 ## Agile Way of Working
 
 The project is managed following Agile principles, with short sprints and continuous feedback loops.  
@@ -132,13 +123,12 @@ Agility ensures that data engineers, data scientists, and data analysts can iter
   - Data Scientists share exploratory findings from Exploratory Data Analysis (EDA) and feature importance with analysts to guide dashboard metrics.  
   >This ensures that Databricks and Fabric are used in a complementary way, not in silos.
 
-#### Kanban board & tooling (who/where/how)
+- See the [Product Backlog](https://github.com/subllings/eurostyle-contonso-ma-unified-data-ai-databricks-fabric/blob/main/statement/2-eurostyle-contonso-ma-project-backlog.md) for the sprint-by-sprint plan, task lists, and acceptance criteria.  
 
-We use Azure DevOps Boards (Kanban) with a standard flow (Backlog → Selected → In Progress → In Review → Done); the Product Owner prioritizes, the Scrum Master facilitates, and the team updates cards daily. See the Product Backlog – Agility section for full roles, board setup, and sprint cadence details: https://github.com/subllings/eurostyle-contonso-ma-unified-data-ai-databricks-fabric/blob/main/statement/2-eurostyle-contonso-ma-project-backlog.md#agility.
 
 ---
 
-In summary, the Agile way of working ensures that even with limited free-tier platforms (Databricks Free, Fabric Trial), the team can **deliver incremental business value each sprint**, demonstrate progress to stakeholders, and continuously adapt as new challenges or opportunities arise.
+In summary, Agile enables the team to **deliver incremental value each sprint**, demonstrate working outcomes to stakeholders, and adapt quickly—even on free tiers (Databricks Free, Fabric Trial).
 
 ---
 
