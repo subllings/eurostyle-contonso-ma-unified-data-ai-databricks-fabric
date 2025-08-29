@@ -205,7 +205,7 @@ As a Data Engineer, I want to ingest EuroStyle and Contoso CSVs into Bronze so t
  - Mini schema dictionary and a short runbook (how to re-run ingestion, folder structure, naming conventions) added to repo.
  - Azure DevOps DQ tickets opened for any raw→Bronze variance >1% or material DQ issue; links captured in README and referenced by DA in Feature 2.2.
 
-**Tasks (15 tasks, prioritised)**:  
+**Tasks**:  
 1) Create raw landing folders in DBFS (`/FileStore/retail/raw/contoso/`, `/FileStore/retail/raw/eurostyle/`) and document paths in the runbook.  
 2) Upload Contoso CSVs to the raw path; note file names, counts, and approximate sizes.  
 3) Ingest Contoso to Delta Bronze with lineage columns (`ingest_ts`, `source_system='CONTOSO'`) as `bronze.sales_contoso`.  
@@ -424,19 +424,22 @@ As a Data Engineer, I want Gold marts for sales and customers so the business ge
 
 **Learning Resources**:  
 - [Star Schema Design](https://www.databricks.com/glossary/star-schema)  
+- [Data mart](https://www.databricks.com/glossary/data-mart)
  - [Performance Optimization in Delta](https://learn.microsoft.com/en-us/azure/databricks/delta/best-practices)  
 - [Recency, Frequency, Monetary (RFM) Segmentation](https://www.databricks.com/solutions/accelerators/rfm-segmentation)  
 - [Retail Personalization with RFM Segmentation and the Composable CDP](https://www.databricks.com/blog/retail-personalization-rfm-segmentation-and-composable-cdp)
 - [RFM Segmentation, Databricks Solution Accelerators](https://github.com/databricks-industry-solutions/rfm-segmentation)
+- [What is a data mart? (Microsoft Learn)](https://learn.microsoft.com/azure/architecture/data-guide/relational-data/data-warehousing#data-marts)  
+- [Datamarts overview (Power BI)](https://learn.microsoft.com/power-bi/transform-model/datamarts/datamarts-overview)  
 - [Gross Merchandise Value (GMV): Meaning & Calculation](https://www.yieldify.com/blog/gross-merchandise-value-gmv)
- - [Understanding GMV in ecommerce](https://getrecharge.com/blog/understanding-gmv-in-ecommerce/)
+- [Understanding GMV in ecommerce](https://getrecharge.com/blog/understanding-gmv-in-ecommerce/)
 - [AOV vs CR vs RPV vs GMV in Ecommerce: Important Metrics You Should Know](https://www.mida.so/blog/important-ecommerce-metrics-aov-cr-rpv-gmv)
 
 **Key Concepts**:  
-- Gold = business-ready, aggregated, and optimized marts.  
-- Sales mart for financial KPIs (GMV, AOV, margin).  
-- Category mart for product/category analysis.  
-- Customer 360° mart enriched with RFM (Recency, Frequency, Monetary).  
+- Gold = business-ready, aggregated, and optimized marts (subject‑oriented curated datasets optimized for analytics).  
+- Sales mart (subject‑oriented curated dataset) for financial KPIs (GMV, AOV, margin).  
+- Category mart (subject‑oriented curated dataset) for product/category analysis.  
+- Customer 360° mart (subject‑oriented curated dataset) enriched with RFM (Recency, Frequency, Monetary).  
 - `source_system` flag to track EuroStyle vs. Contoso origin.  
 
 **Acceptance Criteria**:  
@@ -743,22 +746,27 @@ As a Data Analyst, I want to compare KPIs Raw vs Silver to highlight data cleani
  - First RLS pass configured on Silver (brand-level roles) and validated on 1–2 visuals.  
  - Azure DevOps cards created for top data-quality fixes, linked in the dashboard/readme.
 
-**Tasks**:  
-- Create dashboard with GMV, AOV, return rates (before/after cleaning).  
-- Document and present differences.  
- - Build DAX measures for Raw vs Silver comparisons and deltas; ensure consistent formatting and tooltips.  
- - Implement bookmarks/toggles for Raw vs Silver views; annotate differences.  
- - Quantify impacts (duplicates removed, currency standardization effects, schema harmonization effects).  
- - Configure and test RLS roles on Silver (brand managers vs executives).  
- - Log Azure DevOps items for identified data-quality issues and link them from the report/README.
-
- - Provide insights: Storytelling one‑liners (Feature 2.2)  
-    - After cleaning, GMV differs by X%; duplicates dropped by Y% and FX normalization changed totals by Z%.  
-    - AOV moved from X to Y after removing duplicates; impact comes from [reason: fewer inflated orders or corrected prices].  
-    - Return rate changed from X% to Y% due to consistent handling of negative quantities/credit notes; note if Contoso lacks returns.  
-    - Biggest delta is in [brand/region/category]; drivers are [dup removal, FX to EUR, SKU mapping].  
-    - Today's delta is small: KPIs within ±X% of Raw; Silver is safe for executive views.  
-    - Confidence note: margin is proxy for W% of rows; decisions within ±V% tolerance.  
+**Tasks (grouped & numbered by type)**:  
+- Measures & Modeling (MM)
+   - MM1) Build DAX measures for Raw vs Silver comparisons and deltas; ensure consistent formatting and tooltips.  
+   - MM2) Implement return‑rate measures with consistent handling (negative quantities/credit notes).  
+   - MM3) Pair measures as `*_raw`, `*_silver`, `*_delta`; add optional last‑week comparators for context/tooltips.  
+- Dashboard & UX (UX)
+   - UX1) Create dashboard pages with GMV, AOV, return rates (before/after cleaning).  
+   - UX2) Implement bookmarks/toggles for Raw vs Silver views; annotate differences.  
+   - UX3) Sync slicers across pages; align layouts and tooltips for comparability.  
+- Data Quality Analysis (DQ)
+   - DQ1) Quantify impacts (duplicates removed, FX normalization effects, schema harmonization effects).  
+   - DQ2) Document and present differences; summarize findings in README.  
+   - DQ3) Capture confidence note (margin proxy coverage and decision tolerance).  
+- Governance & Security (RLS)
+   - RLS1) Configure and test RLS roles on Silver (brand managers vs executives).  
+- DevOps & Hygiene (OPS)
+   - OPS1) Log Azure DevOps items for identified data‑quality issues and link them from the report/README.  
+- Insights & Storytelling (INS)
+   - INS1) Draft one‑liners: GMV differs by X%; duplicates dropped by Y%; FX normalization changed totals by Z%.  
+   - INS2) AOV moved from X to Y; explain the driver (e.g., fewer inflated orders, corrected prices); note return‑rate changes and Contoso limitations.  
+   - INS3) Highlight biggest deltas (brand/region/category) and drivers (dup removal, FX to EUR, SKU mapping); add "today normal?" note and margin proxy confidence.  
 
 **User Stories (breakdown)**  
 - As a DA, I compare Raw vs Silver KPIs with clear delta measures and toggles.  
@@ -766,11 +774,11 @@ As a Data Analyst, I want to compare KPIs Raw vs Silver to highlight data cleani
 - As a DA, I configure first RLS roles on Silver and validate.  
 
 ### Sprint day plan (4.5 days)
-- **Day 1:** Connect to both Raw and Silver (consistent fields/units); implement paired measures (`*_raw`, `*_silver`, `*_delta`); ensure returns handling is consistent.  
-- **Day 2:** Build side‑by‑side pages and bookmark toggles; sync slicers across pages; align layouts and tooltips for comparability.  
-- **Day 3:** Quantify impacts (% dup reduction, FX normalization effect); annotate visuals; summarize findings in README.  
-- **Day 4:** Configure brand-level RLS on Silver; validate with "View as role"; open DevOps items for data-quality issues.  
-- **Day 4.5:** Buffer; stakeholder walkthrough; polish visuals and documentation.
+- **Day 1 (MM1–MM3, UX1):** Connect to both Raw and Silver (consistent fields/units); implement paired measures (`*_raw`, `*_silver`, `*_delta`); ensure returns handling is consistent; scaffold first page.  
+- **Day 2 (UX1–UX3, MM refinements):** Build side‑by‑side pages and bookmark toggles; sync slicers across pages; align layouts and tooltips for comparability.  
+- **Day 3 (DQ1–DQ2, INS1):** Quantify impacts (% dup reduction, FX normalization effect, schema harmonization); annotate visuals; summarize findings in README.  
+- **Day 4 (RLS1, OPS1):** Configure brand‑level RLS on Silver; validate with "View as role"; open DevOps items for data‑quality issues and link from report/README.  
+- **Day 4.5 (INS2–INS3, DQ3):** Stakeholder walkthrough; finalize insights one‑liners; add confidence note and polish visuals/documentation.  
 
 #### Mini notes — Feature 2.2 (per day)
 - Day 1: Import both models (Raw and Silver) with consistent field names/units; create paired measures `*_raw`, `*_silver`, and delta measures; avoid mixed grains.
@@ -840,7 +848,7 @@ As an Executive, I want consolidated GMV, AOV, and margin so I can track EuroSty
 - [Create report bookmarks in Power BI to share insights and build stories](https://learn.microsoft.com/en-us/power-bi/create-reports/desktop-bookmarks)
 
 **Key Concepts**:  
-- Gold = business-ready marts with consistent KPIs.  
+- Gold = business-ready marts (subject‑oriented curated datasets optimized for analytics) with consistent KPIs.  
 - Consolidated KPIs unify EuroStyle & Contoso for board-level decisions.  
 - RLS (Row-Level Security) = ensures managers see only their brand while executives see both.  
 
@@ -1447,7 +1455,7 @@ For your information
 - [Microsoft Fabric documentation](https://learn.microsoft.com/en-us/fabric)
 
 **Key Concepts**:  
-- **Gold marts** = final curated tables for analytics (sales_daily, customer_360, etc.).  
+- **Gold marts** (subject‑oriented curated datasets optimized for analytics) = final curated tables for analytics (sales_daily, customer_360, etc.).  
 - **Parquet + manifest + _SUCCESS** = ensures consistent export contract.  
 - **Fabric Lakehouse Files** (Free path) = manual upload from Databricks to Fabric.  
 - **Delta in Fabric** = ingestion into tables ready for Direct Lake mode.  
@@ -1472,6 +1480,9 @@ For your information
 10) Create/verify shortcuts or views if needed for Power BI; test Direct Lake connectivity with a basic visual.  
 11) Capture evidence (screenshots/links), store manifest and a README with steps, and note any edge cases.  
 12) Document re-run/idempotency guidance and ownership (who exports, who ingests, cadence).  
+13) Apply sensitivity labels and ownership metadata; add table comments/Descriptions in the Lakehouse.  
+14) Build a tiny Direct Lake smoke report (1–2 visuals) and capture Performance Analyzer notes/screenshots.  
+15) Establish versioned releases and a `current` pointer/view; document rollback steps and tolerance thresholds.  
 
 **Deliverables**  
 - Export folder structure per table with Parquet files, `_SUCCESS`, and `release_manifest.json`.  
@@ -1485,11 +1496,11 @@ For your information
 - As a DE, I ingest them into Fabric Lakehouse tables via Data Pipelines.  
 
 ### Sprint day plan (4.5 days)
-- Day 1 [Tasks 1–6]: Define contract, schema, manifest fields; dry‑run on one small table and verify re‑ingest.  
-- Day 2 [Tasks 7–9]: Package all Gold marts; manual transfer; configure Data Pipeline mappings and create Delta tables.  
-- Day 3 [Tasks 9–10]: Validate counts/schemas; test Power BI connectivity (Direct Lake) and basic visuals.  
-- Day 4 [Tasks 11–12]: Capture evidence and finalize docs, ownership, and re-run guidance.  
-- Day 4.5 [Polish]: Troubleshooting notes and hand-off.  
+- Day 1 [Tasks 1–5]: Define export contract (tables/layout), file sizing, manifest fields; dry‑run on one small table.  
+- Day 2 [Tasks 6–9]: Package all Gold marts; manual transfer to Fabric; configure Data Pipeline mappings and create Delta tables.  
+- Day 3 [Tasks 10–12]: Validate ingestion and partitions; create views/shortcuts; test Direct Lake connectivity.  
+- Day 4 [Tasks 13–14]: Apply sensitivity/ownership metadata; run smoke report and capture performance notes.  
+- Day 4.5 [Tasks 15]: Set `current` pointer and rollback guidance; finalize docs and hand‑off.  
 
 #### Notes — Feature 4.1 (day-by-day + how-to)
 - Exports: prefer stable column order and names; avoid schema drift between releases; add version tags into the manifest.  
@@ -1546,6 +1557,11 @@ As a Data Analyst, I want Power BI dashboards published through Fabric so execut
 8) Promote to Test; validate dataset parameters, refresh, and fix any broken lineage.  
 9) Polish visuals, accessibility (titles/alt text), and page performance (optimize visuals, fields).  
 10) Document sharing (audience, app access), dataset/dashboards URLs, and pipeline links; capture screenshots for hand-off.  
+11) Create and publish a Fabric App with audiences; configure navigation and app permissions.  
+12) Configure dataset refresh schedules and parameters/secrets (e.g., workspace/Lakehouse bindings); verify post-promotion refresh.  
+13) Apply sensitivity labels and endorse/certify the dataset; add descriptions and ownership metadata.  
+14) Run Performance Analyzer and document actions; reduce heavy visuals/queries and optimize interactions.  
+15) Add a "How to use" + QA checklist page; verify responsiveness and accessibility; finalize hand-off pack.  
 
 **Deliverables**  
 - Published dashboards (Executive and Segmentation) with stable URLs.  
@@ -1559,11 +1575,11 @@ As a Data Analyst, I want Power BI dashboards published through Fabric so execut
 - As a DA, I deploy via Fabric pipelines across stages.  
 
 ### Sprint day plan (4.5 days)
-- Day 1 [Tasks 1–3]: Build Executive and initial Segmentation pages; ensure consistent formats and tooltips.  
-- Day 2 [Tasks 3–4]: Integrate scored tables; validate cross‑highlighting and performance.  
-- Day 3 [Tasks 5–6]: Configure RLS roles and test with "View as".  
-- Day 4 [Tasks 7–8]: Promote Dev → Test; validate connections and parameters; fix lineage.  
-- Day 4.5 [Tasks 9–10]: Polish visuals, documentation, sharing settings, and capture screenshots.  
+- Day 1 [Tasks 1–4]: Build Executive and initial Segmentation pages; ensure consistent formats/tooltips; validate basic interactions/performance.  
+- Day 2 [Tasks 5–7]: Configure RLS roles, test with "View as" (first pass), and prepare Deployment Pipeline (Dev → Test).  
+- Day 3 [Tasks 8–10]: Promote to Test; validate connections/parameters/lineage; polish visuals and document sharing/links.  
+- Day 4 [Tasks 11–13]: Publish Fabric App; configure refresh schedules/parameters; apply sensitivity labels and endorsement.  
+- Day 4.5 [Tasks 14–15]: Performance Analyzer wrap‑up; add "How to use" + QA checklist; finalize hand‑off.  
 
 #### Notes — Feature 4.2 (day-by-day + how-to)
 - Formatting: apply a consistent theme; standardize currency/decimal formats; hide technical columns from visuals.  
@@ -1604,24 +1620,22 @@ As a Data Scientist, I want churn and CLV scores exported from Databricks into F
 - Fabric Data Pipeline ingests scores into Lakehouse tables.  
 - Power BI dashboards (Feature 4.2) consume these tables for segmentation and risk views.  
 
-**Tasks**:  
-- Run batch scoring in Databricks Free Edition for churn and CLV models.  
-- Save outputs to Gold (`customer_scores_gold`).  
-- Export as Parquet + manifest + `_SUCCESS`.  
-- **Manually download Parquet files from Databricks Free Edition and upload them into Fabric Lakehouse `/Files` folder.**  
-- Ingest with Fabric Data Pipeline → Delta tables.  
-- Validate alignment of predictions between Databricks and Fabric dashboards.   
-
-**Tasks (numbered)**:  
+**Tasks (15 tasks, numbered)**:  
 1) Confirm scored output schemas and partitions; align with DA on fields/buckets needed in dashboards.  
-2) Run batch scoring using fixed model/feature versions; write to Gold `customer_scores_gold`.  
-3) Export to Parquet + `_SUCCESS` and generate `scores_manifest.json` with schema, files, counts, versions, and created_ts.  
-4) Manually transfer Parquet + manifest from Databricks Free to Fabric Lakehouse `/Files/<release>/scores/...`.  
-5) Configure Fabric Data Pipeline mappings to create/overwrite Delta tables for scores; set types and keys.  
-6) Validate counts, nullability, and value ranges (0–1 churn, ≥0 CLV); capture a QA report.  
-7) Bind dashboards to ingested tables; refresh visuals; confirm segments and KPIs align with Databricks samples.  
-8) Document validations (types/time zones/rounding) and capture before/after screenshots.  
-9) Finalize evidence links, ownership, and re-run guidance.  
+2) Fix model/feature versions; record MLflow run IDs and registry versions for traceability.  
+3) Run batch scoring in Databricks Free Edition; write outputs to Gold `customer_scores_gold` with version columns.  
+4) Validate the Gold write in Databricks (row counts, nullability); snapshot a small sample for later alignment.  
+5) Export scored tables to Parquet and write `_SUCCESS` in the release folder.  
+6) Generate `scores_manifest.json` (schema, files, counts, checksums optional, versions, run_ids, created_ts, as_of_date).  
+7) Package a versioned release structure under `/Files/<release>/scores/...` and document folder conventions.  
+8) Manually transfer Parquet + manifest from Databricks Free to Fabric Lakehouse `/Files/<release>/scores/...`.  
+9) Configure Fabric Data Pipeline mappings to create/overwrite Delta tables for scores; set dtypes and keys.  
+10) Run the pipeline; validate counts and basic bounds in the Lakehouse; fix dtype/precision mismatches.  
+11) Bind dashboards to ingested tables; refresh visuals; confirm segments/KPIs align (formatting/time zones consistent).  
+12) Run spot checks (e.g., 100 rows) between Databricks and Fabric with tolerance (e.g., 1e-6 for floats); record a QA report.  
+13) Document validations, limitations, and caveats (types/time zones/rounding); capture before/after screenshots.  
+14) Finalize evidence links, ownership, and re-run/rollback guidance; maintain versioned releases and a `current` pointer/view.  
+15) Stakeholder walkthrough with DA/DS; capture follow-ups and open DevOps items if discrepancies remain.  
 
 **Deliverables**  
 - `customer_scores_gold` in Databricks and Fabric Lakehouse Delta tables.  
@@ -1635,11 +1649,11 @@ As a Data Scientist, I want churn and CLV scores exported from Databricks into F
 - As a DA, I confirm dashboards consume the new tables consistently.  
 
 ### Sprint day plan (4.5 days)
-- Day 1 [Tasks 1–3]: Define schema and export plan; run batch scoring; write Gold and export with manifest.  
-- Day 2 [Tasks 4–5]: Transfer to Fabric `/Files`; configure mappings and create Delta tables.  
-- Day 3 [Tasks 6–7]: Validate Lakehouse tables and bind dashboards; refresh visuals.  
-- Day 4 [Tasks 8–9]: Document validations, edge cases, and finalize evidence/ownership.  
-- Day 4.5 [Polish]: Close the loop with DA and capture links/screenshots.  
+- Day 1 [Tasks 1–4]: Confirm schemas/versions; run batch scoring to Gold; initial validation and sample snapshot.  
+- Day 2 [Tasks 5–8]: Export Parquet + `_SUCCESS`; generate manifest; package release; manual transfer to Fabric `/Files`.  
+- Day 3 [Tasks 9–11]: Configure/run Fabric Pipeline; validate Lakehouse tables; bind dashboards and refresh.  
+- Day 4 [Tasks 12–14]: Spot checks with tolerance; document validations; finalize evidence/ownership and rollback guidance.  
+- Day 4.5 [Tasks 15]: Stakeholder walkthrough; capture follow-ups and open DevOps items if needed.  
 
 #### Notes — Feature 4.3 (day-by-day + how-to)
 - Scores schema: include `model_version`, `feature_version`, `as_of_date`, `scored_ts`; define buckets if used in visuals.  
@@ -1707,30 +1721,33 @@ Trade-offs and when to skip
 - Joins across hub/link/satellite validated (cardinality, sample checks).  
 - Short README section explaining schema, keys, and historization policy.
 
-**Tasks**  
-1. Build Hubs  
-   - `customer_hub`: deduplicate, harmonize `customer_id`, compute `customer_hk` (hash).  
-   - `product_hub`: harmonize `sku/product_code`, compute `product_hk`.  
-   - `calendar_hub`: generate a date hub and `date_hk` (or keep natural date key).  
-2. Build Link  
-   - `sales_link`: from cleaned sales, resolve FK to hubs, optionally compute `sales_lk`.  
-3. Build at least one Satellite  
-   - `customer_satellite`: descriptive columns (country, segment) with SCD2 fields.  
-4. Validate  
-   - Join samples, row counts, date consistency.  
-5. Document  
-   - ASCII/Mermaid schema, naming conventions, key logic, SCD policy.
+**Tasks (15 tasks, numbered)**  
+1) Define Data Vault standards: naming conventions, BK normalization (upper/trim), hash algorithm (e.g., sha2), delimiter policy, null handling, `record_source`, and audit columns (`load_ts`, `batch_id`).  
+2) Build `silver.customer_hub`: deduplicate/harmonize business keys, compute `customer_hk`, enforce uniqueness (constraints/checks), add lineage/audit fields.  
+3) Build `silver.product_hub`: normalize `sku/product_code`, compute `product_hk`, enforce uniqueness, and add lineage/audit fields.  
+4) Build `silver.calendar_hub`: generate required date range, decide natural vs hashed key (`date_key` vs `date_hk`), and persist attributes (year, month, day).  
+5) Implement idempotent hub loads: MERGE on BK hashes or deterministic `replaceWhere` windows; validate re-run yields identical end state.  
+6) Design `silver.sales_link`: define grain (e.g., order_line), compute `sales_lk` as hash of participating hub keys, carry minimal invariants (e.g., source_system).  
+7) Resolve FKs from cleaned sales to hubs: handle late-arriving/unknown keys with sentinel HKs, log exceptions, and persist a reconciliation table.  
+8) Load `silver.sales_link` idempotently: apply constraints (non-null HKs), RI checks (anti-joins), and uniqueness on `sales_lk`; measure violations and fix.  
+9) Design `silver.customer_satellite` (SCD2): choose descriptive attributes (country, segment), define SCD2 columns (`effective_from`, `effective_to`, `is_current`), and compute change hash.  
+10) Implement SCD2 change detection: window over BK, compare change hashes, close/open rows with correct timestamps; ensure no overlaps and time-travel correctness.  
+11) Add a second satellite (optional but recommended): `silver.product_satellite` for category/brand with SCD2 handling and change hash.  
+12) Performance & storage: choose partitioning/Z-ORDER (e.g., by `effective_from` or `order_date`), compact small files, set table properties (e.g., retention/VACUUM policy).  
+13) Data quality & RI validation: cardinality checks (1:1 hubs, 1:N link), orphan detection, duplicate rates; publish a DV QA report table with metrics per entity.  
+14) Documentation & contracts: publish DV schema contracts, Mermaid diagram (hubs/links/sats), BK→HK rules, SCD2 policy, and integration notes for Gold derivations.  
+15) Integration validation: derive a thin Gold (e.g., `sales_daily`) from DV components and reconcile KPIs vs existing Gold; write a short runbook and rollback steps.  
 
 **User Stories (breakdown)**  
 - As a DE, I create hubs/links/satellites that integrate with existing Silver/Gold contracts.  
 - As a DA/DS, I query hubs/links for consistent keys and history.  
 
 ### Sprint day plan (4.5 days)
-- **Day 1:** Build `customer_hub`, `product_hub`, `calendar_hub`; choose hash function and key normalization; ensure idempotent population.  
-- **Day 2:** Build `sales_link`; resolve FK lookups; handle null/late‑arriving keys; confirm transaction granularity.  
-- **Day 3:** Build a first satellite (e.g., `customer_satellite`) with SCD2 fields; implement change detection and closing/opening rows.  
-- **Day 4:** Validate joins/cardinality, orphan detection, and date consistency; fix issues and re‑run.  
-- **Day 4.5:** Document schema, keys, and SCD policy (diagram + notes).
+- **Day 1 [Tasks 1–5]:** Define DV standards; build hubs (customer/product/calendar); implement idempotent hub load and validate re-run.  
+- **Day 2 [Tasks 6–8]:** Design/load `sales_link`; resolve FKs and unknowns; enforce RI/uniqueness and idempotent link loads.  
+- **Day 3 [Tasks 9–11]:** Design/implement SCD2 for `customer_satellite`; add `product_satellite`; validate no overlaps.  
+- **Day 4 [Tasks 12–14]:** Tune partitioning/compaction; run DV QA (cardinality/orphans/dupes); finalize contracts and diagrams.  
+- **Day 4.5 [Task 15]:** Derive thin Gold from DV and reconcile KPIs; document runbook and rollback steps.  
 
 #### Mini notes — Feature 5.1 (per day)
 - Day 1: Normalize BKs; hash to SKs; ensure idempotent hub loads.
