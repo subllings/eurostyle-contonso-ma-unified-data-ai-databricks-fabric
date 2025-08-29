@@ -205,15 +205,22 @@ As a Data Engineer, I want to ingest EuroStyle and Contoso CSVs into Bronze so t
  - Mini schema dictionary and a short runbook (how to re-run ingestion, folder structure, naming conventions) added to repo.
  - Azure DevOps DQ tickets opened for any raw→Bronze variance >1% or material DQ issue; links captured in README and referenced by DA in Feature 2.2.
 
-**Tasks**:  
-- Upload EuroStyle dataset (Online Retail II) into `/FileStore/retail/raw/eurostyle/`  
-- Upload Contoso dataset (European Fashion Store Multitable) into `/FileStore/retail/raw/contoso/`  
-- Create Bronze Delta tables with schema inference.  
-- Add metadata columns (`ingest_ts`, `source_system`).  
- - Expose tables/views for DirectQuery and perform a smoke test from Power BI.  
- - Produce a one‑page Data Quality (DQ) summary (nulls, duplicates, row counts), and reconcile raw→Bronze counts (±1% tolerance or documented variance).  
- - Publish a mini schema dictionary and a short runbook for re‑runs.
- - Open Azure DevOps "DQ" tickets for any reconciliation variance >1% or material DQ issue; include evidence (counts, sample rows), severity, owner, and ETA; paste the work item links into the README.
+**Tasks (15 tasks, prioritised)**:  
+1) Create raw landing folders in DBFS (`/FileStore/retail/raw/contoso/`, `/FileStore/retail/raw/eurostyle/`) and document paths in the runbook.  
+2) Upload Contoso CSVs to the raw path; note file names, counts, and approximate sizes.  
+3) Ingest Contoso to Delta Bronze with lineage columns (`ingest_ts`, `source_system='CONTOSO'`) as `bronze.sales_contoso`.  
+4) Create a BI‑friendly Contoso view `bronze.v_sales_contoso` with trimmed/typed columns for Power BI DirectQuery.  
+5) Register tables/views in the metastore (Unity Catalog or workspace) and add table comments.  
+6) Validate Contoso types (dates/numerics), address corrupt records if any, and record issues.  
+7) Perform a Power BI DirectQuery smoke test to `bronze.v_sales_contoso`; capture steps/screenshot in the README.  
+8) Upload EuroStyle CSVs to the raw path and capture source metadata (provenance, obtained date).  
+9) Ingest EuroStyle to Delta Bronze with lineage columns (`ingest_ts`, `source_system='EUROSTYLE'`) as `bronze.sales_eurostyle`.  
+10) Create and check in `docs/column_mapping.csv` with `source_name, unified_name, target_type`.  
+11) Apply initial schema alignment across brands using the mapping and naming conventions (snake_case, consistent date/decimal types); update the runbook.  
+12) Reconcile raw→Bronze row counts per brand (±1% tolerance or explained variance) and persist counts to `monitor.dq_bronze_daily`.  
+13) Compute a basic DQ summary: null rates on keys, duplicate rate on `(order_id, sku, customer_id, order_date)`, top countries/currencies; publish a one‑pager.  
+14) Enforce basic Delta constraints where feasible (NOT NULL on business keys, simple CHECKs); record violations.  
+15) Implement an idempotent re‑run strategy (deterministic overwrite by date window via `replaceWhere` or `MERGE` on business keys) and verify repeatability.
 
 **User Stories (breakdown)**  
 - As a DA, I can connect to Contoso Bronze via DirectQuery on Day 1 to build the First Look.  
@@ -222,14 +229,14 @@ As a Data Engineer, I want to ingest EuroStyle and Contoso CSVs into Bronze so t
 - As a DE, I publish a mini schema dictionary and runbook so the team can re‑run ingestion.
 
 ### Sprint day plan (4.5 days)
-- **Day 1:** Ingest Contoso → Bronze (with `ingest_ts`, `source_system`), validate types/dates, expose for DirectQuery (publish a thin SQL view or Delta table with Power BI‑friendly types, register in the metastore, and validate a Power BI Desktop DirectQuery connection via the Databricks connector — see Learning Resources), DA smoke test from Power BI.  
-- **Day 2:** Ingest EuroStyle → Bronze, align obvious column names/types across brands (build a simple mapping table or dict: `source_name → unified_name`, plus `target_type`; apply with `withColumnRenamed`/`selectExpr` and `cast`; store mapping CSV in `docs/` and reference it in the runbook; prefer snake_case, consistent date/decimal types — see Learning Resources), update mapping notes and folder structure.  
- - **Day 3:** Reconcile raw→Bronze row counts; compute a basic DQ summary (nulls, dup rate on business key, top dims); persist key metrics in a small monitoring table (e.g., `monitor.dq_bronze_daily`) and note any variance >1%; open Azure DevOps DQ tickets for any variance >1% or material issue and link them in the README.  
-- **Day 4:** Prove idempotent re‑run (same inputs → same end state). Use deterministic overwrite by date/partition or a MERGE on business keys to avoid duplicates; enforce basic constraints (NOT NULL/CHECK) where useful. Finalize docs: commit a mini schema dictionary at `docs/bronze-schema-dictionary.md` (use `docs/data-dictionary-template.md`) and a runbook at `docs/runbook-ingestion.md` (steps, paths, re-run notes). Address issues raised by DA/DS.  
-- **Day 4.5:** Buffer and hand‑off; optional pre‑aggregate view: create a thin day‑level view for faster DirectQuery (e.g., `CREATE VIEW bronze.sales_contoso_daily AS SELECT order_date, COUNT(*) AS orders, SUM(quantity*unit_price) AS revenue FROM bronze.sales_contoso GROUP BY order_date;`) and register it (see CREATE VIEW in Learning Resources).
+- Day 1 — Contoso live (covers Tasks 1–7): Create landing folders; upload Contoso; ingest to Bronze; create BI view; register; validate types; run Power BI DirectQuery smoke test.  
+- Day 2 — EuroStyle ingestion (covers Tasks 8–10): Upload EuroStyle; ingest to Bronze; create `column_mapping.csv`.  
+- Day 3 — Alignment & counts (covers Tasks 11–12): Apply initial schema alignment + naming conventions; update runbook; reconcile raw→Bronze counts and persist monitoring.  
+- Day 4 — DQ & constraints (covers Tasks 13–14): Produce basic DQ summary; enforce Delta constraints and record violations.  
+- Day 4.5 — Idempotence (covers Task 15): Implement and verify idempotent re‑run strategy; capture brief notes in the runbook.  
 
-#### Mini notes — Feature 1.1 (per day)
-- Day 1 — Ingest + DirectQuery
+#### Mini notes — Feature 1.1 (how‑to)
+- Ingest + DirectQuery
    - Read CSV to Delta, add lineage columns:
       ```sql
       CREATE OR REPLACE TABLE bronze.sales_contoso AS
@@ -246,8 +253,7 @@ As a Data Engineer, I want to ingest EuroStyle and Contoso CSVs into Bronze so t
       FROM bronze.sales_contoso;
       ```
    - In Power BI, connect via Databricks (Token, Hostname, HTTP Path), storage mode = DirectQuery; DA runs a smoke visual.
-
-- Day 2 — Mapping + types
+- Mapping + types
    - Keep a simple mapping CSV in `docs/column_mapping.csv` with `source_name, unified_name, target_type`.
    - Apply rename/cast (example in PySpark):
       ```python
@@ -256,14 +262,11 @@ As a Data Engineer, I want to ingest EuroStyle and Contoso CSVs into Bronze so t
       df = raw_df.select([col(c).alias(mapping.get(c,c)) for c in raw_df.columns])
       df = df.withColumn("order_date", col("order_date").cast("date")).withColumn("unit_price", col("unit_price").cast("decimal(18,2)"))
       ```
-
-- Day 3 — Counts + DQ summary
+- Counts + DQ summary
    - Reconcile counts raw→bronze and persist a few metrics to `monitor.dq_bronze_daily` (row_count, null rates on keys, dup rate on BK, min/max date). Note any variance >1%.
-
-- Day 4 — Idempotence + docs
+- Idempotence + docs
    - Re‑run safely via `MERGE` on business keys or deterministic overwrite by date window (`replaceWhere`). Add NOT NULL/CHECK where useful. Commit `docs/bronze-schema-dictionary.md` and `docs/runbook-ingestion.md`.
-
-- Day 4.5 — Pre‑aggregate view
+- Pre‑aggregate view
    - Create/register a thin day view for DirectQuery performance and validate from Power BI.
 
 ---
@@ -301,16 +304,22 @@ As a Data Engineer, I want Silver tables with clean, harmonized schemas so Analy
  - FX snapshot table (`silver.fx_rates_eur`) versioned with valuation date and source metadata.
  - Azure DevOps DQ tickets opened/updated for any Raw→Silver residual issues discovered (e.g., orphan facts, missing FX rates); links added to README and referenced by DA in Feature 2.2.
 
-**Tasks**:  
-- Deduplicate data using business keys.  
-- Standardize currencies (conversion → EUR).  
-- Align product hierarchies using mapping table.  
-- Normalize customer IDs across EuroStyle & Contoso.  
- - Create and persist an `fx_rates_eur` reference table with the chosen valuation date and FX source (e.g., European Central Bank (ECB)).
- - Implement idempotent write logic (e.g., overwrite by date window or equivalent) and document it.  
- - Publish the Silver schema contract (names, types, nullability) and mapping rules.  
- - Refresh and attach the DQ report highlighting Raw→Silver improvements.
- - Create/refresh Azure DevOps DQ tickets for residual data issues (e.g., orphans, invalid codes, missing FX); attach evidence queries and assign owners with ETA; paste links in README.
+**Tasks (15 tasks, prioritized)**:  
+1) Confirm target Silver table names and create empty schemas (or temp views) with expected columns and types for `sales_clean` and any dims (document in schema contract draft).  
+2) Define and document business keys for deduplication (e.g., `order_id + sku + customer_id + order_date`); capture edge cases (null/invalid keys).  
+3) Profile duplicate rates per brand; implement windowed dedup keeping latest by `ingest_ts`; persist intermediate results for audit.  
+4) Normalize critical types across brands (dates to DATE, money to DECIMAL(18,2)); trim/uppercase IDs; standardize country/currency codes.  
+5) Build and persist `silver.fx_rates_eur` snapshot with valuation date and source metadata (ECB suggested); validate coverage for encountered currencies.  
+6) Convert all monetary amounts to EUR by joining FX "as‑of" valuation date; implement rounding policy (HALF_UP) and document precision.  
+7) Create product and customer crosswalk CSVs in `docs/` and register Delta mapping tables; specify collision handling rules.  
+8) Normalize customer IDs across EuroStyle & Contoso using the crosswalk; resolve duplicates/collisions and record decisions.  
+9) Align product hierarchy (category/brand) via mapping; backfill missing categories where possible; flag unresolved.  
+10) Enforce referential checks (orphans) using anti‑joins; fix or quarantine with reason codes and counts.  
+11) Implement idempotent write strategy: `MERGE` on BKs or deterministic `replaceWhere` by date window; prove re‑run yields same end state.  
+12) Add Delta constraints where feasible (NOT NULL on BKs, simple CHECK constraints); evaluate impact and violations.  
+13) Partitioning/optimization: choose partition columns (e.g., `order_date`); consider OPTIMIZE/Z‑ORDER for common predicates; document choices.  
+14) Publish the Silver schema contract (names, types, nullability) and mapping rules; include FX rounding/fallback policies.  
+15) Produce a DQ report (pre/post metrics: duplicate reduction %, nulls reduced %, FX conversion coverage, orphan counts); attach queries.  
 
 **User Stories (breakdown)**  
 - As a DE, I deliver Silver sales with duplicates removed and currencies normalized to EUR.  
@@ -319,12 +328,20 @@ As a Data Engineer, I want Silver tables with clean, harmonized schemas so Analy
 - As a DE, I ensure idempotent Silver writes so re‑runs are safe and deterministic.
 
 ### Sprint day plan (4.5 days)
-- **Day 1:** Define business keys and dedup strategy (dedup = remove duplicate rows so only one remains per business key; use a window over keys ordered by `ingest_ts` to keep latest); profile duplicate rates per brand; normalize types (dates/decimals), trim/uppercase IDs; capture edge cases (null/invalid keys).  
-  
-- **Day 2:** Build and persist `silver.fx_rates_eur` snapshot (valuation date, source, currency, rate); join-as-of date to convert to EUR; handle missing currencies with fallback/exclusion; document rounding/precision and null-handling in notes.  
-- **Day 3:** Create customer/product crosswalks (case-trim, resolve collisions); store mapping CSVs in `docs/` and register Delta mapping tables; enforce referential checks (orphan sales) and fix before proceeding.  
-- **Day 4:** Implement idempotent writes (`replaceWhere` by date window or `MERGE` on business keys); publish Silver schema contract (names, types, nullability) and mapping rules; refresh DQ report with pre/post metrics.  
-- **Day 4.5:** Buffer; quantify Raw→Silver impacts (% duplicate reduction, FX impact), run sample queries with DA/DS, and hand-off.
+- **Day 1 — BKs, Dedup, Types (covers Tasks 1–4, 12 init):** Define BKs and dedup strategy; profile duplicates; create Silver schema skeletons; normalize core types; draft initial Delta constraints.
+   - Outcome: documented BKs; first dedup pass per brand; type normalization applied; constraints plan drafted.
+
+- **Day 2 — FX Snapshot & Conversion (covers Tasks 5–6):** Build `silver.fx_rates_eur` with valuation date/source; implement EUR conversion with rounding policy; measure FX coverage and note fallback rules.
+   - Outcome: complete FX table; amounts in EUR; rounding/precision policy documented; FX coverage metrics captured.
+
+- **Day 3 — Crosswalks & Referential Integrity (covers Tasks 7–10):** Create/register crosswalks; normalize customer IDs; align product hierarchy; run orphan checks and fix/quarantine; update mapping CSVs.
+   - Outcome: unified customers/products; orphan issues addressed with counts and rationale.
+
+- **Day 4 — Idempotence, Performance, Contract (covers Tasks 11–14):** Implement and validate idempotent writes; set partitioning and optional OPTIMIZE/Z‑ORDER; publish the Silver schema contract and mapping rules.
+   - Outcome: deterministic re‑runs; documented performance choices; published schema contract.
+
+- **Day 4.5 — DQ Readout (covers Task 15):** Produce the DQ report with pre/post metrics (duplicates, nulls, FX coverage, orphans); attach queries and store evidence.
+   - Outcome: DQ evidence pack complete and ready for review.
 
 #### Mini notes — definitions & examples (Silver)
 
@@ -453,11 +470,22 @@ SELECT
 FROM silver.sales_clean;
 ```
 
-**Tasks**:  
-- Build `sales_daily` (GMV, AOV, margin).  
-- Build `category_perf` (sales by product/category).  
-- Build `customer_360` (RFM analysis + source_system flag).  
-- Validate marts and document schema.  
+**Tasks (15 tasks, numbered)**:  
+1) Define star schema contracts: fact grains, conformed dims, keys (surrogate vs natural), naming and formats (snake_case, DECIMAL scales).  
+2) Create `gold.date_dim` and populate from Silver order_date window; add `date_key` (yyyymmdd), year/month/day.  
+3) Create `gold.product_dim` with surrogate key (IDENTITY or hashed BK); populate attributes (product_code, category, brand).  
+4) Create `gold.customer_dim` with surrogate key and unified customer identifier; include `source_system` where relevant.  
+5) Specify the `gold.sales_daily` schema (keys/measures) and write the first load query (GMV, Orders, Units, Estimated Margin proxy).  
+6) Implement `gold.sales_daily` load handling returns (negative qty → returns) and label margin as proxy when COGS absent.  
+7) Add Delta constraints/checks to `gold.sales_daily` (NOT NULL on keys, non‑negative checks on units/revenue).  
+8) Define and build `gold.category_perf` (aggregations by product/category/brand/date; include GMV, Units, Orders).  
+9) Define `gold.customer_360` base schema (one row per customer) and populate core aggregates (orders, units, GMV).  
+10) Compute and attach RFM metrics to `gold.customer_360` (Recency, Frequency, Monetary) and optional RFM segment/bucket; carry `source_system`.  
+11) Make loads idempotent: choose MERGE or deterministic INSERT OVERWRITE by date/snapshot for each mart; validate repeatability.  
+12) Partitioning/optimization: choose partitioning (e.g., by date), coalesce/compact files, and note file size targets.  
+13) Validate vs Silver: reconcile counts/KPIs, run orphan/RI checks, and execute smoke queries with DA/DS; capture results.  
+14) Document schemas and assumptions: contracts for all marts, margin proxy method, and any caveats; update README.  
+15) Register helper views (e.g., top‑level selects), set table comments/permissions, and finalize hand‑off notes.  
 
 **User Stories (breakdown)**  
 - As a DE, I deliver `sales_daily` with GMV/AOV/margin (proxy if needed).  
@@ -465,11 +493,11 @@ FROM silver.sales_clean;
 - As a DA/DS, I can query Gold marts with documented schema and consistent keys.  
 
 ### Sprint day plan (4.5 days)
-- **Day 1:** Define **star schemas** (grain, conformed dims, keys); decide surrogate vs natural keys; set naming/format rules; pre-create reference dims (date, product, customer).  
-- **Day 2:** Build `sales_daily`: derive revenue, apply margin proxy if COGS missing (label clearly); handle returns/negatives; partition/coalesce sensibly; validate totals against Silver.  
-- **Day 3:** Build `category_perf` and `customer_360` (include RFM base); ensure one-row-per-customer, dedupe/keys consistent across brands; snapshot any slowly changing attributes if needed.  
-- **Day 4:** Reconcile counts and KPIs vs Silver; add basic constraints (NOT NULL, CHECK ranges); document schemas and assumptions (e.g., margin proxy).  
-- **Day 4.5:** Light tuning (partitioning/coalesce), create a few helper views (and register them), run smoke queries with DA/DS, and hand-off.
+- **Day 1 [Tasks 1–4]:** Define star schemas and contracts; decide keys; implement and populate `date_dim`, `product_dim`, and `customer_dim`.  
+- **Day 2 [Tasks 5–7, 11 (init)]:** Build `sales_daily` (GMV/AOV/margin proxy), handle returns; add Delta constraints; start idempotent load pattern.  
+- **Day 3 [Tasks 8–10]:** Build `category_perf` and `customer_360`; compute and attach RFM metrics; ensure one‑row‑per‑customer.  
+- **Day 4 [Tasks 11 (final), 12–13]:** Finalize idempotent strategies; set partitioning/coalesce; validate vs Silver and run smoke queries with DA/DS.  
+- **Day 4.5 [Tasks 14–15]:** Document schemas/assumptions (margin proxy); register helper views, set comments/permissions, and complete hand‑off.  
 
 #### Mini examples — Star schema and `sales_daily` (start)
 
