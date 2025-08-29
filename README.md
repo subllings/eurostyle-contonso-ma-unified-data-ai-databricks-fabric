@@ -56,7 +56,7 @@ In a production environment, this would be automated and governed using:
 | Advanced | 🟥 Gold marts enriched with scores | 🟥 Baseline churn & CLV models | 🟩 🟨 Predictive KPIs dashboards | Predictive insights |
 | Mastery | 🟥→🟩 Reusable pipelines & exports | 🟥 Finalized models + metrics (Accuracy, AUC, RMSE) | 🟩 🟨 Executive storytelling dashboards | Portfolio-ready prototype |
 
-Icon legend: 🟥 Databricks, 🟥→🟩 handoff (Databricks & Fabricks integration), 🟩 Fabric, 🟨 Power BI.
+Icon legend: 🟥 Databricks, 🟥→🟩 Databricks & Fabricks integration, 🟩 Fabric, 🟨 Power BI.
 
 ---
 
