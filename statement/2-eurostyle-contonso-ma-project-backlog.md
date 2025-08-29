@@ -201,7 +201,7 @@ As a Data Engineer, I want to ingest EuroStyle and Contoso CSVs into Bronze so t
 - Row counts match raw source files.  
  - Contoso Bronze available by Day 1 for DA DirectQuery; connection validated from Power BI.  
  - Dates and numeric columns parse correctly; consistent column naming applied where feasible across brands.  
- - Basic Data Quality (DQ) summary produced (missing values, duplicate rate on `(order_id, sku, customer_id, order_date)`, top countries/currencies).  
+ - Basic Data Quality (DQ) summary produced (missing values, duplicate rate on `(order_id, sku, customer_id, order_date)`, top countries/currencies). See Appendix A – DQ Thresholds & Tests.  
  - Mini schema dictionary and a short runbook (how to re-run ingestion, folder structure, naming conventions) added to repo.
  - Azure DevOps DQ tickets opened for any raw→Bronze variance >1% or material DQ issue; links captured in README and referenced by DA in Feature 2.2.
 
@@ -300,7 +300,7 @@ As a Data Engineer, I want Silver tables with clean, harmonized schemas so Analy
    - Note: Currency conversion reproducibility — store a reference FX table (e.g., European Central Bank (ECB) daily rates) and use a fixed valuation snapshot/date for the sprint; persist it in Silver (e.g., `silver.fx_rates_eur`).
  - Idempotent writes: re‑running the Silver job yields the same results (deterministic windowed writes or replaceWhere strategy).  
  - Silver data contract published (schema with types/nullability and mapping rules).  
- - DQ report updated (pre/post cleaning: duplicates removed %, nulls reduced %, FX normalization impact).  
+ - DQ report updated (pre/post cleaning: duplicates removed %, nulls reduced %, FX normalization impact). See Appendix A – DQ Thresholds & Tests.  
  - FX snapshot table (`silver.fx_rates_eur`) versioned with valuation date and source metadata.
  - Azure DevOps DQ tickets opened/updated for any Raw→Silver residual issues discovered (e.g., orphan facts, missing FX rates); links added to README and referenced by DA in Feature 2.2.
 
@@ -742,7 +742,7 @@ As a Data Analyst, I want to compare KPIs Raw vs Silver to highlight data cleani
    - Note: Online Retail II captures returns (credit notes/negative quantities). If the Contoso dataset lacks explicit returns, either simulate a conservative return flag or exclude return-rate comparisons for Contoso and document the limitation.
  - Comparison measures implemented (e.g., `GMV_raw`, `GMV_silver`, `GMV_delta`, `AOV_delta`, `return_rate_delta`) with clear labeling.  
  - Side-by-side (or toggle/bookmark) view implemented to switch between Raw and Silver.  
- - At least three material data-quality impacts quantified (e.g., % duplicate reduction, FX normalization impact on GMV).  
+ - At least three material data-quality impacts quantified (e.g., % duplicate reduction, FX normalization impact on GMV). See Appendix A – DQ Thresholds & Tests.  
  - First RLS pass configured on Silver (brand-level roles) and validated on 1–2 visuals.  
  - Azure DevOps cards created for top data-quality fixes, linked in the dashboard/readme.
 
@@ -857,7 +857,7 @@ As an Executive, I want consolidated GMV, AOV, and margin so I can track EuroSty
 - Brand comparison available (EuroStyle vs Contoso).  
 - Regional splits included (North vs South Europe).  
 - RLS configured and validated.  
- - Methods banner present on the Executive page (date range, currency/FX note, and margin method disclosure).
+ - Methods banner present on the Executive page (date range, currency/FX note, and margin method disclosure). See Business Case – Governance, NFRs, and Security.
  - Performance budget on Executive page met (target visual refresh ≤ 3–5s on typical filters).  
  - Accessibility basics applied (contrast, meaningful titles and alt text, tab order).  
  - RLS validated in Power BI Service (View as role) and sharing permissions verified.  
@@ -1465,7 +1465,7 @@ For your information
 - Manual export path validated for Free Edition: files manually downloaded from Databricks and uploaded to Fabric Lakehouse `/Files/dropzone/...`.  
 - Fabric Data Pipeline ingests to Delta tables with correct dtypes, partitioning (if applicable), and primary keys validated.  
 - Row counts and optional checksums match source within tolerance; sampling spot-checks pass.  
-- Datasets are queryable from Power BI (Direct Lake) and a tiny visual loads without refresh errors.  
+ - Datasets are queryable from Power BI (Direct Lake) and a tiny visual loads without refresh errors. Follow Ops runbook (Appendix B) for validation checklist.  
 
 **Tasks (numbered)**  
 1) List Gold tables to export (e.g., `sales_daily_gold`, `customer_360_gold`, `customer_scores_gold`) and confirm owners.  
@@ -1615,7 +1615,7 @@ As a Data Scientist, I want churn and CLV scores exported from Databricks into F
 
 **Acceptance Criteria**:  
 - Scored churn and CLV tables saved in `customer_scores_gold`.  
-- Files exported as Parquet + manifest for Fabric.  
+ - Files exported as Parquet + manifest for Fabric. Include `_SUCCESS` and follow Ops runbook (Appendix B) for manual transfer on free tiers.  
 - Export process documented and tested **using manual download from Databricks Free Edition and manual upload into Fabric Lakehouse** (no automated integration in free tier).  
 - Fabric Data Pipeline ingests scores into Lakehouse tables.  
 - Power BI dashboards (Feature 4.2) consume these tables for segmentation and risk views.  
@@ -1665,7 +1665,7 @@ As a Data Scientist, I want churn and CLV scores exported from Databricks into F
  - Bucketing reproducibility: if using deciles/thresholds, include bucket edges in the manifest so Fabric reproduces the same buckets; avoid recomputing deciles on a different population.  
  - Manifest fields (scores): `table`, `schema` (name, dtype, nullability), `files`, `row_counts`, optional `checksums`, `model_version`, `feature_version`, `created_ts`, `as_of_date`, `run_ids`, and sample size used for spot checks.  
  - Dtype/time zone mapping: map floating scores to DOUBLE/DECIMAL consistently; store timestamps in UTC; document any conversions (UTC → local) and rounding rules used in dashboards.  
- - QA in Fabric (quick SQLs): check distinct `customer_id`, null rates, bounds (`0<=churn_score<=1`, `clv_pred>=0`), distribution by `churn_bucket`, and latest `as_of_date`. Keep a small SQL snippet in the README.  
+   - QA in Fabric (quick SQLs): check distinct `customer_id`, null rates, bounds (`0<=churn_score<=1`, `clv_pred>=0`), distribution by `churn_bucket`, and latest `as_of_date`. See Appendix A – DQ Thresholds & Tests for acceptance thresholds.  
  - Spot checks: randomly sample 100 rows before/after ingestion and compare values within a small tolerance (e.g., 1e-6 for floats); save the diff summary as an artifact.  
  - Error triage & rollback: keep releases in versioned folders; if ingestion for a table fails, fix dtype/mapping and re-run only that table; maintain a `current` pointer (shortcut or view) to the latest good release.  
  - Security/PII: export only needed columns (`customer_id`, scores, versions, dates); avoid leaking raw attributes not required by dashboards.  
@@ -2034,6 +2034,50 @@ Note on numbering: Tasks are grouped by workflow (prep → train → validate �
       - Diagnostics: QQ plots of monetary, KS on inter‑purchase times, posterior checks; lift vs RFM.
    - Sequential deep learning (optional, for comparison)
       - Sequence building: sessionized purchases; embeddings for product/brand/channel; positional encodings; masking.
+
+---
+
+## Appendices
+
+### Appendix A — DQ Thresholds & Tests (Prototype)
+
+Scope: minimal, consistent checks to build trust. Apply at layer handoffs and export.
+
+- Row count reconciliation: Raw→Bronze and Bronze→Silver within ±1.0% unless explained; list exclusions explicitly.  
+- Duplicate rate on BK (order_id, sku, customer_id, order_date): ≤ 0.5% after Silver; document residuals.  
+- Nulls on business keys: ≤ 0.1% in Silver; none allowed in Gold facts/dims (enforce NOT NULL).  
+- FX coverage: ≥ 99.5% of monetary rows have a matching FX rate for the chosen valuation date; missing handled per policy, counts reported.  
+- Monetary precision: amounts DECIMAL(18,2); rates DECIMAL(18,8); rounding HALF_UP at final step.  
+- Score bounds (Feature 4.3): 0 ≤ churn_score ≤ 1; clv_pred ≥ 0; no NaN/Inf; bucket definitions fixed per manifest.  
+- Fabric ingestion QA: counts match manifest within tolerance; dtype/nullability preserved; latest `as_of_date` present; partition uniqueness holds.  
+
+Outputs and evidence
+- Persist a small `monitor.*` table per layer (e.g., `monitor.dq_bronze_daily`, `monitor.dq_silver_daily`) with counts and key null/dup metrics.  
+- Store a one‑pager per sprint with the metrics and variances; link any Azure DevOps DQ bugs.  
+- For exports, attach `release_manifest.json`/`scores_manifest.json` and a tiny CSV summary of counts/checksums.
+
+### Appendix B — Ops & Observability Runbook (Free/Trial tiers)
+
+Purpose: codify manual steps and health checks in free/trial environments.
+
+Run patterns
+- Idempotent writes: MERGE on keys or deterministic overwrite by date window (`replaceWhere`).  
+- Export contract: Parquet files coalesced to 128–512MB, `_SUCCESS` marker, versioned manifest with schema/counts/checksums.  
+- Manual transfer: download from Databricks, upload to Fabric Lakehouse `/Files/dropzone/<release>/...`; keep folder structure identical.  
+
+Health checks (post‑write/post‑ingest)
+- Row counts within Appendix A tolerance; primary key uniqueness; partition completeness; file count sanity.  
+- Score bounds and dtypes; timestamps in UTC; latest `as_of_date` available.  
+- Power BI smoke: a small visual reads the dataset without errors; Performance Analyzer notes captured.
+
+Recovery steps
+- If counts drift > threshold: rerun the affected window; compare manifest vs Lakehouse; reopen DQ bug with evidence.  
+- If dtype mismatch: adjust Fabric mapping and re‑ingest the specific table; do not mass‑recreate if avoidable.  
+- If dashboard broken: rebind dataset; refresh; verify lineage; consult Methods banner and RLS matrix.
+
+Ownership & cadence
+- DE owns exports/ingest; DA owns dashboards; DS owns scores; PO reviews evidence weekly.  
+- Cadence: daily refresh target; promotion via Fabric Deployment Pipelines when applicable.
 
 
 <a id="feature-5-4"></a>

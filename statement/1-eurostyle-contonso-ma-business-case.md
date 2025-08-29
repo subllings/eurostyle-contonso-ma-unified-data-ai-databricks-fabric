@@ -92,7 +92,8 @@ The **Chief Marketing Officer (CMO)** and **Chief Data & Analytics Officer (CDAO
 
 
 
----
+
+
 
 ## Agile Way of Working
 
@@ -167,39 +168,14 @@ You will work with **two European retail datasets** to simulate EuroStyle (North
 - Link: https://www.kaggle.com/datasets/joycemara/european-fashion-store-multitable-dataset  
 - Notes: Synthetic but realistic, multiple related tables (orders, products, customers). Ideal for schema harmonization and joins.
 
-**Upload instructions (Databricks Free Edition)**  
-- Download CSVs locally, then upload to:  
-  - EuroStyle: `/FileStore/retail/raw/eurostyle/...`  
-  - Contoso: `/FileStore/retail/raw/contoso/...`
-
-**Example column mapping (to harmonize schemas)**
-
-| Unified field        | EuroStyle (Online Retail II) | Contoso (European Fashion Store) |
-|---|---|---|
-| `order_id`           | `InvoiceNo`                   | `order_id` |
-| `order_date`         | `InvoiceDate`                 | `order_date` |
-| `customer_id`        | `CustomerID`                  | `customer_id` |
-| `sku`                | `StockCode`                   | `sku` or `product_id` |
-| `product_name`       | `Description`                 | `product_name` |
-| `quantity`           | `Quantity`                    | `quantity` |
-| `unit_price`         | `UnitPrice`                   | `unit_price` |
-| `country`            | `Country`                     | `country` |
-| `currency`           | inferred/assumed              | `currency` (if present) |
-
-Recommendations  
-- Normalize currencies to a common target (e.g., EUR) before Silver.  
-- Build mapping tables for `sku` and product hierarchy.  
-- Deduplicate by `(order_id, sku, customer_id, order_date)` where needed.  
-- Add `source_system` column: `eurostyle` or `contoso`.
-
 ---
 
 ## Detailed Deliverables
 
 For full details of tasks, acceptance criteria, and technical specifications, see the [Product Backlog](https://github.com/subllings/eurostyle-contonso-ma-unified-data-ai-databricks-fabric/blob/main/statement/2-eurostyle-contonso-ma-project-backlog.md).
 
-Note de référence
-- Le Sprint Planning Matrix, l'Epic‑to‑Sprint and Role Mapping, et le Feature‑to‑Sprint and Role Mapping sont maintenus dans ce document de backlog (voir le lien ci‑dessus).
+Reference note
+- The Sprint Planning Matrix, the Epic‑to‑Sprint and Role Mapping, and the Feature‑to‑Sprint and Role Mapping are maintained in the backlog document (see the link above).
 
 ---
 
