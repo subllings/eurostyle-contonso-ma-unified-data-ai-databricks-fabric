@@ -149,14 +149,14 @@ It mirrors the same structure as *Roles per Sprint*, ensuring clarity and consis
 
 | Level of Ambition | Data Engineer (DE) | Data Scientist (DS) | Data Analyst (DA) | Objectives |
 |-------------------|---------------------|----------------------|-------------------|------------|
-| **Must-Have (Essentials)** | Load EuroStyle + Contoso raw files into **Bronze Delta** with metadata and quality checks | Define initial hypotheses for churn and **Customer Lifetime Value (CLV)**; set up notebooks for basic **Exploratory Data Analysis (EDA)** | Create first dashboards showing **Gross Merchandise Value (GMV)**, **Average Order Value (AOV)**, and order counts from Bronze | Prove that ingestion works end-to-end and provide first insights |
-| **Stretching (Robustness)** | Build the **Silver layer**: clean data, harmonize schemas, align currencies, and prepare first **Gold marts** | Conduct detailed **EDA** on Silver: detect overlaps, missing values, customer segments; start designing **RFM features** (Recency, Frequency, Monetary value) | Redesign dashboards with harmonized KPIs; implement **Row-Level Security (RLS)** to separate manager vs. executive views | Guarantee consistent and reliable reporting across both brands |
+| **Must-Have (Essentials)** | Load EuroStyle + Contoso raw files into **Bronze Delta** with metadata (ingest_ts, source_system), a basic DQ summary, and a mini schema dictionary/runbook | Define initial hypotheses for churn and **Customer Lifetime Value (CLV)**; set up notebooks for basic **Exploratory Data Analysis (EDA)** | Create first dashboards showing **Gross Merchandise Value (GMV)**, **Average Order Value (AOV)**, and order counts from Bronze | Prove that ingestion works end-to-end and provide first insights |
+| **Stretching (Robustness)** | Build the **Silver layer**: clean data, harmonize schemas, align currencies (FX→EUR), and prepare first **Gold marts** | Conduct detailed **EDA** on Silver: detect overlaps, missing values, customer segments; start designing **RFM features** (Recency, Frequency, Monetary value) | Redesign dashboards with harmonized KPIs; implement **Row-Level Security (RLS)** and add a methods banner (returns rule, FX valuation date, margin proxy note) | Guarantee consistent and reliable reporting across both brands |
 | **Excellence (Advanced Value)** | Enrich **Customer 360° Gold mart** with scored tables (e.g., churn probability, CLV segments) | Train baseline churn and CLV models (e.g., Logistic Regression, Random Forest); track runs in MLflow; refine features such as cross-sell signals | Add predictive KPIs (churn risk, CLV tiers) into Fabric/Power BI dashboards | Move from descriptive reporting to predictive decision-making |
-| **Hire Me Level (Mastery)** | Document and publish reusable pipelines for ingestion, transformation, and export to Fabric Lakehouse | Finalize churn and CLV models; document performance using metrics such as **accuracy**, **Area Under the Curve (AUC)**, and **Root Mean Squared Error (RMSE)**; provide explainability; publish customer-level scored datasets for reuse | Build executive-level dashboards combining financial KPIs and predictive scores; present a polished *"Post-Merger Analytics with Databricks & Fabric"* case | Demonstrate full mastery of engineering, analytics, and science in a unified portfolio-ready project |
+| **Hire Me Level (Mastery)** | Document and publish reusable pipelines for ingestion, transformation, and export to Fabric Lakehouse; note the optional orchestration path (Feature 5.4: Airflow DAG + Fabric fallback) | Finalize churn and CLV models; document performance using metrics such as **accuracy**, **Area Under the Curve (AUC)**, and **Root Mean Squared Error (RMSE)**; provide explainability; publish customer-level scored datasets for reuse | Build executive-level dashboards combining financial KPIs and predictive scores; present a polished *"Post-Merger Analytics with Databricks & Fabric"* case | Demonstrate full mastery of engineering, analytics, and science in a unified portfolio-ready project |
 
 ---
 
-## Dataset
+## Datasets
 
 You will work with **two European retail datasets** to simulate EuroStyle (North/West Europe) and Contoso (South Europe).
 
@@ -174,8 +174,7 @@ You will work with **two European retail datasets** to simulate EuroStyle (North
 
 For full details of tasks, acceptance criteria, and technical specifications, see the [Product Backlog](https://github.com/subllings/eurostyle-contonso-ma-unified-data-ai-databricks-fabric/blob/main/statement/2-eurostyle-contonso-ma-project-backlog.md).
 
-Reference note
-- The Sprint Planning Matrix, the Epic‑to‑Sprint and Role Mapping, and the Feature‑to‑Sprint and Role Mapping are maintained in the backlog document (see the link above).
+
 
 ---
 
