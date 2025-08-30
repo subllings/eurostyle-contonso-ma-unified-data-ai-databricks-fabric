@@ -444,7 +444,7 @@ Register Silver catalog/schema in Purview (UC connector), run scan, apply classi
   - After initial Silver loads, trigger a Purview UC scan on the workspace URL + SQL Warehouse HTTP Path.
   - Store the Databricks PAT (or use Managed Identity/Service Principal) in Key Vault and grant Purview read of the secret.
   - Apply classifications (e.g., Email, Phone) and associate glossary terms to key Silver tables; capture a lineage screenshot for evidence.
-      ```
+      
    - Null‑handling: define a fallback if `rate_to_eur` is missing (e.g., previous business day, default to EUR=1 when currency='EUR', or exclude and log). Record counts of affected rows in DQ metrics and note the policy in the schema contract.
    - Contract note: explicitly write the chosen scales (`DECIMAL(18,2)` amounts, `DECIMAL(18,8)` rates), rounding step (final vs intermediate), and fallback policy.
 
@@ -503,8 +503,8 @@ As a Data Engineer, I want Gold marts for sales and customers so the business ge
 - [Gross Merchandise Value (GMV): Meaning & Calculation](https://www.yieldify.com/blog/gross-merchandise-value-gmv)
 - [Understanding GMV in ecommerce](https://getrecharge.com/blog/understanding-gmv-in-ecommerce/)
 - [AOV vs CR vs RPV vs GMV in Ecommerce: Important Metrics You Should Know](https://www.mida.so/blog/important-ecommerce-metrics-aov-cr-rpv-gmv)
- - Microsoft Purview — Connect Azure Databricks Unity Catalog: https://learn.microsoft.com/purview/register-scan-azure-databricks-unity-catalog  
- - Microsoft Purview — Data Quality for UC: https://learn.microsoft.com/purview/unified-catalog-data-quality-azure-databricks-unity-catalog  
+ - [Microsoft Purview — Connect Azure Databricks Unity Catalog](https://learn.microsoft.com/purview/register-scan-azure-databricks-unity-catalog) 
+ - [Microsoft Purview — Data Quality for UC](https://learn.microsoft.com/purview/unified-catalog-data-quality-azure-databricks-unity-catalog)
 
 **Key Concepts**:  
 - Gold = business-ready, aggregated, and optimized marts (subject‑oriented curated datasets optimized for analytics).  
@@ -544,7 +544,10 @@ SELECT
 FROM silver.sales_clean;
 ```
 
-**Tasks (15 tasks, numbered)**:  
+
+
+
+**Tasks (15 tasks, numbered)**  
 🟥 1) [DBX-DE-Prof][Modeling] Define star schema contracts: fact grains, conformed dims, keys (surrogate vs natural), naming and formats (snake_case, DECIMAL scales).  
 🟥 2) [DBX-DE-Prof][Modeling][DBX-DE-Assoc][Delta-Basics] Create `gold.date_dim` and populate from Silver order_date window; add `date_key` (yyyymmdd), year/month/day.  
 🟥 3) [DBX-DE-Prof][Modeling][DBX-DE-Assoc][Delta-Basics] Create `gold.product_dim` with surrogate key (IDENTITY or hashed BK); populate attributes (product_code, category, brand).  
@@ -1742,7 +1745,7 @@ As a Data Scientist, I want churn and CLV scores exported from Databricks into F
 - Fabric Data Pipeline ingests scores into Lakehouse tables.  
 - Power BI dashboards (Feature 4.2) consume these tables for segmentation and risk views.  
 
-**Tasks (15 tasks, numbered)**:  
+**Tasks (15 tasks, numbered)**  
 🟥 1) Confirm scored output schemas and partitions; align with DA on fields/buckets needed in dashboards.  
 🟥 2) Fix model/feature versions; record MLflow run IDs and registry versions for traceability.  
 🟥 3) Run batch scoring in Databricks Free Edition; write outputs to Gold `customer_scores_gold` with version columns.  
