@@ -58,12 +58,12 @@ It provides a clear mapping of **who delivers what, and when**, ensuring no role
 | Sprint | Data Engineer (DE) | Data Scientist (DS) | Data Business Analyst (DA) |
 |--------|---------------------|---------------------|-------------------|
 | **0 (0.5d)** | 🟥 Set up Databricks workspace and folder structure; define ingestion paths for EuroStyle & Contoso | 🟥 Define hypotheses for churn (inactivity >90 days) and Customer Lifetime Value (CLV); identify required features | 🟩 🟨 Define initial KPI Catalog v0.1 (GMV, AOV, margin, churn rate); map differences EuroStyle vs Contoso |
-| **1 (4.5d)** | 🟥 Ingest EuroStyle & Contoso raw CSVs into Bronze Delta tables; add metadata (`ingest_ts`, `source_system`) | 🟥 Perform **Exploratory Data Analysis (EDA)** on Bronze (Contoso first): distributions, missing values, brand overlap; draft churn & CLV definitions | 🟩 🟨 Build "First Look Dashboard" (Contoso first) with Bronze KPIs: **GMV (Gross Merchandise Value)**, **AOV (Average Order Value)**, order counts |
-| **2 (4.5d)** | 🟥 Transform Bronze → Silver: deduplication, schema harmonization, standardize currencies, align product hierarchies | 🟥 Engineer features: **RFM (Recency, Frequency, Monetary value)**, basket diversity, cross-brand overlap; track feature sets in MLflow | 🟩 🟨 Redesign dashboards on Silver; compare Raw vs Silver KPIs; implement first **Row-Level Security (RLS)** rules |
+| **1 (4.5d)** | 🟥 Ingest EuroStyle & Contoso raw CSVs into Bronze Delta tables; add metadata (`ingest_ts`, `source_system`); kick off 🟦 Governance G.1 (Purview + UC setup: SQL Warehouse HTTP Path, system tables, credential) | 🟥 Perform **Exploratory Data Analysis (EDA)** on Bronze (Contoso first): distributions, missing values, brand overlap; draft churn & CLV definitions | 🟩 🟨 Build "First Look Dashboard" (Contoso first) with Bronze KPIs: **GMV (Gross Merchandise Value)**, **AOV (Average Order Value)**, order counts |
+| **2 (4.5d)** | 🟥 Transform Bronze → Silver: deduplication, schema harmonization, standardize currencies, align product hierarchies; continue 🟦 Governance G.1 (run first Purview scan, verify lineage, capture evidence) | 🟥 Engineer features: **RFM (Recency, Frequency, Monetary value)**, basket diversity, cross-brand overlap; track feature sets in MLflow | 🟩 🟨 Redesign dashboards on Silver; compare Raw vs Silver KPIs; implement first **Row-Level Security (RLS)** rules |
 | **3 (4.5d)** | 🟥 Build Gold marts: `sales_daily` (sales, GMV, AOV, margin), `category_perf`, `customer_360` with RFM base | 🟥 Train baseline models: Logistic Regression (churn), Random Forest (CLV regression); log experiments in MLflow | 🟩 🟨 Deliver **Executive Dashboard**: consolidated KPIs (GMV, AOV, margin), brand comparisons, North vs South splits |
 | **4 (4.5d)** | 🟥→🟩 Export Gold marts to Fabric Lakehouse (Parquet + manifest, or Shortcuts); orchestrate ingestion with Fabric Data Pipelines | 🟥→🟩 Run batch scoring for churn & CLV; join scored tables into Gold `customer_360`; export to Fabric and validate metrics/skew | 🟩 🟨 Build full **Power BI Post-Merger Suite**: Executive + Customer Segmentation dashboards (with churn & CLV); deploy with Fabric pipelines |
 
-Legend: 🟥 Databricks, 🟩 Fabric, 🟨 Power BI, 🟥→🟩 Integration (handoff Databricks → Fabric)
+Legend: 🟥 Databricks, 🟩 Fabric, 🟨 Power BI, 🟦 Governance, 🟥→🟩 Integration (handoff Databricks → Fabric)
 
 
 ---
@@ -75,13 +75,13 @@ This table lists all epics, distributed by sprint and by profile (DE, DS, DA). I
 | Sprint | DE (Data Engineer) | DS (Data Scientist) | DA (Data Business Analyst) |
 |---|---|---|---|
 | 0 | 🟥 [Epic 1 – Data Foundation Platform](#epic-1) (setup: workspace, folders, ingest paths) | 🟥 [Epic 2 – ML & Predictive](#epic-2) (hypotheses/requirements, MLflow init) | 🟩 🟨 [Epic 3 – Analytics & BI](#epic-3) (KPI Catalog v0.1, semantic draft) |
-| 1 | 🟥 [Epic 1 – Data Foundation Platform](#epic-1) (Bronze: ES+Contoso, metadata, DirectQuery) | 🟥 [Epic 2 – ML & Predictive](#epic-2) (EDA: prevalence, drift, baselines) | 🟩 🟨 [Epic 3 – Analytics & BI](#epic-3) (First Look – Contoso: semantic model, measures, v1 report, KPI v0.2) |
-| 2 | 🟥 [Epic 1 – Data Foundation Platform](#epic-1) (Silver: dedup, FX→EUR, IDs, schema contract) | 🟥 [Epic 2 – ML & Predictive](#epic-2) (Features: RFM, basket, versioning, leakage checks) | 🟩 🟨 [Epic 3 – Analytics & BI](#epic-3) (Raw vs Silver: deltas, toggles, RLS v1, DQ impacts) |
+| 1 | 🟥 [Epic 1 – Data Foundation Platform](#epic-1) (Bronze: ES+Contoso, metadata, DirectQuery) + 🟦 Governance [G.1](#feature-g-1) (Purview + UC setup) | 🟥 [Epic 2 – ML & Predictive](#epic-2) (EDA: prevalence, drift, baselines) | 🟩 🟨 [Epic 3 – Analytics & BI](#epic-3) (First Look – Contoso: semantic model, measures, v1 report, KPI v0.2) |
+| 2 | 🟥 [Epic 1 – Data Foundation Platform](#epic-1) (Silver: dedup, FX→EUR, IDs, schema contract) + 🟦 Governance [G.1](#feature-g-1) (scan + lineage + evidence) | 🟥 [Epic 2 – ML & Predictive](#epic-2) (Features: RFM, basket, versioning, leakage checks) | 🟩 🟨 [Epic 3 – Analytics & BI](#epic-3) (Raw vs Silver: deltas, toggles, RLS v1, DQ impacts) |
 | 3 | 🟥 [Epic 1 – Data Foundation Platform](#epic-1) (Gold marts: sales_daily, category_perf, customer_360) | 🟥 [Epic 2 – ML & Predictive](#epic-2) (Model training: churn LR, CLV RF, calibration/CI) | 🟩 🟨 [Epic 3 – Analytics & BI](#epic-3) (Executive: consolidated KPIs, brand/region, RLS) |
 | 4 | 🟥→🟩 [Epic 4 – Platform Integration](#epic-4) (Fabric export: Parquet+manifest, pipeline ingest) | 🟥→🟩 [Epic 2 – ML](#epic-2) (Batch scoring, join to Gold, explainability) + [Epic 4](#epic-4) (Export/validation) | 🟩 🟨 [Epic 3 – Analytics](#epic-3) (Segmentation) + [Epic 4](#epic-4) (Power BI Suite, pipeline promotion) |
 | 5 (optional) | 🟥 [Epic 5 – Optional Extensions](#epic-5) (Data Vault light; E2E deployment sim) | 🟥 [Epic 5 – Optional Extensions](#epic-5) (Survival = time‑to‑churn; probabilistic repeat‑purchase model (Beta‑Geometric (BG)/Negative Binomial Distribution (NBD)) to estimate Customer Lifetime Value (CLV); export scores to Fabric and run validation checks (QA)) | 🟩 🟨 [Epic 5 – Optional Extensions](#epic-5) (Dynamic dashboards: what‑if/drill; deployment pipeline) |
 
-Legend: 🟥 Databricks, 🟩 Fabric, 🟨 Power BI, 🟥→🟩 Integration (handoff Databricks → Fabric)
+Legend: 🟥 Databricks, 🟩 Fabric, 🟨 Power BI, 🟦 Governance, 🟥→🟩 Integration (handoff Databricks → Fabric)
 
 Notes
 - Optional extensions (Epic 5.x) are scheduled under Sprint 5 (optional) based on team capacity.
@@ -95,13 +95,13 @@ This table lists all features, distributed by sprint and by profile (DE, DS, DA)
 | Sprint | DE (Data Engineer) | DS (Data Scientist) | DA (Data Business Analyst) |
 |---|---|---|---|
 | 0 | — | — | — |
-| 1 | 🟥 [1.1 Raw Data Ingestion](#feature-1-1) (Bronze Delta with ingest_ts/source_system; DQ summary; schema dictionary; runbook) | 🟥 [2.1 EDA, baselines & MLflow setup](#feature-2-1) (EDA readout; baselines; leakage/risk log; MLflow init) | 🟩 🟨 [3.1 First Look – Contoso](#feature-3-1) (semantic model; named measures; v1 report) |
-| 2 | 🟥 [1.2 Silver Cleaning & Harmonization](#feature-1-2) (idempotent writes; Silver schema contract; FX normalization with ECB snapshot; DQ before/after) | 🟥 [2.1 EDA summary & risk log](#feature-2-1); 🟥 [2.2 Feature Engineering](#feature-2-2) (RFM; basket/cross‑brand; versioned feature tables; leakage checks; consumption contract) | 🟩 🟨 [3.2 Raw vs Silver – Contoso + EuroStyle](#feature-3-2) (side‑by‑side KPIs; delta measures; RLS draft; bookmarks/toggles) |
+| 1 | 🟥 [1.1 Raw Data Ingestion](#feature-1-1) (Bronze Delta with ingest_ts/source_system; DQ summary; schema dictionary; runbook); 🟦 [G.1 Governance — Purview + UC Scanning](#feature-g-1) (UC/system tables, credential, source registration) | 🟥 [2.1 EDA, baselines & MLflow setup](#feature-2-1) (EDA readout; baselines; leakage/risk log; MLflow init) | 🟩 🟨 [3.1 First Look – Contoso](#feature-3-1) (semantic model; named measures; v1 report) |
+| 2 | 🟥 [1.2 Silver Cleaning & Harmonization](#feature-1-2) (idempotent writes; Silver schema contract; FX normalization with ECB snapshot; DQ before/after); 🟦 [G.1 Governance — Purview + UC Scanning](#feature-g-1) (run scan, verify lineage, evidence) | 🟥 [2.1 EDA summary & risk log](#feature-2-1); 🟥 [2.2 Feature Engineering](#feature-2-2) (RFM; basket/cross‑brand; versioned feature tables; leakage checks; consumption contract) | 🟩 🟨 [3.2 Raw vs Silver – Contoso + EuroStyle](#feature-3-2) (side‑by‑side KPIs; delta measures; RLS draft; bookmarks/toggles) |
 | 3 | 🟥 [1.3 Gold Business Marts](#feature-1-3) (sales_daily; customer_360; category_perf; margin proxy/notes) | 🟥 [2.3 Model Training](#feature-2-3) (LR churn; RF CLV; calibration/CIs; segment evaluation; registry notes) | 🟩 🟨 [3.3 Executive Post‑Merger Dashboard](#feature-3-3) (GMV/AOV/margin; brand & region splits; RLS configured; perf tuned) |
 | 4 | 🟥→🟩 [4.1 Export Gold to Fabric](#feature-4-1) (Parquet + manifest/Shortcuts; Fabric Pipeline ingest; connectivity validated) | 🟥→🟩 [2.4 Batch Scoring & Integration](#feature-2-4), 🟥→🟩 [4.3 Scoring Export & Validation](#feature-4-3) (batch scoring churn/CLV; join to customer_360; export to Fabric; validate metrics/skew) | 🟩 🟨 [3.4 Customer Segmentation](#feature-3-4), 🟩 🟨 [4.2 Power BI Suite](#feature-4-2) (Executive + Segmentation dashboards; RLS; pipeline Dev→Test; publish suite) |
 | 5 (optional) | 🟥 [5.1 Simplified Data Vault](#feature-5-1); 🟥→🟩 [5.4 Orchestration & E2E Deployment](#feature-5-4) (Airflow DAG + Fabric fallback; manifests/_SUCCESS; QA & notifications) | 🟥 [5.3 Survival/Probabilistic Models](#feature-5-3); 🟥→🟩 [5.4 Orchestration & E2E Deployment](#feature-5-4) (batch scoring export → Fabric ingest; alignment QA) | 🟩 🟨 [5.2 Advanced Segmentation](#feature-5-2); 🟩 🟨 [5.4 Orchestration & E2E Deployment](#feature-5-4) (promotion via Fabric pipelines/app; RLS/share checks) |
 
-Legend: 🟥 Databricks, 🟩 Fabric, 🟨 Power BI, 🟥→🟩 Integration (handoff Databricks → Fabric)
+Legend: 🟥 Databricks, 🟩 Fabric, 🟨 Power BI, 🟦 Governance, 🟥→🟩 Integration (handoff Databricks → Fabric)
 
 Notes
 - Optional extensions (5.x) are grouped in Sprint 5 (optional): 5.1 (DE), 5.2 (DA), 5.3 (DS), and 5.4 (All, cross‑role).
@@ -325,6 +325,9 @@ As a Data Engineer, I want Silver tables with clean, harmonized schemas so Analy
 - [PySpark DataFrame API](https://api-docs.databricks.com/python/pyspark/latest/pyspark.sql/api/pyspark.sql.DataFrame.html)  
  - [Star schema guidance (natural/business vs surrogate keys)](https://learn.microsoft.com/power-bi/guidance/star-schema)  
  - [Delta Lake — overwrite specific partitions with replaceWhere](https://learn.microsoft.com/azure/databricks/delta/delta-batch#overwrite-specific-partitions-with-replacewhere)  
+ - Microsoft Purview — Connect Azure Databricks Unity Catalog: https://learn.microsoft.com/purview/register-scan-azure-databricks-unity-catalog  
+ - Microsoft Purview — Classifications and sensitivity labels: https://learn.microsoft.com/purview/sensitivity-labels-overview  
+ - Microsoft Purview — Glossary and business terms: https://learn.microsoft.com/purview/glossary-terms
 
 **Key Concepts**:  
 - Silver = cleaned and standardized layer.  
@@ -363,6 +366,7 @@ As a Data Engineer, I want Silver tables with clean, harmonized schemas so Analy
 🟥 13) [DBX-DE-Assoc][Platform][DBX-DE-Prof][Modeling] Partitioning/optimization: choose partition columns (e.g., `order_date`); consider OPTIMIZE/Z‑ORDER for common predicates; document choices.  
 🟥 14) [DBX-DE-Prof][Modeling] Publish the Silver schema contract (names, types, nullability) and mapping rules; include FX rounding/fallback policies.  
 🟥 15) [DBX-DE-Prof][Monitoring-Logs] Produce a DQ report (pre/post metrics: duplicate reduction %, nulls reduced %, FX conversion coverage, orphan counts); attach queries.  
+🟥 16) [MS-DP-700][Governance] Register Silver catalog/schema in Purview (UC connector), run scan, apply classifications for PII, and verify lineage from example notebook run.
 
 **User Stories (breakdown)**  
 - As a DE, I deliver Silver sales with duplicates removed and currencies normalized to EUR.  
@@ -418,6 +422,12 @@ As a Data Engineer, I want Silver tables with clean, harmonized schemas so Analy
       ```python
       from pyspark.sql import functions as F
       df = df.withColumn("revenue_eur", F.round(F.col("quantity")*F.col("unit_price")*F.col("rate_to_eur"), 2))
+   ```
+
+- Governance (Purview):
+  - After initial Silver loads, trigger a Purview UC scan on the workspace URL + SQL Warehouse HTTP Path.
+  - Store the Databricks PAT (or use Managed Identity/Service Principal) in Key Vault and grant Purview read of the secret.
+  - Apply classifications (e.g., Email, Phone) and associate glossary terms to key Silver tables; capture a lineage screenshot for evidence.
       ```
    - Null‑handling: define a fallback if `rate_to_eur` is missing (e.g., previous business day, default to EUR=1 when currency='EUR', or exclude and log). Record counts of affected rows in DQ metrics and note the policy in the schema contract.
    - Contract note: explicitly write the chosen scales (`DECIMAL(18,2)` amounts, `DECIMAL(18,8)` rates), rounding step (final vs intermediate), and fallback policy.
@@ -477,6 +487,8 @@ As a Data Engineer, I want Gold marts for sales and customers so the business ge
 - [Gross Merchandise Value (GMV): Meaning & Calculation](https://www.yieldify.com/blog/gross-merchandise-value-gmv)
 - [Understanding GMV in ecommerce](https://getrecharge.com/blog/understanding-gmv-in-ecommerce/)
 - [AOV vs CR vs RPV vs GMV in Ecommerce: Important Metrics You Should Know](https://www.mida.so/blog/important-ecommerce-metrics-aov-cr-rpv-gmv)
+ - Microsoft Purview — Connect Azure Databricks Unity Catalog: https://learn.microsoft.com/purview/register-scan-azure-databricks-unity-catalog  
+ - Microsoft Purview — Data Quality for UC: https://learn.microsoft.com/purview/unified-catalog-data-quality-azure-databricks-unity-catalog  
 
 **Key Concepts**:  
 - Gold = business-ready, aggregated, and optimized marts (subject‑oriented curated datasets optimized for analytics).  
@@ -532,6 +544,7 @@ FROM silver.sales_clean;
 🟥 13) [DBX-DE-Prof][Testing] Validate vs Silver: reconcile counts/KPIs, run orphan/RI checks, and execute smoke queries with DA/DS; capture results.  
 🟥 14) [DBX-DE-Prof][Modeling] Document schemas and assumptions: contracts for all marts, margin proxy method, and any caveats; update README.  
 🟥 15) [DBX-DE-Assoc][UC-Permissions] Register helper views (e.g., top‑level selects), set table comments/permissions, and finalize hand‑off notes.  
+🟦 Note: Governance — After first Gold load, run a Purview UC scan and validate assets and lineage for `gold.sales_daily`; attach evidence.
 
 **User Stories (breakdown)**  
 - As a DE, I deliver `sales_daily` with GMV/AOV/margin (proxy if needed).  
@@ -662,6 +675,8 @@ As a Data Scientist, I want to perform **Exploratory Data Analysis (EDA)** to un
  - [Imbalanced-learn: handling class imbalance](https://imbalanced-learn.org/stable/user_guide.html)  
  - [Time-based and grouped CV (scikit-learn)](https://scikit-learn.org/stable/modules/cross_validation.html#cross-validation-iterators)  
  - [Delta Lake time travel for reproducibility](https://docs.delta.io/latest/delta-utility.html#time-travel)  
+ - Microsoft Purview — Connect Azure Databricks Unity Catalog: https://learn.microsoft.com/purview/register-scan-azure-databricks-unity-catalog  
+ - Microsoft Purview — Glossary: https://learn.microsoft.com/purview/glossary-terms  
 
 **Key Concepts**:  
 - **EDA (Exploratory Data Analysis)** = profiling data to find patterns, missing values, distributions.  
@@ -686,21 +701,22 @@ As a Data Scientist, I want to perform **Exploratory Data Analysis (EDA)** to un
  - Data dictionary updated or created for key fields used in labels/features (e.g., last_activity_date, net_margin).  
 
 **Tasks**:  
-🟥 1) Load Bronze tables and sample safely for iteration (record table names, counts, and sample logic).  
-🟥 2) Generate quick profiles (distributions, missingness, outliers) and capture shapes/head/tail for reproducibility.  
-🟥 3) Map entities/joins needed for churn and CLV (customers, transactions, products, brand dimension).  
-🟥 4) Define churn = inactivity > 90 days; compute last_activity_date per customer and create label churn_90d.  
-🟥 5) Draft CLV definition (12-month net margin) and required inputs (gross revenue, returns, costs).  
-🟥 6) Create leakage checklist; flag/remove fields with future info (e.g., cancellation_date after cutoff).  
-🟥 7) Decide split protocol: time-based cutoff and/or GroupKFold by customer; freeze seed; persist split artifacts.  
-🟥 8) Implement rule-based churn baseline (e.g., inactive > X days) and compute AUC/PR‑AUC on validation.  
-🟥 9) Compute RFM features and segment customers; record segment distributions.  
-🟥 10) Compare EuroStyle vs Contoso distributions; quantify overlaps; run drift checks (e.g., PSI/KS on top features).  
-🟥 11) Initialize MLflow experiment; log baseline runs, parameters (churn_horizon, cutoff_date), and artifacts (plots/tables).  
-🟥 12) Compile prioritized data-quality issue list with owners/severity and proposed fixes (feeds Feature 2.2 and DE backlog).  
-🟥 13) Create data risk log (PII handling, leakage risks, gaps) and share in team space.  
-🟥 14) Produce and commit an EDA notebook and a 1–2 page readout; link them in this backlog.  
-🟥 15) Update data dictionary for key fields; note any ambiguous semantics to resolve with DA/DE.  
+🟥 1) [DBX-ML-Assoc][EDA] Load Bronze tables and sample safely for iteration (record table names, counts, and sample logic).  
+🟥 2) [DBX-ML-Assoc][EDA] Generate quick profiles (distributions, missingness, outliers) and capture shapes/head/tail for reproducibility.  
+🟥 3) [DBX-ML-Assoc][Feature-Engineering][DBX-ML-Assoc][EDA] Map entities/joins needed for churn and CLV (customers, transactions, products, brand dimension).  
+🟥 4) [DBX-ML-Assoc][Feature-Engineering] Define churn = inactivity > 90 days; compute last_activity_date per customer and create label churn_90d.  
+🟥 5) [DBX-ML-Assoc][EDA] Draft CLV definition (12-month net margin) and required inputs (gross revenue, returns, costs).  
+🟥 6) [DBX-ML-Assoc][EDA] Create leakage checklist; flag/remove fields with future info (e.g., cancellation_date after cutoff).  
+🟥 7) [DBX-ML-Assoc][Splits] Decide split protocol: time-based cutoff and/or GroupKFold by customer; freeze seed; persist split artifacts.  
+🟥 8) [DBX-ML-Assoc][Metrics] Implement rule-based churn baseline (e.g., inactive > X days) and compute AUC/PR‑AUC on validation.  
+🟥 9) [DBX-ML-Assoc][Feature-Engineering] Compute RFM features and segment customers; record segment distributions.  
+🟥 10) [DBX-ML-Prof][Monitoring] Compare EuroStyle vs Contoso distributions; quantify overlaps; run drift checks (e.g., PSI/KS on top features).  
+🟥 11) [DBX-ML-Assoc][MLflow] Initialize MLflow experiment; log baseline runs, parameters (churn_horizon, cutoff_date), and artifacts (plots/tables).  
+🟥 12) [DBX-ML-Assoc][EDA] Compile prioritized data-quality issue list with owners/severity and proposed fixes (feeds Feature 2.2 and DE backlog).  
+🟥 13) [DBX-ML-Assoc][UC] Create data risk log (PII handling, leakage risks, gaps) and share in team space.  
+🟥 14) [DBX-ML-Assoc][EDA] Produce and commit an EDA notebook and a 1–2 page readout; link them in this backlog.  
+🟥 15) [DBX-ML-Assoc][EDA] Update data dictionary for key fields; note any ambiguous semantics to resolve with DA/DE.  
+🟦 Note: Governance — Tag PII in Purview (classifications/labels) for customer fields surfaced in EDA; link glossary terms to churn/CLV concepts.
 
 **User Stories (breakdown)**  
 - As a DS, I document churn prevalence and select a non‑leaky split protocol.  
@@ -766,6 +782,8 @@ As a Data Scientist, I want RFM and behavioral features to build churn & CLV mod
  - [Evidently AI: data/drift reports](https://docs.evidentlyai.com/)  
  - [scikit-learn preprocessing (impute/scale/transform)](https://scikit-learn.org/stable/modules/preprocessing.html)  
  - [scikit-learn feature selection (mutual information, variance, etc.)](https://scikit-learn.org/stable/modules/feature_selection.html)  
+ - Microsoft Purview — Glossary and business terms: https://learn.microsoft.com/purview/glossary-terms  
+ - Microsoft Purview — Data Quality for UC: https://learn.microsoft.com/purview/unified-catalog-data-quality-azure-databricks-unity-catalog  
 
 **Key Concepts**:  
 - **RFM** = **Recency, Frequency, Monetary** value (classic segmentation method).  
@@ -817,6 +835,7 @@ As a Data Scientist, I want RFM and behavioral features to build churn & CLV mod
 - Consumption contract doc: schema, keys, join examples to `customer_360_gold`, refresh cadence.  
 - Leakage checklist results and preprocessing spec (imputations/transforms with train‑fit note).  
  - Feature engineering notebook artifact: `notebooks/feature_2_2_feature_engineering.ipynb` (synthetic fallback; Delta write attempted if Spark available).  
+ - Governance evidence: Purview asset entries for feature tables and applied glossary terms (where applicable).
 
 ### Sprint day plan (4.5 days)
 - Day 1 [Tasks 1–2, 9 (init)]: Compute RFM anchored at as‑of T; create `v1` Delta with metadata (version, created_ts, source_snapshot); register table.  
@@ -919,6 +938,49 @@ As a Data Scientist, I want baseline models for churn and CLV so I can evaluate 
 
 ---
 
+<a id="feature-g-1"></a>
+### Feature G.1: Governance — Purview + Unity Catalog Scanning (Sprint 1–2)
+**User Story**:  
+As a Data Platform team, we want Microsoft Purview to catalog and govern our Azure Databricks Unity Catalog assets (metadata, classification, and lineage) so stakeholders can search and trust governed data.  
+
+**Context**:  
+- Workspace is Azure Databricks Trial Premium in our subscription (not Community Edition).  
+- Unity Catalog is required; scanning uses a Databricks SQL Warehouse HTTP Path and authenticates via PAT/Managed Identity/Service Principal.  
+- Lineage requires enabling system tables and SELECT on `system.access.table_lineage` and `system.access.column_lineage`.  
+
+**Acceptance Criteria**:  
+- Purview registered source "Azure Databricks Unity Catalog" points to our workspace URL and SQL Warehouse HTTP Path.  
+- Credential created (PAT in Key Vault or Managed Identity/Service Principal) and test connection succeeds.  
+- At least one catalog successfully scanned; assets (metastore, catalogs, schemas, tables/views/columns) visible in Purview search.  
+- Lineage appears for a sample notebook/SQL run across at least one table/view.  
+- Optional: Data profiling or Data Quality scan configured for a representative UC table.  
+- README updated with steps, links to Purview account, and scan schedule.  
+
+**Tasks (numbered)**:  
+🟥 1) [DBX-DE-Assoc][Platform] Verify workspace is UC‑enabled and attached to the intended metastore; record metastore ID and default catalog.  
+🟥 2) [DBX-DE-Assoc][Platform] Create or reuse a SQL Warehouse; capture Workspace URL and HTTP Path; grant "Can Use" to the scanning identity.  
+🟥 3) [DBX-DE-Assoc][UC-Permissions] Enable system tables and grant SELECT on `system.access.table_lineage` and `system.access.column_lineage` to the scanning identity.  
+🟥 4) [MS-DP-700][Governance] Create Microsoft Purview account (if missing) and Azure Key Vault; grant Purview access to read secrets in Key Vault.  
+🟥 5) [MS-DP-700][Governance] Generate a Databricks PAT (or configure Managed Identity/Service Principal); store secret in Key Vault with clear naming/versioning.  
+🟥 6) [MS-DP-700][Governance] Register source "Azure Databricks Unity Catalog" in Purview; create/select credential; input Workspace URL + HTTP Path; toggle lineage; Test connection.  
+🟥 7) [MS-DP-700][Governance] Scope catalogs/schemas for the first scan; run on‑demand; confirm asset count and classifications appear.  
+🟥 8) [DBX-DE-Prof][Monitoring-Logs] Execute a small UC notebook/SQL that reads/writes between two tables; re‑run scan (or wait for schedule) and verify lineage graph in Purview.  
+🟥 9) [MS-DP-700][Workspaces] If private networking is required, configure Managed vNet or self‑hosted Integration Runtime and private endpoints for Databricks/Key Vault.  
+🟥 10) [MS-DP-700][Governance] Optional: Configure Unified Catalog Data Quality profiling/scan on one table; save results as artifacts.  
+🟥 11) [DBX-DE-Prof][Monitoring-Logs] Document setup (identity, permissions, warehouse, HTTP Path, IR mode) and add Purview links/screenshots to evidence folder; update README.  
+
+**Deliverables**:  
+- Purview source registration with successful scan and lineage visualization.  
+- Credential in Purview (PAT/MI/SP) referencing a Key Vault secret.  
+- Evidence pack: screenshots of scan, assets, and lineage; brief README notes and links.  
+- Optional: Data profiling/quality report for one UC table.  
+
+**Learning Resources**:  
+- Connect Azure Databricks Unity Catalog in Purview (official): https://learn.microsoft.com/purview/register-scan-azure-databricks-unity-catalog  
+- Purview Data Quality for UC: https://learn.microsoft.com/purview/unified-catalog-data-quality-azure-databricks-unity-catalog  
+- Unity Catalog setup and privileges: https://learn.microsoft.com/azure/databricks/data-governance/unity-catalog/  
+
+
 <a id="feature-2-4"></a>
 ### Feature 2.4: Batch Scoring & Integration (Sprint 4)
 **User Story**:  
@@ -929,6 +991,7 @@ As a Data Scientist, I want to score churn/CLV and join them into Customer 360 s
 - Databricks: [Batch inference patterns](https://docs.databricks.com/machine-learning/model-inference/index.html), [Delta MERGE](https://docs.databricks.com/delta/merge.html)  
 - Explainability: [Interpretable ML](https://christophm.github.io/interpretable-ml-book/)  
 - Data quality & drift: [Evidently](https://docs.evidentlyai.com/) (PSI, drift), Great Expectations for schema checks  
+ - Microsoft Purview — Connect Azure Databricks Unity Catalog: https://learn.microsoft.com/purview/register-scan-azure-databricks-unity-catalog  
 
 **Key Concepts**:  
 - Idempotent batch scoring: partition by `as_of_date` and write with MERGE/overwrite-by-partition; include `_SUCCESS`/manifest when exporting.  
@@ -964,6 +1027,7 @@ As a Data Scientist, I want to score churn/CLV and join them into Customer 360 s
 - `customer_scores_gold` table/view with schema contract and version columns.  
 - Skew/QA report artifacts; explainability summary; consumption guide (paths, sample queries).  
 - Runbook with idempotency and recovery steps; versions and run IDs documented.  
+ - Governance evidence: Purview lineage for scoring write into `customer_scores_gold` and updated classifications.
 
 ### Sprint day plan (4.5 days)
 - Day 1 [Tasks 1–3]: Freeze versions, load features, implement model loaders.  
