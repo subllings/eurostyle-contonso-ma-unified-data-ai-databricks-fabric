@@ -517,21 +517,21 @@ FROM silver.sales_clean;
 ```
 
 **Tasks (15 tasks, numbered)**:  
-🟥 1) Define star schema contracts: fact grains, conformed dims, keys (surrogate vs natural), naming and formats (snake_case, DECIMAL scales).  
-🟥 2) Create `gold.date_dim` and populate from Silver order_date window; add `date_key` (yyyymmdd), year/month/day.  
-🟥 3) Create `gold.product_dim` with surrogate key (IDENTITY or hashed BK); populate attributes (product_code, category, brand).  
-🟥 4) Create `gold.customer_dim` with surrogate key and unified customer identifier; include `source_system` where relevant.  
-🟥 5) Specify the `gold.sales_daily` schema (keys/measures) and write the first load query (GMV, Orders, Units, Estimated Margin proxy).  
-🟥 6) Implement `gold.sales_daily` load handling returns (negative qty → returns) and label margin as proxy when COGS absent.  
-🟥 7) Add Delta constraints/checks to `gold.sales_daily` (NOT NULL on keys, non‑negative checks on units/revenue).  
-🟥 8) Define and build `gold.category_perf` (aggregations by product/category/brand/date; include GMV, Units, Orders).  
-🟥 9) Define `gold.customer_360` base schema (one row per customer) and populate core aggregates (orders, units, GMV).  
-🟥 10) Compute and attach RFM metrics to `gold.customer_360` (Recency, Frequency, Monetary) and optional RFM segment/bucket; carry `source_system`.  
-🟥 11) Make loads idempotent: choose MERGE or deterministic INSERT OVERWRITE by date/snapshot for each mart; validate repeatability.  
-🟥 12) Partitioning/optimization: choose partitioning (e.g., by date), coalesce/compact files, and note file size targets.  
-🟥 13) Validate vs Silver: reconcile counts/KPIs, run orphan/RI checks, and execute smoke queries with DA/DS; capture results.  
-🟥 14) Document schemas and assumptions: contracts for all marts, margin proxy method, and any caveats; update README.  
-🟥 15) Register helper views (e.g., top‑level selects), set table comments/permissions, and finalize hand‑off notes.  
+🟥 1) [DBX-DE-Prof][Modeling] Define star schema contracts: fact grains, conformed dims, keys (surrogate vs natural), naming and formats (snake_case, DECIMAL scales).  
+🟥 2) [DBX-DE-Prof][Modeling][DBX-DE-Assoc][Delta-Basics] Create `gold.date_dim` and populate from Silver order_date window; add `date_key` (yyyymmdd), year/month/day.  
+🟥 3) [DBX-DE-Prof][Modeling][DBX-DE-Assoc][Delta-Basics] Create `gold.product_dim` with surrogate key (IDENTITY or hashed BK); populate attributes (product_code, category, brand).  
+🟥 4) [DBX-DE-Prof][Modeling][DBX-DE-Assoc][Delta-Basics] Create `gold.customer_dim` with surrogate key and unified customer identifier; include `source_system` where relevant.  
+🟥 5) [DBX-DE-Prof][Modeling][DBX-DE-Assoc][Spark-Aggregations][DBX-DE-Assoc][Delta-Basics] Specify the `gold.sales_daily` schema (keys/measures) and write the first load query (GMV, Orders, Units, Estimated Margin proxy).  
+🟥 6) [DBX-DE-Assoc][Spark-Aggregations][DBX-DE-Assoc][Delta-Basics] Implement `gold.sales_daily` load handling returns (negative qty → returns) and label margin as proxy when COGS absent.  
+🟥 7) [DBX-DE-Assoc][Delta-Basics] Add Delta constraints/checks to `gold.sales_daily` (NOT NULL on keys, non‑negative checks on units/revenue).  
+🟥 8) [DBX-DE-Prof][Modeling][DBX-DE-Assoc][Spark-Aggregations] Define and build `gold.category_perf` (aggregations by product/category/brand/date; include GMV, Units, Orders).  
+🟥 9) [DBX-DE-Prof][Modeling][DBX-DE-Assoc][Spark-Aggregations] Define `gold.customer_360` base schema (one row per customer) and populate core aggregates (orders, units, GMV).  
+🟥 10) [DBX-DE-Assoc][Spark-Aggregations][DBX-DE-Prof][Modeling] Compute and attach RFM metrics to `gold.customer_360` (Recency, Frequency, Monetary) and optional RFM segment/bucket; carry `source_system`.  
+🟥 11) [DBX-DE-Assoc][Delta-MERGE][DBX-DE-Assoc][Delta-Basics] Make loads idempotent: choose MERGE or deterministic INSERT OVERWRITE by date/snapshot for each mart; validate repeatability.  
+🟥 12) [DBX-DE-Assoc][Platform] Partitioning/optimization: choose partitioning (e.g., by date), coalesce/compact files, and note file size targets.  
+🟥 13) [DBX-DE-Prof][Testing] Validate vs Silver: reconcile counts/KPIs, run orphan/RI checks, and execute smoke queries with DA/DS; capture results.  
+🟥 14) [DBX-DE-Prof][Modeling] Document schemas and assumptions: contracts for all marts, margin proxy method, and any caveats; update README.  
+🟥 15) [DBX-DE-Assoc][UC-Permissions] Register helper views (e.g., top‑level selects), set table comments/permissions, and finalize hand‑off notes.  
 
 **User Stories (breakdown)**  
 - As a DE, I deliver `sales_daily` with GMV/AOV/margin (proxy if needed).  
