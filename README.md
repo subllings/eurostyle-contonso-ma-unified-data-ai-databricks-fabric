@@ -56,18 +56,10 @@ In a production environment, this would be automated and governed using:
 
 | Level | Data Engineer | Data Scientist | Data Business Analyst | Objective |
 |-------|---------------|----------------|--------------|-----------|
-| Essentials | 🟥 Bronze ingestion | 🟥 Churn & CLV* hypotheses | 🟨 Raw KPI* dashboard | First insights |
-| Robustness | 🟥 Silver harmonization, Gold marts | 🟥 Feature engineering (RFM*, overlap) | 🟩 🟨 Silver dashboards + RLS* | Reliable reporting |
-| Advanced | 🟥 Gold marts enriched with scores | 🟥 Baseline churn & CLV* models | 🟩 🟨 Predictive KPI* dashboards | Predictive insights |
-| Mastery | 🟥→🟩 Reusable pipelines & exports | 🟥 Finalized models + metrics (Accuracy, AUC*, RMSE*) | 🟩 🟨 Executive storytelling dashboards | Portfolio-ready prototype |
-
-Acronyms (used above)
-- KPI: Key Performance Indicator
-- CLV: Customer Lifetime Value
-- RFM: Recency, Frequency, Monetary
-- RLS: Row-Level Security
-- AUC: Area Under the ROC Curve
-- RMSE: Root Mean Square Error
+| Essentials | 🟥 Bronze ingestion | 🟥 Churn & CLV hypotheses | 🟨 Raw KPIs dashboard | First insights |
+| Robustness | 🟥 Silver harmonization, Gold marts | 🟥 Feature engineering (RFM, overlap) | 🟩 🟨 Silver dashboards + RLS | Reliable reporting |
+| Advanced | 🟥 Gold marts enriched with scores | 🟥 Baseline churn & CLV models | 🟩 🟨 Predictive KPIs dashboards | Predictive insights |
+| Mastery | 🟥→🟩 Reusable pipelines & exports | 🟥 Finalized models + metrics (Accuracy, AUC, RMSE) | 🟩 🟨 Executive storytelling dashboards | Portfolio-ready prototype |
 
 Icon legend: 🟥 Databricks, 🟥→🟩 Databricks & Fabric integration, 🟩 Fabric, 🟨 Power BI.
 
@@ -83,7 +75,7 @@ Icon legend: 🟥 Databricks, 🟥→🟩 Databricks & Fabric integration, 🟩 
 - [Business Case](./statement/eurostyle-contonso-ma-business-case.md)
 - [Product Backlog](./statement/eurostyle-contonso-ma-project-backlog.md)
 - [Getting Started (free/trial setup)](./GETTING_STARTED.md)
-- [Certification-compliant mapping](./statement/eurostyle-contonso-ma-certification-compliant.md)
+- [Certification-compliant mapping](./statement/eurostyle-contonso-certification-compliant.md)
 - [Certification guides (DE/DS/DA)](./certification/)
 - [Glossary](./GLOSSARY.md)
 

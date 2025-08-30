@@ -2,7 +2,7 @@
 
 This guide shows how to create an Azure Databricks workspace (Premium Trial, 14 days) and enable Microsoft Fabric (Trial or Free F2), configure both for this M&A project, and understand what's possible on free/trial tiers. It also includes quick starts per role (DE/DS/DA).
 
-Useful links: `GLOSSARY.md`, `statement/2-eurostyle-contonso-ma-project-backlog.md`, `statement/eurostyle-contonso-ma-certification-compliant.md`.
+Useful links: `GLOSSARY.md`, `statement/2-eurostyle-contonso-ma-project-backlog.md`, `statement/eurostyle-contonso-certification-compliant.md`.
 
 ---
 
@@ -178,6 +178,6 @@ Data Business Analyst (DA)
 - Sprint 4 — Epic 3 + 4 (Feature 4.2): Power BI Suite and Deployment Pipeline (Dev→Test)
 ## 7) References
 - Backlog: `statement/2-eurostyle-contonso-ma-project-backlog.md`
-- Certification-compliant use case: `statement/eurostyle-contonso-ma-certification-compliant.md`
+- Certification-compliant use case: `statement/eurostyle-contonso-certification-compliant.md`
 - Certification guides: `certification/`
 - Glossary: `GLOSSARY.md`

@@ -1,80 +1,59 @@
-# Glossary — EuroStyle–Contoso (Databricks & Fabric)
+# Glossary (English)
 
-Purpose
-- Common, repo-wide vocabulary for Data Engineer (DE), Data Scientist (DS), and Data Business Analyst (DA).
-- Neutral definitions with light vendor context (Databricks, Microsoft Fabric/Power BI). FR notes inline where useful.
+Single source of truth for terms and acronyms used across the Business Case and Product Backlog.
 
-How to use
-- Terms are grouped; use headings or Ctrl+F. Cross‑links point to files in this repo.
+## Acronyms (A–Z)
 
----
+| Acronym | Classification | Explanation |
+|---|---|---|
+| ADLS (Gen2) | Platform/Storage | Azure Data Lake Storage Gen2, used for governed lake storage in enterprise setups. |
+| AOV | Business Metric | Average Order Value = GMV / Orders. |
+| AUC | Data Science Metric | Area Under the ROC curve; measures ranking quality for binary classifiers (e.g., churn). |
+| AUCPR | Data Science Metric | Area Under the Precision–Recall curve; useful for imbalanced targets like churn. |
+| BG/NBD | Data Science Model | Beta-Geometric/Negative Binomial model for repeat purchase frequency in non-contractual settings (used with Gamma–Gamma for CLV). |
+| BK | Data Modeling | Business Key; stable real‑world identifier used for deduplication and joins. |
+| bps | Finance/Analytics | Basis points (1 bps = 0.01%). Often used for margin deltas. |
+| C360 (Customer 360) | Analytics | Unified customer view combining identities, behaviors, and scores (e.g., churn, CLV). |
+| CDAO | Role | Chief Data & Analytics Officer. |
+| CDP | Platform/Marketing | Customer Data Platform; referenced in learning resources (composable CDP). |
+| CLV | Business/DS Metric | Customer Lifetime Value; expected margin or revenue over a defined horizon. |
+| CMO | Role | Chief Marketing Officer. |
+| COGS | Finance Metric | Cost of Goods Sold; direct costs associated with items sold (drives margin calculations). |
+| CI (Confidence Interval) | Statistics | Interval estimate that quantifies uncertainty around a metric (e.g., AUC, RMSE). |
+| CI/CD | DevOps | Continuous Integration / Continuous Delivery for automations and deployments. |
+| DAX | BI Language | Data Analysis Expressions (Power BI); used for measures (e.g., GMV, AOV). |
+| DBFS | Platform/Storage | Databricks File System; workspace-backed storage used in Free/Trial setups. |
+| DBU | Platform/Billing | Databricks Unit; consumption/billing unit for compute on Databricks. |
+| DLT | Data Engineering | Delta Live Tables (Databricks) for declarative pipelines (not available in Free edition). |
+| DQ | Data Quality | Practices/metrics to assess and improve data accuracy, completeness, and consistency. |
+| EDA | Data Science | Exploratory Data Analysis; profiling data to understand distributions, gaps, and patterns. |
+| ECB | Finance/Data Source | European Central Bank; reference source for daily FX rates. |
+| FX | Finance | Foreign Exchange; currency conversion to a common reporting currency (e.g., EUR). |
+| F2 (Fabric Free) | Platform/SKU | Microsoft Fabric Free capacity tier used for learning/testing. |
+| GMV | Business Metric | Gross Merchandise Value; total merchandise sales value (before returns/discounts). |
+| HK | Data Modeling | Hash Key; hashed identifier derived from a Business Key (often used in Data Vault). |
+| KPI | Business Metric | Key Performance Indicator; headline metric (e.g., GMV, AOV, margin, churn). |
+| KS | Statistics | Kolmogorov–Smirnov test; used to compare distributions (e.g., drift checks). |
+| Lakehouse | Architecture | Unified architecture combining data lake storage with warehouse/BI capabilities. |
+| MAE | Data Science Metric | Mean Absolute Error; average absolute prediction error (regression). |
+| MAPE | Data Science Metric | Mean Absolute Percentage Error; percentage‑based error metric (regression). |
+| MLflow | MLOps | Experiment tracking, model registry, and artifacts for ML workflows. |
+| OneLake | Platform | Microsoft Fabric’s single logical data lake for all Fabric items. |
+| PBIX | BI Artifact | Power BI Desktop report file format. |
+| PSI | Statistics/Monitoring | Population Stability Index; measures distribution shifts (train vs serve). |
+| R2 (R-squared) | Data Science Metric | Proportion of variance explained by a regression model. |
+| RFM | Analytics/Segmentation | Recency, Frequency, Monetary value; classic customer segmentation approach. |
+| RLS | Security/BI | Row‑Level Security; restricts data access by user role (e.g., brand managers). |
+| RMSE | Data Science Metric | Root Mean Squared Error; square‑root of MSE (regression accuracy). |
+| ROC | Statistics/DS | Receiver Operating Characteristic curve; plots TPR vs FPR across thresholds. |
+| SCD2 | Data Modeling | Slowly Changing Dimension Type 2; tracks attribute history with effective date ranges. |
+| SKU | Product | Stock Keeping Unit; unique product identifier. |
+| SK | Data Modeling | Surrogate Key; technical key used in dimensional models. |
+| UC (Unity Catalog) | Governance | Databricks governance layer for data/AI (catalogs, schemas, privileges, lineage). |
+| UTC | Time/Standards | Coordinated Universal Time; recommended for storing timestamps. |
+| WoW | Time Series | Week‑over‑Week comparison period. |
 
-## Lakehouse & Storage
-- Lakehouse: Architecture combining data lake flexibility with warehouse management/performance. Databricks implements this with Delta Lake; Fabric adds Lakehouse/Warehouse items. FR: "lakehouse".
-- Delta Lake (Delta): Storage layer over Parquet with ACID transactions and time travel. Key ops: MERGE, OPTIMIZE, VACUUM. Docs: `docs` not yet present; see backlog Feature 1.x.
-- Parquet: Columnar open file format optimized for analytics. FR: "format colonne".
-- Time travel: Query a table at a past version/timestamp. Example: SELECT ... VERSION AS OF 3.
-- External location: UC object mapping to cloud storage with access policies.
-- OneLake: Fabric's single logical data lake across workspaces. Shortcuts can reference external data (e.g., ADLS/Databricks output).
-- Shortcut: OneLake pointer to data stored elsewhere; avoids copy.
+Notes
+- Alphabetical, English‑only list aligned to the current Business Case and Product Backlog.
+- Margin may be labeled “Estimated” when COGS isn’t available; see Business Case and Backlog notes.
 
-## Governance & Security
-- Unity Catalog (UC): Databricks governance for data/AI (catalogs, schemas, tables, permissions, lineage). FR: "catalogue d'unité".
-- Catalog/Schema/Table: Three‑level namespace in UC (catalog.schema.table). FR: "catalogue/schéma/table".
-- Dynamic view: SQL view applying row/column filters (RLS/CLS) at query time (often using current_user()).
-- RLS/CLS: Row‑Level/Column‑Level Security. RLS filters rows per role/user; CLS masks or restricts columns.
-- Sensitivity label: Power BI/Fabric classification (e.g., Confidential) enforcing protection.
-- Workspace (Fabric): Container for items (Lakehouse, Warehouse, Semantic Model, Report, Pipeline). FR: "espace de travail".
-
-## Processing & Orchestration
-- Auto Loader: Incremental file ingestion to Delta using cloud notifications/listing. FR: "chargement automatique".
-- COPY INTO: Bulk load SQL command into tables from files.
-- Structured Streaming: Micro‑batch/stream processing API in Spark.
-- Delta Live Tables (DLT): Declarative pipelines for building reliable Delta flows with expectations (data quality checks).
-- Jobs/Workflows: Databricks scheduler for notebooks/SQL/pipelines with dependencies and retries.
-- Fabric Data Pipeline: Orchestration pipeline in Fabric (copy/transform/schedule). FR: "pipeline de données".
-
-## Modeling & Analytics
-- Medallion architecture: Bronze (raw) → Silver (cleaned) → Gold (curated marts). FR: "architecture médaillon".
-- Star schema: Fact and dimension modeling for analytics. FR: "schéma en étoile".
-- Semantic model (Power BI): Dataset/model containing tables, relationships, measures (DAX), RLS.
-- Direct Lake / DirectQuery / Import: Power BI/Fabric connection modes (performance vs freshness trade‑offs).
-- Measures (DAX): Calculations evaluated at query time (e.g., GMV, AOV).
-- KPI Catalog: Canonical list of business metrics with definitions. See backlog.
-
-## Machine Learning & MLOps
-- MLflow: Experiment tracking, models, and registry for ML lifecycle.
-- Feature table: Persisted table of machine‑learning features (often in UC Feature Store; awareness if not enabled in trial).
-- Batch scoring: Periodic prediction job writing results to tables.
-
-## Performance & Maintenance
-- OPTIMIZE: Compacts small files for read performance; with Z‑ORDER to cluster by a column.
-- VACUUM: Removes old files (per retention) to free storage; ensure time travel needs are considered.
-- Partitioning: Physically organize table files by a key (e.g., date) to prune scans.
-
-## DevEx & Deployment
-- Databricks Repos: Git‑backed folder integration in a workspace.
-- DAB (Databricks Asset Bundles): YAML‑defined packaging/deployment for jobs, pipelines, and other assets.
-- Fabric Deployment Pipeline: Dev→Test→Prod promotion with rules/parameters.
-
-## Agile & Project Terms
-- Epic/Feature/User Story/Task: Backlog hierarchy. FR: "épopée/fonctionnalité/histoire utilisateur/tâche". See `statement/2-eurostyle-contonso-ma-project-backlog.md`.
-- DoD (Definition of Done): Criteria to mark a work item complete.
-- DQ (Data Quality): Checks and thresholds; see backlog Appendix A.
-
-## Metrics & Commerce (context)
-- GMV (Gross Merchandise Value): Total merchandise sales value before returns/discounts.
-- AOV (Average Order Value): GMV divided by order count.
-- Margin (proxy): Estimated margin when COGS is unavailable; clearly labeled as estimate.
-
-## Exams & Certifications
-- PL‑300: Microsoft Power BI Data Analyst.
-- DP‑700: Implementing Analytics Solutions Using Microsoft Fabric.
-- Databricks Data Analyst Associate: Databricks SQL & dashboards.
-- Databricks Data Engineer Associate/Professional: Engineering track for Delta/Spark/Jobs.
-- IIBA ECBA/CCBA/CBAP; PMI‑PBA: Business analysis practice certs (not data/BI‑specific).
-
----
-
-Contributing
-- Add terms used in code/notebooks/backlog. Keep vendor‑neutral definitions and link to repo files where helpful.
