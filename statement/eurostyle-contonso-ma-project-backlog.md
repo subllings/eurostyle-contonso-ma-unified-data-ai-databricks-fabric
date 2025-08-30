@@ -11,7 +11,7 @@ Role-based study guides are available:
 - Data Business Analyst (preferred): `certification/data-business-analyst-certifications.md` (alias: `certification/analyst-bi-certifications.md`)
 
 A certification‑compliant use case that maps backlog tasks to exam‑aligned competencies is here:
-- `statement/eurostyle-contonso-certification-compliant.md`
+- `statement/eurostyle-contonso-ma-certification-compliant.md`
 
 ---
 
@@ -52,10 +52,10 @@ Practical implications in this repo
 
 ## Sprint Planning Matrix (4.5 days per sprint)
 
-This matrix summarizes the focus and concrete deliverables of each role — **Data Engineer (DE)**, **Data Scientist (DS)**, and **Data Analyst (DA)** — across all sprints.  
+This matrix summarizes the focus and concrete deliverables of each role — **Data Engineer (DE)**, **Data Scientist (DS)**, and **Data Business Analyst (DA)** — across all sprints.  
 It provides a clear mapping of **who delivers what, and when**, ensuring no role is idle.
 
-| Sprint | Data Engineer (DE) | Data Scientist (DS) | Data Analyst (DA) |
+| Sprint | Data Engineer (DE) | Data Scientist (DS) | Data Business Analyst (DA) |
 |--------|---------------------|---------------------|-------------------|
 | **0 (0.5d)** | 🟥 Set up Databricks workspace and folder structure; define ingestion paths for EuroStyle & Contoso | 🟥 Define hypotheses for churn (inactivity >90 days) and Customer Lifetime Value (CLV); identify required features | 🟩 🟨 Define initial KPI Catalog v0.1 (GMV, AOV, margin, churn rate); map differences EuroStyle vs Contoso |
 | **1 (4.5d)** | 🟥 Ingest EuroStyle & Contoso raw CSVs into Bronze Delta tables; add metadata (`ingest_ts`, `source_system`) | 🟥 Perform **Exploratory Data Analysis (EDA)** on Bronze (Contoso first): distributions, missing values, brand overlap; draft churn & CLV definitions | 🟩 🟨 Build "First Look Dashboard" (Contoso first) with Bronze KPIs: **GMV (Gross Merchandise Value)**, **AOV (Average Order Value)**, order counts |
@@ -72,7 +72,7 @@ Legend: 🟥 Databricks, 🟩 Fabric, 🟨 Power BI, 🟥→🟩 Integration (ha
 
 This table lists all epics, distributed by sprint and by profile (DE, DS, DA). It complements the Sprint Planning Matrix and provides a high-level view; ownership remains at the user story level within each epic.
 
-| Sprint | DE (Data Engineer) | DS (Data Scientist) | DA (Data Analyst) |
+| Sprint | DE (Data Engineer) | DS (Data Scientist) | DA (Data Business Analyst) |
 |---|---|---|---|
 | 0 | 🟥 [Epic 1 – Data Foundation Platform](#epic-1) (setup: workspace, folders, ingest paths) | 🟥 [Epic 2 – ML & Predictive](#epic-2) (hypotheses/requirements, MLflow init) | 🟩 🟨 [Epic 3 – Analytics & BI](#epic-3) (KPI Catalog v0.1, semantic draft) |
 | 1 | 🟥 [Epic 1 – Data Foundation Platform](#epic-1) (Bronze: ES+Contoso, metadata, DirectQuery) | 🟥 [Epic 2 – ML & Predictive](#epic-2) (EDA: prevalence, drift, baselines) | 🟩 🟨 [Epic 3 – Analytics & BI](#epic-3) (First Look – Contoso: semantic model, measures, v1 report, KPI v0.2) |
@@ -92,7 +92,7 @@ Notes
 
 This table lists all features, distributed by sprint and by profile (DE, DS, DA). Ownership is ultimately at the user story level; this is the primary owner per feature.
 
-| Sprint | DE (Data Engineer) | DS (Data Scientist) | DA (Data Analyst) |
+| Sprint | DE (Data Engineer) | DS (Data Scientist) | DA (Data Business Analyst) |
 |---|---|---|---|
 | 0 | — | — | — |
 | 1 | 🟥 [1.1 Raw Data Ingestion](#feature-1-1) (Bronze Delta with ingest_ts/source_system; DQ summary; schema dictionary; runbook) | 🟥 [2.1 EDA, baselines & MLflow setup](#feature-2-1) (EDA readout; baselines; leakage/risk log; MLflow init) | 🟩 🟨 [3.1 First Look – Contoso](#feature-3-1) (semantic model; named measures; v1 report) |

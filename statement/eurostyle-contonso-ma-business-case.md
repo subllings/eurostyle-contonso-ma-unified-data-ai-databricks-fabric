@@ -16,7 +16,7 @@ The merger brings opportunities but also challenges:
 
 The **Chief Marketing Officer (CMO)** and **Chief Data & Analytics Officer (CDAO)** have tasked three specialized teams to deliver a **prototype of a unified post-merger data platform** leveraging Databricks and Microsoft Fabric:
 - **Data Engineering Team**: Build robust pipelines to integrate EuroStyle and Contoso sources into a harmonized Medallion architecture.  
-- **Data Analytics Team**: Provide executives with comparative and consolidated dashboards.  
+- **Data Business Analyst Team**: Provide executives with comparative and consolidated dashboards.  
 - **Data Science Team**: Develop predictive models to assess churn and customer lifetime value across the merged customer base.
 
 ---
@@ -43,7 +43,7 @@ The **Chief Marketing Officer (CMO)** and **Chief Data & Analytics Officer (CDAO
 - Maintain mapping tables to align product hierarchies and customer identifiers across brands.  
 - Ensure reproducibility so the same process can be re-run as new data arrives.  
 
-### Data Analyst
+### Data Business Analyst
 - Deliver dashboards that serve two complementary views:
   - **Comparative view**: EuroStyle vs. Contoso performance side-by-side.
   - **Unified view**: consolidated KPIs across both brands, including  
@@ -72,7 +72,7 @@ The **Chief Marketing Officer (CMO)** and **Chief Data & Analytics Officer (CDAO
   - Maintain mapping tables for cross-brand consistency (e.g., product hierarchies, customer IDs).  
   - Export unified Gold datasets into the **Fabric Lakehouse** under a reproducible release contract.  
 
-- **Data Analysts (DA)**  
+- **Data Business Analysts (DA)**  
   - Define **key performance indicators (KPIs)** from Day 0, highlighting differences in definitions between EuroStyle and Contoso.  
   - Build side-by-side dashboards early on raw/Bronze data, then refine them progressively on Silver and Gold.  
   - Implement **Row-Level Security (RLS)** in Power BI so managers see only their own brand while executives access consolidated dashboards.  
@@ -123,7 +123,7 @@ Agility ensures that data engineers, data scientists, and data analysts can iter
   - Data Scientists share exploratory findings from Exploratory Data Analysis (EDA) and feature importance with analysts to guide dashboard metrics.  
   >This ensures that Databricks and Fabric are used in a complementary way, not in silos.
 
-- See the [Product Backlog](https://github.com/subllings/eurostyle-contonso-ma-unified-data-ai-databricks-fabric/blob/main/statement/2-eurostyle-contonso-ma-project-backlog.md) for the sprint-by-sprint plan, task lists, and acceptance criteria.  
+- See the [Product Backlog](./2-eurostyle-contonso-ma-project-backlog.md) for the sprint-by-sprint plan, task lists, and acceptance criteria.  
 
 
 ---
@@ -162,7 +162,9 @@ You will work with **two European retail datasets** to simulate EuroStyle (North
 
 ## Detailed Deliverables
 
-For full details of tasks, acceptance criteria, and technical specifications, see the [Product Backlog](https://github.com/subllings/eurostyle-contonso-ma-unified-data-ai-databricks-fabric/blob/main/statement/2-eurostyle-contonso-ma-project-backlog.md).
+For full details of tasks, acceptance criteria, and technical specifications, see the [Product Backlog](./2-eurostyle-contonso-ma-project-backlog.md).
+
+Note: For acronym definitions (GMV, AOV, RFM, CLV, RLS, etc.), see the repository [Glossary](../GLOSSARY.md).
 
 
 

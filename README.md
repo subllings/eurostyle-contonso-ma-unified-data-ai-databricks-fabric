@@ -33,7 +33,7 @@ To address this, the CMO and CDAO asked the **Data Engineer**, **Data Scientist*
 
 ---
 
-![picture 3](images/35d18433840be028b76217bbce653993e80e81add498968cc9f7bf81ecca2b62.png)  
+![picture 8](images/daa5adb827d2fc7487dc37c035199c3f628e68fac93ce5aefcec854f1cca42bd.png)  
 
 
 ---
@@ -56,10 +56,18 @@ In a production environment, this would be automated and governed using:
 
 | Level | Data Engineer | Data Scientist | Data Business Analyst | Objective |
 |-------|---------------|----------------|--------------|-----------|
-| Essentials | 🟥 Bronze ingestion | 🟥 Churn & CLV hypotheses | 🟨 Raw KPIs dashboard | First insights |
-| Robustness | 🟥 Silver harmonization, Gold marts | 🟥 Feature engineering (RFM, overlap) | 🟩 🟨 Silver dashboards + RLS | Reliable reporting |
-| Advanced | 🟥 Gold marts enriched with scores | 🟥 Baseline churn & CLV models | 🟩 🟨 Predictive KPIs dashboards | Predictive insights |
-| Mastery | 🟥→🟩 Reusable pipelines & exports | 🟥 Finalized models + metrics (Accuracy, AUC, RMSE) | 🟩 🟨 Executive storytelling dashboards | Portfolio-ready prototype |
+| Essentials | 🟥 Bronze ingestion | 🟥 Churn & CLV* hypotheses | 🟨 Raw KPI* dashboard | First insights |
+| Robustness | 🟥 Silver harmonization, Gold marts | 🟥 Feature engineering (RFM*, overlap) | 🟩 🟨 Silver dashboards + RLS* | Reliable reporting |
+| Advanced | 🟥 Gold marts enriched with scores | 🟥 Baseline churn & CLV* models | 🟩 🟨 Predictive KPI* dashboards | Predictive insights |
+| Mastery | 🟥→🟩 Reusable pipelines & exports | 🟥 Finalized models + metrics (Accuracy, AUC*, RMSE*) | 🟩 🟨 Executive storytelling dashboards | Portfolio-ready prototype |
+
+Acronyms (used above)
+- KPI: Key Performance Indicator
+- CLV: Customer Lifetime Value
+- RFM: Recency, Frequency, Monetary
+- RLS: Row-Level Security
+- AUC: Area Under the ROC Curve
+- RMSE: Root Mean Square Error
 
 Icon legend: 🟥 Databricks, 🟥→🟩 Databricks & Fabric integration, 🟩 Fabric, 🟨 Power BI.
 
@@ -72,10 +80,10 @@ Icon legend: 🟥 Databricks, 🟥→🟩 Databricks & Fabric integration, 🟩 
 
 ## References
 
-- [Business Case](./statement/1-eurostyle-contonso-ma-business-case.md)
-- [Product Backlog](./statement/2-eurostyle-contonso-ma-project-backlog.md)
+- [Business Case](./statement/eurostyle-contonso-ma-business-case.md)
+- [Product Backlog](./statement/eurostyle-contonso-ma-project-backlog.md)
 - [Getting Started (free/trial setup)](./GETTING_STARTED.md)
-- [Certification-compliant mapping](./statement/eurostyle-contonso-certification-compliant.md)
+- [Certification-compliant mapping](./statement/eurostyle-contonso-ma-certification-compliant.md)
 - [Certification guides (DE/DS/DA)](./certification/)
 - [Glossary](./GLOSSARY.md)
 

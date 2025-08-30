@@ -73,6 +73,6 @@ C4) Fabric Deployment (Backlog: Feature 4.2)
 - Exam alignment: deployment pipelines, governance, endorsements.
 
 ## References
-- Role guides: see `certification/data-engineer-certifications.md`, `certification/data-scientist-certifications.md` (alias: `certification/ml-ai-engineer-certifications.md`), `certification/data-business-analyst-certifications.md` (alias: `certification/analyst-bi-certifications.md`).
-- Backlog: `statement/2-eurostyle-contonso-ma-project-backlog.md`.
-- Business case: `statement/1-eurostyle-contonso-ma-business-case.md`.
+- Role guides: see `../certification/data-engineer-certifications.md`, `../certification/data-scientist-certifications.md` (alias: `../certification/ml-ai-engineer-certifications.md`), `../certification/data-business-analyst-certifications.md` (alias: `../certification/analyst-bi-certifications.md`).
+- Backlog: `./2-eurostyle-contonso-ma-project-backlog.md`.
+- Business case: `./1-eurostyle-contonso-ma-business-case.md`.
