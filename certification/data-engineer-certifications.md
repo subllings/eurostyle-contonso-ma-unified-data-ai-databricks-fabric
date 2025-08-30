@@ -22,36 +22,37 @@ Purpose: provide a concise, actionable structure to prepare for the Data Enginee
 - Official page: https://www.databricks.com/learn/certification/data-engineering-certificates
 
 ### 3) Exam outline and weights
+
 Section 1 — Databricks Intelligence Platform (10%)
-- Describe the platform value and workspace building blocks, and select the right compute (clusters, SQL warehouses, serverless) for a use case. [DBX-DE-Assoc][Platform]
-- Enable and use features that simplify data layout choices and improve query performance (partitioning, file sizing, caching, relevant platform accelerators). [DBX-DE-Assoc][Platform]
+- [DBX-DE-Assoc][Platform] Describe the platform value and workspace building blocks, and select the right compute (clusters, SQL warehouses, serverless) for a use case.
+- [DBX-DE-Assoc][Platform] Enable and use features that simplify data layout choices and improve query performance (partitioning, file sizing, caching, relevant platform accelerators).
 
 Section 2 — Development and Ingestion (30%)
-- Use Databricks Connect in data engineering workflows. [DBX-DE-Assoc][Tooling]
-- Identify notebook capabilities (versioning, repos integration, collaboration) and when to use each. [DBX-DE-Assoc][Tooling]
-- Classify valid Auto Loader sources and use cases; demonstrate Auto Loader syntax and options at a high level. [DBX-DE-Assoc][Autoloader]
-- Choose COPY INTO for batch ingestion and explain when it is preferred over Auto Loader. [DBX-DE-Assoc][CopyInto]
-- Use built-in debugging tools to troubleshoot jobs and notebooks. [DBX-DE-Assoc][Tooling]
+- [DBX-DE-Assoc][Tooling] Use Databricks Connect in data engineering workflows.
+- [DBX-DE-Assoc][Tooling] Identify notebook capabilities (versioning, repos integration, collaboration) and when to use each.
+- [DBX-DE-Assoc][Autoloader] Classify valid Auto Loader sources and use cases; demonstrate Auto Loader syntax and options at a high level.
+- [DBX-DE-Assoc][CopyInto] Choose COPY INTO for batch ingestion and explain when it is preferred over Auto Loader.
+- [DBX-DE-Assoc][Tooling] Use built-in debugging tools to troubleshoot jobs and notebooks.
 
 Section 3 — Data Processing and Transformations (31%)
-- Explain the Medallion architecture (Bronze, Silver, Gold) and the purpose of each layer. [DBX-DE-Assoc][Medallion]
-- Choose cluster types/configurations for performance given a scenario. [DBX-DE-Assoc][Platform]
-- Describe DLT (Delta Live Tables) concepts and implement basic pipelines with expectations and quality gates. [DBX-DE-Assoc][DLT]
-- Identify core DDL/DML features in SQL and Delta. [DBX-DE-Assoc][Delta-Basics]
-- Implement an idempotent MERGE (UPSERT) on a business key. [DBX-DE-Assoc][Delta-MERGE]
-- Compute non-trivial aggregations and metrics with PySpark DataFrames and/or Spark SQL. [DBX-DE-Assoc][Spark-Aggregations]
+- [DBX-DE-Assoc][Medallion] Explain the Medallion architecture (Bronze, Silver, Gold) and the purpose of each layer.
+- [DBX-DE-Assoc][Platform] Choose cluster types/configurations for performance given a scenario.
+- [DBX-DE-Assoc][DLT] Describe DLT (Delta Live Tables) concepts and implement basic pipelines with expectations and quality gates.
+- [DBX-DE-Assoc][Delta-Basics] Identify core DDL/DML features in SQL and Delta.
+- [DBX-DE-Assoc][Delta-MERGE] Implement an idempotent MERGE (UPSERT) on a business key.
+- [DBX-DE-Assoc][Spark-Aggregations] Compute non-trivial aggregations and metrics with PySpark DataFrames and/or Spark SQL.
 
 Section 4 — Productionizing Data Pipelines (18%)
-- Compare Databricks Asset Bundles (DAB) to traditional deployment methods and identify bundle structure. [DBX-DE-Assoc][Jobs]
-- Deploy workflows; repair and re-run failed tasks; schedule jobs effectively. [DBX-DE-Assoc][Jobs]
-- Use serverless for managed, auto-optimized compute when appropriate. [DBX-DE-Assoc][Platform]
-- Review Spark UI to reason about and optimize a query. [DBX-DE-Assoc][Spark-UI]
+- [DBX-DE-Assoc][Jobs] Compare Databricks Asset Bundles (DAB) to traditional deployment methods and identify bundle structure.
+- [DBX-DE-Assoc][Jobs] Deploy workflows; repair and re-run failed tasks; schedule jobs effectively.
+- [DBX-DE-Assoc][Platform] Use serverless for managed, auto-optimized compute when appropriate.
+- [DBX-DE-Assoc][Spark-UI] Review Spark UI to reason about and optimize a query.
 
 Section 5 — Data Governance and Quality (11%)
-- Differentiate managed vs external tables; apply Unity Catalog permissions and identify key roles. [DBX-DE-Assoc][UC-Permissions]
-- Understand audit log storage patterns and use lineage. [DBX-DE-Assoc][UC-Permissions]
-- Use Delta Sharing; know types (Databricks-to-Databricks vs external), trade-offs, and cross-cloud cost considerations. [DBX-DE-Assoc][Sharing]
-- Identify Lakehouse Federation use cases when connecting to external sources. [DBX-DE-Assoc][Federation]
+- [DBX-DE-Assoc][UC-Permissions] Differentiate managed vs external tables; apply Unity Catalog permissions and identify key roles.
+- [DBX-DE-Assoc][UC-Permissions] Understand audit log storage patterns and use lineage.
+- [DBX-DE-Assoc][Sharing] Use Delta Sharing; know types (Databricks-to-Databricks vs external), trade-offs, and cross-cloud cost considerations.
+- [DBX-DE-Assoc][Federation] Identify Lakehouse Federation use cases when connecting to external sources.
 
 ### Tag Reference Table — Databricks DE Associate
 
@@ -83,12 +84,18 @@ Note: section names and weights mirror the July 25, 2025 guide; wording here is 
   - Data Management and Governance with Unity Catalog
 
 ### 5) Hands-on mapping to this repository
-- Bronze/Silver/Gold and Delta: see `statement/2-eurostyle-contonso-ma-project-backlog.md` (Epics 1 and 4) for contracts, idempotence, and export manifests.
-- Ingestion (Auto Loader vs COPY INTO): adapt ingestion steps from Epic 1 into practice notebooks.
-- Structured Streaming: build a small file-to-Delta streaming pipeline (checkpointing and idempotence).
-- DLT (concepts): transpose the medallion design into DLT definitions in a suitable environment; otherwise document the approach.
-- Optimization: practice repartition/coalesce, file size targeting, and Delta constraints; review feature notes.
-- Unity Catalog: prefer catalog.schema.table naming when UC is available (simulate hierarchy otherwise).
+- **Medallion and Delta**
+  - [DBX-DE-Assoc][Medallion] [DBX-DE-Assoc][Delta-Basics] See `statement/2-eurostyle-contonso-ma-project-backlog.md` (Epics 1 and 4) for contracts, idempotence, and export manifests.
+- **Ingestion**
+  - [DBX-DE-Assoc][Autoloader] [DBX-DE-Assoc][CopyInto] Adapt ingestion (Auto Loader vs COPY INTO) from Epic 1 into practice notebooks.
+- **Streaming**
+  - Build a small file-to-Delta streaming pipeline (checkpointing and idempotence).
+- **DLT concepts**
+  - [DBX-DE-Assoc][DLT] Transpose the medallion design into DLT definitions; otherwise document the approach.
+- **Optimization**
+  - [DBX-DE-Assoc][Platform] [DBX-DE-Assoc][Delta-Basics] Practice repartition/coalesce, file size targeting, and Delta constraints; review feature notes.
+- **Unity Catalog**
+  - [DBX-DE-Assoc][UC-Permissions] Prefer catalog.schema.table naming when UC is available (simulate hierarchy otherwise).
 
 ### 6) 10-day study plan (example)
 - Days 1–2: Delta fundamentals (create/read/write, schema/enforcement, time travel, MERGE/UPSERT).
@@ -165,37 +172,37 @@ Purpose: actionable prep for advanced data engineering on Databricks. This guide
 - Exam guide PDF: https://www.databricks.com/sites/default/files/2025-02/databricks-certified-data-engineer-professional-exam-guide-1-mar-2025.pdf
 
 ### 3) Exam outline and weights
-Section 1 — Databricks Tooling (20%)
-- Use Databricks CLI and REST API (auth, common operations). [DBX-DE-Prof][Tooling]
-- Work with Repos, notebooks (versioning, collaboration), and Git workflows. [DBX-DE-Prof][Tooling]
-- Use Databricks Asset Bundles (DAB) for packaging, configuration, environments, and deployment. [DBX-DE-Prof][DAB]
-- Manage and troubleshoot Workflows (Jobs), task dependencies, parameters, retries, and serverless options. [DBX-DE-Prof][Tooling]
+**Section 1 — Databricks Tooling (20%)**
+- [DBX-DE-Prof][Tooling] Use Databricks CLI and REST API (auth, common operations).
+- [DBX-DE-Prof][Tooling] Work with Repos, notebooks (versioning, collaboration), and Git workflows.
+- [DBX-DE-Prof][DAB] Use Databricks Asset Bundles (DAB) for packaging, configuration, environments, and deployment.
+- [DBX-DE-Prof][Tooling] Manage and troubleshoot Workflows (Jobs), task dependencies, parameters, retries, and serverless options.
 
-Section 2 — Data Processing (30%)
-- Optimize Spark SQL/DataFrame jobs (joins, aggregations, windowing); choose cluster/warehouse types. [DBX-DE-Prof][Spark-AQE]
-- Apply performance techniques: AQE, broadcast hints, partition pruning, caching, file sizing. [DBX-DE-Prof][Spark-AQE]
-- Build robust batch and streaming pipelines (sources/sinks, checkpoints, watermarks, state, idempotence) on Delta. [DBX-DE-Prof][Spark-AQE]
-- Handle CDC with Delta (MERGE, Change Data Feed) and incremental patterns. [DBX-DE-Prof][Delta-CDC]
+**Section 2 — Data Processing (30%)**
+- [DBX-DE-Prof][Spark-AQE] Optimize Spark SQL/DataFrame jobs (joins, aggregations, windowing); choose cluster/warehouse types.
+- [DBX-DE-Prof][Spark-AQE] Apply performance techniques: AQE, broadcast hints, partition pruning, caching, file sizing.
+- [DBX-DE-Prof][Spark-AQE] Build robust batch and streaming pipelines (sources/sinks, checkpoints, watermarks, state, idempotence) on Delta.
+- [DBX-DE-Prof][Delta-CDC] Handle CDC with Delta (MERGE, Change Data Feed) and incremental patterns.
 
-Section 3 — Data Modeling (20%)
-- Model lakehouse tables for analytics (dimensional/star, slowly changing dimensions, surrogate keys). [DBX-DE-Prof][SCD2]
-- Apply table properties, constraints, Z-ordering (where available), and schema evolution. [DBX-DE-Prof][Modeling]
-- Design Bronze/Silver/Gold contracts and SLAs. [DBX-DE-Prof][Tooling]
+**Section 3 — Data Modeling (20%)**
+- [DBX-DE-Prof][SCD2] Model lakehouse tables for analytics (dimensional/star, slowly changing dimensions, surrogate keys).
+- [DBX-DE-Prof][Modeling] Apply table properties, constraints, Z-ordering (where available), and schema evolution.
+- [DBX-DE-Prof][Tooling] Design Bronze/Silver/Gold contracts and SLAs.
 
-Section 4 — Security and Governance (10%)
-- Enforce Unity Catalog permissions (catalog/schema/table, views), grants, and object ownership. [DBX-DE-Prof][UC-Advanced]
-- Apply row/column-level controls (dynamic views), secrets, tokens, and credential passthrough patterns. [DBX-DE-Prof][UC-Advanced]
-- Use audit logs and lineage at a high level; understand Delta Sharing concepts and Lakehouse Federation basics. [DBX-DE-Prof][UC-Advanced] [DBX-DE-Prof][Monitoring-Logs]
+**Section 4 — Security and Governance (10%)**
+- [DBX-DE-Prof][UC-Advanced] Enforce Unity Catalog permissions (catalog/schema/table, views), grants, and object ownership.
+- [DBX-DE-Prof][UC-Advanced] Apply row/column-level controls (dynamic views), secrets, tokens, and credential passthrough patterns.
+- [DBX-DE-Prof][UC-Advanced] [DBX-DE-Prof][Monitoring-Logs] Use audit logs and lineage at a high level; understand Delta Sharing concepts and Lakehouse Federation basics.
 
-Section 5 — Monitoring and Logging (10%)
-- Interpret Spark UI (stages/tasks, skew, spills, shuffle) to diagnose performance. [DBX-DE-Prof][Monitoring-Logs]
-- Use job run logs, metrics, and system tables for observability. [DBX-DE-Prof][Monitoring-Logs]
-- Set alerts and notifications for failures and SLAs. [DBX-DE-Prof][Monitoring-Logs]
+**Section 5 — Monitoring and Logging (10%)**
+- [DBX-DE-Prof][Monitoring-Logs] Interpret Spark UI (stages/tasks, skew, spills, shuffle) to diagnose performance.
+- [DBX-DE-Prof][Monitoring-Logs] Use job run logs, metrics, and system tables for observability.
+- [DBX-DE-Prof][Monitoring-Logs] Set alerts and notifications for failures and SLAs.
 
-Section 6 — Testing and Deployment (10%)
-- Validate data quality with expectations (DLT/SQL constraints) and sanity checks. [DBX-DE-Prof][Testing]
-- Implement unit/integration tests for transformations; promote through environments. [DBX-DE-Prof][Testing]
-- Deploy reliably with DAB/Workflows; parameterize and use environment-specific configs. [DBX-DE-Prof][DAB] [DBX-DE-Prof][CI-CD]
+**Section 6 — Testing and Deployment (10%)**
+- [DBX-DE-Prof][Testing] Validate data quality with expectations (DLT/SQL constraints) and sanity checks.
+- [DBX-DE-Prof][Testing] Implement unit/integration tests for transformations; promote through environments.
+- [DBX-DE-Prof][DAB] [DBX-DE-Prof][CI-CD] Deploy reliably with DAB/Workflows; parameterize and use environment-specific configs.
 
 ### Tag Reference Table — Databricks DE Professional
 
@@ -223,12 +230,18 @@ Note: Names/weights mirror the official guide; bullets are paraphrased for study
   - Automated Deployment with Databricks Asset Bundles — https://www.databricks.com/learn/training/catalog/automated-deployment-with-databricks-asset-bundles
 
 ### 5) Hands-on mapping to this repository
-- Medallion + Delta: `statement/2-eurostyle-contonso-ma-project-backlog.md` (Epics 1, 4) — extend with CDF-based upserts and SCD2.
-- Performance labs: add notebooks to compare joins (broadcast vs shuffle), partitioning, and small-file mitigation.
-- Streaming: implement a stateful stream with watermarks and exactly-once to Delta (repair/restart scenarios).
-- CI/CD: create a minimal DAB bundle to deploy a Workflow with env configs (dev/test/prod) and parameters.
-- UC governance: add a permission matrix (roles → catalog.schema.table) and a dynamic view example for RLS/CLS.
-- Observability: capture job run logs and query history, summarize hot stages from Spark UI.
+- **Modeling and Delta**
+  - [DBX-DE-Prof][SCD2] [DBX-DE-Prof][Delta-CDC] `statement/2-eurostyle-contonso-ma-project-backlog.md` (Epics 1, 4) — extend with CDF-based upserts and SCD2.
+- **Performance**
+  - [DBX-DE-Prof][Spark-AQE] Add notebooks to compare joins (broadcast vs shuffle), partitioning, and small-file mitigation.
+- **Streaming**
+  - [DBX-DE-Prof][Spark-AQE] Implement a stateful stream with watermarks and exactly-once to Delta (repair/restart scenarios).
+- **CI/CD**
+  - [DBX-DE-Prof][DAB] [DBX-DE-Prof][CI-CD] Create a minimal DAB bundle to deploy a Workflow with env configs (dev/test/prod) and parameters.
+- **Governance**
+  - [DBX-DE-Prof][UC-Advanced] Add a permission matrix (roles → catalog.schema.table) and a dynamic view example for RLS/CLS.
+- **Observability**
+  - [DBX-DE-Prof][Monitoring-Logs] Capture job run logs and query history; summarize hot stages from Spark UI.
 
 ### 6) 12-day study plan (example)
 - Days 1–2: Tooling (CLI, REST, Repos) and Workflows (dependencies, retries, serverless).
@@ -337,3 +350,49 @@ Monitor and optimize an analytics solution
 
 ### 5) Optional mapping to this repository
 - The two-company narrative can be realized on Fabric Lakehouse (OneLake) in parallel to Databricks. Mirror ingestion/transform contracts; add Fabric pipelines/notebooks equivalents.
+
+---
+
+## DE Tag Glossary (quick reference)
+
+This glossary lists the tags used in this file. For broader definitions shared across roles, see `GLOSSARY.md`.
+
+| Tag | Study Point | What to know |
+|-----|-------------|--------------|
+| [DBX-DE-Assoc][Platform] | Databricks compute and performance | Clusters vs SQL Warehouses vs Serverless; partitioning, caching, file sizing. |
+| [DBX-DE-Assoc][Tooling] | Engineering tooling | Databricks Connect, notebooks, repos, debugging tools. |
+| [DBX-DE-Assoc][Autoloader] | Auto Loader ingestion | Sources, schema inference/evolution, syntax, core options. |
+| [DBX-DE-Assoc][CopyInto] | COPY INTO ingestion | Declarative batch loading, idempotence, when to use vs Auto Loader. |
+| [DBX-DE-Assoc][Delta-Basics] | Delta Lake fundamentals | DDL/DML, schema enforcement, constraints, time travel. |
+| [DBX-DE-Assoc][Delta-MERGE] | Delta MERGE / UPSERT | MERGE INTO syntax, idempotence, handling duplicates. |
+| [DBX-DE-Assoc][Medallion] | Medallion architecture | Bronze, Silver, Gold layers and contracts. |
+| [DBX-DE-Assoc][Spark-Aggregations] | Aggregations and windows | SQL/DataFrame aggregations and window functions. |
+| [DBX-DE-Assoc][DLT] | Delta Live Tables basics | Pipelines, expectations, quality gates. |
+| [DBX-DE-Assoc][Jobs] | Jobs orchestration | Deploy, schedule, repair, re-run workflows. |
+| [DBX-DE-Assoc][UC-Permissions] | Unity Catalog basics | Managed vs external tables, grants/roles, lineage. |
+| [DBX-DE-Assoc][Sharing] | Delta Sharing | Internal vs external sharing, trade-offs and costs. |
+| [DBX-DE-Assoc][Federation] | Lakehouse Federation | Connect external sources, cross-cloud considerations. |
+| [DBX-DE-Assoc][Spark-UI] | Spark UI basics | Interpret stages/tasks, skew, spills, shuffles. |
+| [DBX-DE-Prof][Tooling] | Databricks tooling | CLI, REST API, repos, notebooks, workflows. |
+| [DBX-DE-Prof][DAB] | Databricks Asset Bundles | Package, configure, deploy across environments. |
+| [DBX-DE-Prof][Spark-AQE] | Spark Adaptive Query Execution (AQE) | Broadcast joins, partition pruning, caching, runtime optimization. |
+| [DBX-DE-Prof][Delta-CDC] | Delta Change Data Capture (CDC) | MERGE patterns, Change Data Feed, incremental upserts. |
+| [DBX-DE-Prof][SCD2] | Slowly Changing Dimension Type 2 | Dimensional modeling with history tracking. |
+| [DBX-DE-Prof][Modeling] | Modeling and contracts | Table properties, Z-ordering, schema evolution, SLAs. |
+| [DBX-DE-Prof][UC-Advanced] | Advanced Unity Catalog governance | Permissions, dynamic views, secrets/tokens, federation. |
+| [DBX-DE-Prof][Monitoring-Logs] | Observability | Spark UI, logs, metrics, alerts, SLAs. |
+| [DBX-DE-Prof][Testing] | Testing | Data expectations, unit/integration tests. |
+| [DBX-DE-Prof][CI-CD] | CI/CD deployment | Promote changes, parameterize configs, DAB-based workflows. |
+| [MS-DP700][Workspaces] | Workspaces and settings | Spark, domains, OneLake, data workflows. |
+| [MS-DP700][Lifecycle] | Lifecycle management | Version control, DB projects, environments. |
+| [MS-DP700][Pipelines] | Fabric Pipelines | Orchestration, scheduling, triggers, parameters. |
+| [MS-DP700][Governance-RLS] | Row-Level Security | Define roles/filters on semantic models. |
+| [MS-DP700][Governance-CLS] | Column-Level Security | Restrict/mask sensitive columns, dynamic data masking. |
+| [MS-DP700][Labels] | Sensitivity & endorsements | Sensitivity labels, endorsement, logging. |
+| [MS-DP700][Modeling] | Modeling | Full vs incremental loads, dimensional prep. |
+| [MS-DP700][Ingestion-Batch] | Batch ingestion | Stores, shortcuts, mirroring, pipelines. |
+| [MS-DP700][Transform-PySpark] | PySpark transforms | Lakehouse transformations. |
+| [MS-DP700][Transform-SQL] | SQL/KQL transforms | SQL Warehouse (T-SQL) and KQL patterns. |
+| [MS-DP700][Ingestion-Streaming] | Streaming ingestion | Eventstreams, Real-Time Intelligence, Structured Streaming. |
+| [MS-DP700][Monitoring] | Monitoring | Monitoring Hub, histories, alerts, troubleshooting. |
+| [MS-DP700][Performance] | Performance optimization | Lakehouse, DW, Spark tuning in Fabric. |
