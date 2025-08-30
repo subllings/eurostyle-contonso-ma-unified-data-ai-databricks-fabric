@@ -3,6 +3,18 @@
 
 ---
 
+## Certifications — where to study and how this backlog maps
+
+Role-based study guides are available:
+- Data Engineer: `certification/data-engineer-certifications.md`
+- Data Scientist: `certification/data-scientist-certifications.md` (also available as `ml-ai-engineer-certifications.md`)
+- Data Business Analyst (preferred): `certification/data-business-analyst-certifications.md` (alias: `certification/analyst-bi-certifications.md`)
+
+A certification‑compliant use case that maps backlog tasks to exam‑aligned competencies is here:
+- `statement/eurostyle-contonso-certification-compliant.md`
+
+---
+
 ## Platform Architecture – Free vs Paid (Databricks ↔ Microsoft Fabric)
 This project was built in class on free/trial tiers. Below is how the prototype constraints differ from a paid, production-ready setup. Names are explicit to avoid ambiguity.
 
