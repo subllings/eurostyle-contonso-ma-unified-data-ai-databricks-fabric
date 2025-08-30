@@ -2,6 +2,8 @@
 
 This case shows how Databricks and Microsoft Fabric can unify two retailers' fragmented systems into a single, governed, and AI-driven platform, giving executives consistent KPIs, real-time dashboards, and predictive insights after a complex M&A.
 
+
+
 ## Business Context
 
 In 2025, EuroStyle (Northern Europe) acquired Contoso Retail (Southern Europe).  
@@ -13,13 +15,12 @@ The merger created both opportunities and challenges:
 - **Post-merger visibility gap**: leaders need both **comparative views** (EuroStyle vs Contoso) and a **unified Customer 360°**.  
 - **Churn risk & cannibalization**: overlapping customers and product lines increase churn risk.  
 
-To address this, the CMO and CDAO requested a **prototype platform** combining **Databricks** and **Microsoft Fabric**:
+To address this, the CMO and CDAO asked the **Data Engineer**, **Data Scientist**, and **Data Business Analyst** teams to deliver a **prototype platform** combining **Databricks** and **Microsoft Fabric**:
 
 - **Databricks**: ingestion pipelines, Medallion architecture (Bronze/Silver/Gold), schema harmonization, feature engineering, MLflow for model tracking.  
 - **Fabric**: Lakehouse, semantic models, Power BI dashboards with Direct Lake for executives and marketing.  
-- **Integration Path**:  
-  - **Free / Trial Setup (classroom prototype)**: Databricks Free Edition exports Gold marts as Parquet files + JSON manifest. These are uploaded manually into the Fabric Lakehouse `/Files` area, then ingested with Fabric Data Pipelines.  
-  - **Paid / Enterprise Setup (production-ready)**: Databricks Premium/Enterprise writes versioned **Delta tables** into ADLS Gen2 (with Unity Catalog and Delta Live Tables). Fabric connects via **Shortcuts** (zero-copy) or Pipelines, enabling **Direct Lake** dashboards at scale with full automation, governance, and CI/CD.
+ - **Integration**: Shortcut-first; otherwise export + pipeline. Supports Direct Lake and CI/CD.
+ - **Profiles**: DE (Medallion + handover), DS (EDA→churn/CLV + scoring), Data Business Analyst (Fabric/Power BI, RLS, dashboards).
  
 
 ---
@@ -39,9 +40,9 @@ To address this, the CMO and CDAO requested a **prototype platform** combining *
 
 ## Platform Context
 
-This project is delivered with **Databricks Free Edition** and **Fabric Trial**.  
-Free tiers impose limitations (manual exports, no ADLS Gen2, limited governance),  
-but they still allow us to demonstrate the **end-to-end integration** between Databricks (pipelines, MLflow) and Fabric (Lakehouse, Direct Lake, Power BI).  
+This project targets **Azure Databricks Premium Trial** (14 days of DBUs) and **Microsoft Fabric Trial**.  
+If trials aren't available, you can still follow along using Databricks Free Edition and Fabric Free (F2) with some constraints.  
+Either path demonstrates the **end-to-end integration** between Databricks (pipelines, MLflow) and Fabric (Lakehouse, Direct Lake, Power BI).  
 
 In a production environment, this would be automated and governed using:  
 - **Databricks Premium/Enterprise**: Delta Live Tables, Unity Catalog, Workflows, Jobs.  
@@ -53,14 +54,14 @@ In a production environment, this would be automated and governed using:
 
 ## Deliverables Journey
 
-| Level | Data Engineer | Data Scientist | Data Analyst | Objective |
+| Level | Data Engineer | Data Scientist | Data Business Analyst | Objective |
 |-------|---------------|----------------|--------------|-----------|
 | Essentials | 🟥 Bronze ingestion | 🟥 Churn & CLV hypotheses | 🟨 Raw KPIs dashboard | First insights |
 | Robustness | 🟥 Silver harmonization, Gold marts | 🟥 Feature engineering (RFM, overlap) | 🟩 🟨 Silver dashboards + RLS | Reliable reporting |
 | Advanced | 🟥 Gold marts enriched with scores | 🟥 Baseline churn & CLV models | 🟩 🟨 Predictive KPIs dashboards | Predictive insights |
 | Mastery | 🟥→🟩 Reusable pipelines & exports | 🟥 Finalized models + metrics (Accuracy, AUC, RMSE) | 🟩 🟨 Executive storytelling dashboards | Portfolio-ready prototype |
 
-Icon legend: 🟥 Databricks, 🟥→🟩 Databricks & Fabricks integration, 🟩 Fabric, 🟨 Power BI.
+Icon legend: 🟥 Databricks, 🟥→🟩 Databricks & Fabric integration, 🟩 Fabric, 🟨 Power BI.
 
 ---
 
@@ -71,8 +72,12 @@ Icon legend: 🟥 Databricks, 🟥→🟩 Databricks & Fabricks integration, �
 
 ## References
 
-- [Business Case](https://github.com/subllings/eurostyle-contonso-ma-unified-data-ai-databricks-fabric/blob/main/statement/1-eurostyle-contonso-ma-business-case.md)  
-- [Product Backlog](https://github.com/subllings/eurostyle-contonso-ma-unified-data-ai-databricks-fabric/blob/main/statement/2-eurostyle-contonso-ma-project-backlog.md)  
+- [Business Case](./statement/1-eurostyle-contonso-ma-business-case.md)
+- [Product Backlog](./statement/2-eurostyle-contonso-ma-project-backlog.md)
+- [Getting Started (free/trial setup)](./GETTING_STARTED.md)
+- [Certification-compliant mapping](./statement/eurostyle-contonso-certification-compliant.md)
+- [Certification guides (DE/DS/DA)](./certification/)
+- [Glossary](./GLOSSARY.md)
 
 
 

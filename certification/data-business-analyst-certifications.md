@@ -48,7 +48,7 @@ Core topics
 
 ### 5) Hands‑on mapping to this repository
 - Epic 3 (Analytics/BI): build queries and dashboards on curated Delta tables; add RLS via dynamic views in UC.
-- Add a small “Analyst SQL” folder with reusable query snippets and a dashboard spec.
+- Add a small "Analyst SQL" folder with reusable query snippets and a dashboard spec.
 
 ### 6) 7‑day study plan (example)
 - Day 1: Delta lakehouse fundamentals; constraints/time travel.

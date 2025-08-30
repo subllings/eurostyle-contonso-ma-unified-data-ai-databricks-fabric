@@ -4,7 +4,7 @@ This document maps the project narrative (two companies, two datasets) to role�
 
 Scope
 - No exam content is reproduced. We paraphrase public outlines and point to official pages.
-- Hands‑on steps reuse this repository’s backlog and deliverables.
+- Hands‑on steps reuse this repository's backlog and deliverables.
 
 ## How to use this guide
 - Choose your role or target exam, then complete the tasks in the corresponding track.
@@ -32,7 +32,7 @@ A5) Observability and CI/CD (Optional Extensions)
 - Outcome: basic run logs, query history, and a minimal DAB bundle.
 - Exam alignment: operations, DAB packaging, environment configs.
 
-## Track B — ML/AI Engineer (Databricks ML Associate/Professional)
+## Track B — Data Scientist (Databricks ML Associate/Professional)
 
 B1) EDA and baselines (Backlog: Feature 2.1)
 - Outcome: leakage checks, target logic, baseline model; MLflow init.
@@ -54,7 +54,7 @@ B5) Drift monitoring (Optional)
 - Outcome: small telemetry job capturing feature/score drift; alert thresholds.
 - Exam alignment: solution/data monitoring.
 
-## Track C — Analyst / BI (Databricks DA Associate; Microsoft PL‑300)
+## Track C — Data Business Analyst (Databricks Data Analyst Associate; Microsoft PL‑300; DP‑700 awareness)
 
 C1) First Look – Contoso (Backlog: Feature 3.1)
 - Outcome: DirectQuery to Bronze; GMV/AOV/Orders with named measures; performance notes.
