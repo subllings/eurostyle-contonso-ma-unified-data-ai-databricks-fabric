@@ -58,8 +58,8 @@ It provides a clear mapping of **who delivers what, and when**, ensuring no role
 | Sprint | Data Engineer (DE) | Data Scientist (DS) | Data Business Analyst (DA) |
 |--------|---------------------|---------------------|-------------------|
 | **0 (0.5d)** | 🟥 Set up Databricks workspace and folder structure; define ingestion paths for EuroStyle & Contoso | 🟥 Define hypotheses for churn (inactivity >90 days) and Customer Lifetime Value (CLV); identify required features | 🟩 🟨 Define initial KPI Catalog v0.1 (GMV, AOV, margin, churn rate); map differences EuroStyle vs Contoso |
-| **1 (4.5d)** | 🟥 Ingest EuroStyle & Contoso raw CSVs into Bronze Delta tables; add metadata (`ingest_ts`, `source_system`); kick off 🟦 Governance G.1 (Purview + UC setup: SQL Warehouse HTTP Path, system tables, credential) | 🟥 Perform **Exploratory Data Analysis (EDA)** on Bronze (Contoso first): distributions, missing values, brand overlap; draft churn & CLV definitions | 🟩 🟨 Build "First Look Dashboard" (Contoso first) with Bronze KPIs: **GMV (Gross Merchandise Value)**, **AOV (Average Order Value)**, order counts |
-| **2 (4.5d)** | 🟥 Transform Bronze → Silver: deduplication, schema harmonization, standardize currencies, align product hierarchies; continue 🟦 Governance G.1 (run first Purview scan, verify lineage, capture evidence) | 🟥 Engineer features: **RFM (Recency, Frequency, Monetary value)**, basket diversity, cross-brand overlap; track feature sets in MLflow | 🟩 🟨 Redesign dashboards on Silver; compare Raw vs Silver KPIs; implement first **Row-Level Security (RLS)** rules |
+| **1 (4.5d)** | 🟥 Ingest EuroStyle & Contoso raw CSVs into Bronze Delta tables; add metadata (`ingest_ts`, `source_system`); kick off 🟦 [Governance G.1](#feature-g-1) (Purview + UC setup: SQL Warehouse HTTP Path, system tables, credential) | 🟥 Perform **Exploratory Data Analysis (EDA)** on Bronze (Contoso first): distributions, missing values, brand overlap; draft churn & CLV definitions | 🟩 🟨 Build "First Look Dashboard" (Contoso first) with Bronze KPIs: **GMV (Gross Merchandise Value)**, **AOV (Average Order Value)**, order counts |
+| **2 (4.5d)** | 🟥 Transform Bronze → Silver: deduplication, schema harmonization, standardize currencies, align product hierarchies; continue 🟦 [Governance G.1](#feature-g-1) (run first Purview scan, verify lineage, capture evidence) | 🟥 Engineer features: **RFM (Recency, Frequency, Monetary value)**, basket diversity, cross-brand overlap; track feature sets in MLflow | 🟩 🟨 Redesign dashboards on Silver; compare Raw vs Silver KPIs; implement first **Row-Level Security (RLS)** rules |
 | **3 (4.5d)** | 🟥 Build Gold marts: `sales_daily` (sales, GMV, AOV, margin), `category_perf`, `customer_360` with RFM base | 🟥 Train baseline models: Logistic Regression (churn), Random Forest (CLV regression); log experiments in MLflow | 🟩 🟨 Deliver **Executive Dashboard**: consolidated KPIs (GMV, AOV, margin), brand comparisons, North vs South splits |
 | **4 (4.5d)** | 🟥→🟩 Export Gold marts to Fabric Lakehouse (Parquet + manifest, or Shortcuts); orchestrate ingestion with Fabric Data Pipelines | 🟥→🟩 Run batch scoring for churn & CLV; join scored tables into Gold `customer_360`; export to Fabric and validate metrics/skew | 🟩 🟨 Build full **Power BI Post-Merger Suite**: Executive + Customer Segmentation dashboards (with churn & CLV); deploy with Fabric pipelines |
 
@@ -351,22 +351,38 @@ As a Data Engineer, I want Silver tables with clean, harmonized schemas so Analy
  - Azure DevOps DQ tickets opened/updated for any Raw→Silver residual issues discovered (e.g., orphan facts, missing FX rates); links added to README and referenced by DA in Feature 3.2.
 
 **Tasks** 
-🟥 1) [DBX-DE-Prof][Modeling] Confirm target Silver table names and create empty schemas (or temp views) with expected columns and types for `sales_clean` and any dims (document in schema contract draft).  
-🟥 2) [DBX-DE-Prof][Modeling] Define and document business keys for deduplication (e.g., `order_id + sku + customer_id + order_date`); capture edge cases (null/invalid keys).  
-🟥 3) [DBX-DE-Assoc][Spark-Aggregations][Delta-Basics] Profile duplicate rates per brand; implement windowed dedup keeping latest by `ingest_ts`; persist intermediate results for audit.  
-🟥 4) [DBX-DE-Assoc][Delta-Basics] Normalize critical types across brands (dates to DATE, money to DECIMAL(18,2)); trim/uppercase IDs; standardize country/currency codes.  
-🟥 5) [DBX-DE-Prof][Modeling] Build and persist `silver.fx_rates_eur` snapshot with valuation date and source metadata (ECB suggested); validate coverage for encountered currencies.  
-🟥 6) [DBX-DE-Assoc][Spark-Aggregations][Delta-Basics] Convert all monetary amounts to EUR by joining FX "as‑of" valuation date; implement rounding policy (HALF_UP) and document precision.  
-🟥 7) [DBX-DE-Prof][Modeling] Create product and customer crosswalk CSVs in `docs` and register Delta mapping tables; specify collision handling rules.  
-🟥 8) [DBX-DE-Prof][Modeling] Normalize customer IDs across EuroStyle & Contoso using the crosswalk; resolve duplicates/collisions and record decisions.  
-🟥 9) [DBX-DE-Prof][Modeling] Align product hierarchy (category/brand) via mapping; backfill missing categories where possible; flag unresolved.  
-🟥 10) [DBX-DE-Prof][Modeling] Enforce referential checks (orphans) using anti‑joins; fix or quarantine with reason codes and counts.  
-🟥 11) [DBX-DE-Assoc][Delta-MERGE][Delta-Basics] Implement idempotent write strategy: `MERGE` on BKs or deterministic `replaceWhere` by date window; prove re‑run yields same end state.  
-🟥 12) [DBX-DE-Assoc][Delta-Basics] Add Delta constraints where feasible (NOT NULL on BKs, simple CHECK constraints); evaluate impact and violations.  
-🟥 13) [DBX-DE-Assoc][Platform][DBX-DE-Prof][Modeling] Partitioning/optimization: choose partition columns (e.g., `order_date`); consider OPTIMIZE/Z‑ORDER for common predicates; document choices.  
-🟥 14) [DBX-DE-Prof][Modeling] Publish the Silver schema contract (names, types, nullability) and mapping rules; include FX rounding/fallback policies.  
-🟥 15) [DBX-DE-Prof][Monitoring-Logs] Produce a DQ report (pre/post metrics: duplicate reduction %, nulls reduced %, FX conversion coverage, orphan counts); attach queries.  
-🟥 16) [MS-DP-700][Governance] Register Silver catalog/schema in Purview (UC connector), run scan, apply classifications for PII, and verify lineage from example notebook run.
+1) 🟥 [DBX-DE-Prof][Modeling]  
+Confirm target Silver table names and create empty schemas (or temp views) with expected columns and types for `sales_clean` and any dims (document in schema contract draft).  
+2) 🟥 [DBX-DE-Prof][Modeling]  
+Define and document business keys for deduplication (e.g., `order_id + sku + customer_id + order_date`); capture edge cases (null/invalid keys).  
+3) 🟥 [DBX-DE-Assoc][Spark-Aggregations][Delta-Basics]  
+Profile duplicate rates per brand; implement windowed dedup keeping latest by `ingest_ts`; persist intermediate results for audit.  
+4) 🟥 [DBX-DE-Assoc][Delta-Basics]  
+Normalize critical types across brands (dates to DATE, money to DECIMAL(18,2)); trim/uppercase IDs; standardize country/currency codes.  
+5) 🟥 [DBX-DE-Prof][Modeling]  
+Build and persist `silver.fx_rates_eur` snapshot with valuation date and source metadata (ECB suggested); validate coverage for encountered currencies.  
+6) 🟥 [DBX-DE-Assoc][Spark-Aggregations][Delta-Basics]  
+Convert all monetary amounts to EUR by joining FX "as‑of" valuation date; implement rounding policy (HALF_UP) and document precision.  
+7) 🟥 [DBX-DE-Prof][Modeling]  
+Create product and customer crosswalk CSVs in `docs` and register Delta mapping tables; specify collision handling rules.  
+8) 🟥 [DBX-DE-Prof][Modeling]  
+Normalize customer IDs across EuroStyle & Contoso using the crosswalk; resolve duplicates/collisions and record decisions.  
+9) 🟥 [DBX-DE-Prof][Modeling]  
+Align product hierarchy (category/brand) via mapping; backfill missing categories where possible; flag unresolved.  
+10) 🟥 [DBX-DE-Prof][Modeling]  
+Enforce referential checks (orphans) using anti‑joins; fix or quarantine with reason codes and counts.  
+11) 🟥 [DBX-DE-Assoc][Delta-MERGE][Delta-Basics]  
+Implement idempotent write strategy: `MERGE` on BKs or deterministic `replaceWhere` by date window; prove re‑run yields same end state.  
+12) 🟥 [DBX-DE-Assoc][Delta-Basics]  
+Add Delta constraints where feasible (NOT NULL on BKs, simple CHECK constraints); evaluate impact and violations.  
+13) 🟥 [DBX-DE-Assoc][Platform][DBX-DE-Prof][Modeling]  
+Partitioning/optimization: choose partition columns (e.g., `order_date`); consider OPTIMIZE/Z‑ORDER for common predicates; document choices.  
+14) 🟥 [DBX-DE-Prof][Modeling]  
+Publish the Silver schema contract (names, types, nullability) and mapping rules; include FX rounding/fallback policies.  
+15) 🟥 [DBX-DE-Prof][Monitoring-Logs]  
+Produce a DQ report (pre/post metrics: duplicate reduction %, nulls reduced %, FX conversion coverage, orphan counts); attach queries.  
+16) 🟦 [Governance]  
+Register Silver catalog/schema in Purview (UC connector), run scan, apply classifications for PII, and verify lineage from example notebook run.
 
 **User Stories (breakdown)**  
 - As a DE, I deliver Silver sales with duplicates removed and currencies normalized to EUR.  
@@ -533,13 +549,13 @@ FROM silver.sales_clean;
 🟥 2) [DBX-DE-Prof][Modeling][DBX-DE-Assoc][Delta-Basics] Create `gold.date_dim` and populate from Silver order_date window; add `date_key` (yyyymmdd), year/month/day.  
 🟥 3) [DBX-DE-Prof][Modeling][DBX-DE-Assoc][Delta-Basics] Create `gold.product_dim` with surrogate key (IDENTITY or hashed BK); populate attributes (product_code, category, brand).  
 🟥 4) [DBX-DE-Prof][Modeling][DBX-DE-Assoc][Delta-Basics] Create `gold.customer_dim` with surrogate key and unified customer identifier; include `source_system` where relevant.  
-🟥 5) [DBX-DE-Prof][Modeling][DBX-DE-Assoc][Spark-Aggregations][DBX-DE-Assoc][Delta-Basics] Specify the `gold.sales_daily` schema (keys/measures) and write the first load query (GMV, Orders, Units, Estimated Margin proxy).  
-🟥 6) [DBX-DE-Assoc][Spark-Aggregations][DBX-DE-Assoc][Delta-Basics] Implement `gold.sales_daily` load handling returns (negative qty → returns) and label margin as proxy when COGS absent.  
+🟥 5) [DBX-DE-Prof][DBX-DE-Assoc][Modeling][Spark-Aggregations][Delta-Basics] Specify the `gold.sales_daily` schema (keys/measures) and write the first load query (GMV, Orders, Units, Estimated Margin proxy).  
+🟥 6) [DBX-DE-Assoc][Spark-Aggregations][Delta-Basics] Implement `gold.sales_daily` load handling returns (negative qty → returns) and label margin as proxy when COGS absent.  
 🟥 7) [DBX-DE-Assoc][Delta-Basics] Add Delta constraints/checks to `gold.sales_daily` (NOT NULL on keys, non‑negative checks on units/revenue).  
 🟥 8) [DBX-DE-Prof][Modeling][DBX-DE-Assoc][Spark-Aggregations] Define and build `gold.category_perf` (aggregations by product/category/brand/date; include GMV, Units, Orders).  
 🟥 9) [DBX-DE-Prof][Modeling][DBX-DE-Assoc][Spark-Aggregations] Define `gold.customer_360` base schema (one row per customer) and populate core aggregates (orders, units, GMV).  
 🟥 10) [DBX-DE-Assoc][Spark-Aggregations][DBX-DE-Prof][Modeling] Compute and attach RFM metrics to `gold.customer_360` (Recency, Frequency, Monetary) and optional RFM segment/bucket; carry `source_system`.  
-🟥 11) [DBX-DE-Assoc][Delta-MERGE][DBX-DE-Assoc][Delta-Basics] Make loads idempotent: choose MERGE or deterministic INSERT OVERWRITE by date/snapshot for each mart; validate repeatability.  
+🟥 11) [DBX-DE-Assoc][Delta-MERGE][Delta-Basics] Make loads idempotent: choose MERGE or deterministic INSERT OVERWRITE by date/snapshot for each mart; validate repeatability.  
 🟥 12) [DBX-DE-Assoc][Platform] Partitioning/optimization: choose partitioning (e.g., by date), coalesce/compact files, and note file size targets.  
 🟥 13) [DBX-DE-Prof][Testing] Validate vs Silver: reconcile counts/KPIs, run orphan/RI checks, and execute smoke queries with DA/DS; capture results.  
 🟥 14) [DBX-DE-Prof][Modeling] Document schemas and assumptions: contracts for all marts, margin proxy method, and any caveats; update README.  
@@ -960,13 +976,13 @@ As a Data Platform team, we want Microsoft Purview to catalog and govern our Azu
 🟥 1) [DBX-DE-Assoc][Platform] Verify workspace is UC‑enabled and attached to the intended metastore; record metastore ID and default catalog.  
 🟥 2) [DBX-DE-Assoc][Platform] Create or reuse a SQL Warehouse; capture Workspace URL and HTTP Path; grant "Can Use" to the scanning identity.  
 🟥 3) [DBX-DE-Assoc][UC-Permissions] Enable system tables and grant SELECT on `system.access.table_lineage` and `system.access.column_lineage` to the scanning identity.  
-🟥 4) [MS-DP-700][Governance] Create Microsoft Purview account (if missing) and Azure Key Vault; grant Purview access to read secrets in Key Vault.  
-🟥 5) [MS-DP-700][Governance] Generate a Databricks PAT (or configure Managed Identity/Service Principal); store secret in Key Vault with clear naming/versioning.  
-🟥 6) [MS-DP-700][Governance] Register source "Azure Databricks Unity Catalog" in Purview; create/select credential; input Workspace URL + HTTP Path; toggle lineage; Test connection.  
-🟥 7) [MS-DP-700][Governance] Scope catalogs/schemas for the first scan; run on‑demand; confirm asset count and classifications appear.  
+🟥 4) [Governance] Create Microsoft Purview account (if missing) and Azure Key Vault; grant Purview access to read secrets in Key Vault.  
+🟥 5) [Governance] Generate a Databricks PAT (or configure Managed Identity/Service Principal); store secret in Key Vault with clear naming/versioning.  
+🟥 6) [Governance] Register source "Azure Databricks Unity Catalog" in Purview; create/select credential; input Workspace URL + HTTP Path; toggle lineage; Test connection.  
+🟥 7) [Governance] Scope catalogs/schemas for the first scan; run on‑demand; confirm asset count and classifications appear.  
 🟥 8) [DBX-DE-Prof][Monitoring-Logs] Execute a small UC notebook/SQL that reads/writes between two tables; re‑run scan (or wait for schedule) and verify lineage graph in Purview.  
-🟥 9) [MS-DP-700][Workspaces] If private networking is required, configure Managed vNet or self‑hosted Integration Runtime and private endpoints for Databricks/Key Vault.  
-🟥 10) [MS-DP-700][Governance] Optional: Configure Unified Catalog Data Quality profiling/scan on one table; save results as artifacts.  
+🟥 9) [Workspaces] If private networking is required, configure Managed vNet or self‑hosted Integration Runtime and private endpoints for Databricks/Key Vault.  
+🟥 10) [Governance] Optional: Configure Unified Catalog Data Quality profiling/scan on one table; save results as artifacts.  
 🟥 11) [DBX-DE-Prof][Monitoring-Logs] Document setup (identity, permissions, warehouse, HTTP Path, IR mode) and add Purview links/screenshots to evidence folder; update README.  
 
 **Deliverables**:  
@@ -976,9 +992,9 @@ As a Data Platform team, we want Microsoft Purview to catalog and govern our Azu
 - Optional: Data profiling/quality report for one UC table.  
 
 **Learning Resources**:  
-- Connect Azure Databricks Unity Catalog in Purview (official): https://learn.microsoft.com/purview/register-scan-azure-databricks-unity-catalog  
-- Purview Data Quality for UC: https://learn.microsoft.com/purview/unified-catalog-data-quality-azure-databricks-unity-catalog  
-- Unity Catalog setup and privileges: https://learn.microsoft.com/azure/databricks/data-governance/unity-catalog/  
+- [Microsoft Purview — Connect Azure Databricks Unity Catalog](https://learn.microsoft.com/purview/register-scan-azure-databricks-unity-catalog)  
+- [Microsoft Purview — Data Quality for Unity Catalog](https://learn.microsoft.com/purview/unified-catalog-data-quality-azure-databricks-unity-catalog)  
+- [Azure Databricks — Unity Catalog setup and privileges](https://learn.microsoft.com/azure/databricks/data-governance/unity-catalog/)  
 
 
 <a id="feature-2-4"></a>
