@@ -62,11 +62,11 @@ This table lists all epics, distributed by sprint and by profile (DE, DS, DA). I
 
 | Sprint | DE (Data Engineer) | DS (Data Scientist) | DA (Data Analyst) |
 |---|---|---|---|
-| 0 | 🟥 [Epic 1 – Data Foundation Platform](#epic-1) (setup: workspace, folders, ingest paths) | 🟥 [Epic 2 – ML & Predictive](#epic-2) (hypotheses/requirements, MLflow init) | 🟩 🟨 [Epic 3 – Analytics & BI](#epic-3) (KPI Catalog v0.1, semantic draft) |
-| 1 | 🟥 [Epic 1 – Data Foundation Platform](#epic-1) (Bronze: ES+Contoso, metadata, DirectQuery) | 🟥 [Epic 2 – ML & Predictive](#epic-2) (EDA: prevalence, drift, baselines) | 🟩 🟨 [Epic 3 – Analytics & BI](#epic-3) (First Look – Contoso: semantic model, measures, v1 report, KPI v0.2) |
-| 2 | 🟥 [Epic 1 – Data Foundation Platform](#epic-1) (Silver: dedup, FX→EUR, IDs, schema contract) | 🟥 [Epic 2 – ML & Predictive](#epic-2) (Features: RFM, basket, versioning, leakage checks) | 🟩 🟨 [Epic 3 – Analytics & BI](#epic-3) (Raw vs Silver: deltas, toggles, RLS v1, DQ impacts) |
-| 3 | 🟥 [Epic 1 – Data Foundation Platform](#epic-1) (Gold marts: sales_daily, category_perf, customer_360) | 🟥 [Epic 2 – ML & Predictive](#epic-2) (Model training: churn LR, CLV RF, calibration/CI) | 🟩 🟨 [Epic 3 – Analytics & BI](#epic-3) (Executive: consolidated KPIs, brand/region, RLS) |
-| 4 | 🟥→🟩 [Epic 4 – Platform Integration](#epic-4) (Fabric export: Parquet+manifest, pipeline ingest) | 🟥→🟩 [Epic 2 – ML](#epic-2) (Batch scoring, join to Gold, explainability) + [Epic 4](#epic-4) (Export/validation) | 🟩 🟨 [Epic 3 – Analytics](#epic-3) (Segmentation) + [Epic 4](#epic-4) (Power BI Suite, pipeline promotion) |
+| 0 | 🟥 [Epic 1 – Data Foundation Platform](#epic-1) (setup: workspace, folders, ingest paths) | 🟥 [Epic 3 – ML & Predictive](#epic-3) (hypotheses/requirements, MLflow init) | 🟩 🟨 [Epic 2 – Analytics & BI](#epic-2) (KPI Catalog v0.1, semantic draft) |
+| 1 | 🟥 [Epic 1 – Data Foundation Platform](#epic-1) (Bronze: ES+Contoso, metadata, DirectQuery) | 🟥 [Epic 3 – ML & Predictive](#epic-3) (EDA: prevalence, drift, baselines) | 🟩 🟨 [Epic 2 – Analytics & BI](#epic-2) (First Look – Contoso: semantic model, measures, v1 report, KPI v0.2) |
+| 2 | 🟥 [Epic 1 – Data Foundation Platform](#epic-1) (Silver: dedup, FX→EUR, IDs, schema contract) | 🟥 [Epic 3 – ML & Predictive](#epic-3) (Features: RFM, basket, versioning, leakage checks) | 🟩 🟨 [Epic 2 – Analytics & BI](#epic-2) (Raw vs Silver: deltas, toggles, RLS v1, DQ impacts) |
+| 3 | 🟥 [Epic 1 – Data Foundation Platform](#epic-1) (Gold marts: sales_daily, category_perf, customer_360) | 🟥 [Epic 3 – ML & Predictive](#epic-3) (Model training: churn LR, CLV RF, calibration/CI) | 🟩 🟨 [Epic 2 – Analytics & BI](#epic-2) (Executive: consolidated KPIs, brand/region, RLS) |
+| 4 | 🟥→🟩 [Epic 4 – Platform Integration](#epic-4) (Fabric export: Parquet+manifest, pipeline ingest) | 🟥→🟩 [Epic 3 – ML](#epic-3) (Batch scoring, join to Gold, explainability) + [Epic 4](#epic-4) (Export/validation) | 🟩 🟨 [Epic 2 – Analytics](#epic-2) (Segmentation) + [Epic 4](#epic-4) (Power BI Suite, pipeline promotion) |
 | 5 (optional) | 🟥 [Epic 5 – Optional Extensions](#epic-5) (Data Vault light; E2E deployment sim) | 🟥 [Epic 5 – Optional Extensions](#epic-5) (Survival = time‑to‑churn; probabilistic repeat‑purchase model (Beta‑Geometric (BG)/Negative Binomial Distribution (NBD)) to estimate Customer Lifetime Value (CLV); export scores to Fabric and run validation checks (QA)) | 🟩 🟨 [Epic 5 – Optional Extensions](#epic-5) (Dynamic dashboards: what‑if/drill; deployment pipeline) |
 
 Legend: 🟥 Databricks, 🟩 Fabric, 🟨 Power BI, 🟥→🟩 Integration (handoff Databricks → Fabric)
@@ -83,10 +83,10 @@ This table lists all features, distributed by sprint and by profile (DE, DS, DA)
 | Sprint | DE (Data Engineer) | DS (Data Scientist) | DA (Data Analyst) |
 |---|---|---|---|
 | 0 | — | — | — |
-| 1 | 🟥 [1.1 Raw Data Ingestion](#feature-1-1) (Bronze Delta with ingest_ts/source_system; DQ summary; schema dictionary; runbook) | 🟥 [2.1 EDA, baselines & MLflow setup](#feature-2-1) (EDA readout; baselines; leakage/risk log; MLflow init) | 🟩 🟨 [3.1 First Look – Contoso](#feature-3-1) (semantic model; named measures; v1 report) |
-| 2 | 🟥 [1.2 Silver Cleaning & Harmonization](#feature-1-2) (idempotent writes; Silver schema contract; FX normalization with ECB snapshot; DQ before/after) | 🟥 [2.1 EDA summary & risk log](#feature-2-1); 🟥 [2.2 Feature Engineering](#feature-2-2) (RFM; basket/cross‑brand; versioned feature tables; leakage checks; consumption contract) | 🟩 🟨 [3.2 Raw vs Silver – Contoso + EuroStyle](#feature-3-2) (side‑by‑side KPIs; delta measures; RLS draft; bookmarks/toggles) |
-| 3 | 🟥 [1.3 Gold Business Marts](#feature-1-3) (sales_daily; customer_360; category_perf; margin proxy/notes) | 🟥 [2.3 Model Training](#feature-2-3) (LR churn; RF CLV; calibration/CIs; segment evaluation; registry notes) | 🟩 🟨 [3.3 Executive Post‑Merger Dashboard](#feature-3-3) (GMV/AOV/margin; brand & region splits; RLS configured; perf tuned) |
-| 4 | 🟥→🟩 [4.1 Export Gold to Fabric](#feature-4-1) (Parquet + manifest/Shortcuts; Fabric Pipeline ingest; connectivity validated) | 🟥→🟩 [2.4 Batch Scoring & Integration](#feature-2-4), 🟥→🟩 [4.3 Scoring Export & Validation](#feature-4-3) (batch scoring churn/CLV; join to customer_360; export to Fabric; validate metrics/skew) | 🟩 🟨 [3.4 Customer Segmentation](#feature-3-4), 🟩 🟨 [4.2 Power BI Suite](#feature-4-2) (Executive + Segmentation dashboards; RLS; pipeline Dev→Test; publish suite) |
+| 1 | 🟥 [1.1 Raw Data Ingestion](#feature-1-1) (Bronze Delta with ingest_ts/source_system; DQ summary; schema dictionary; runbook) | 🟥 [3.1 EDA, baselines & MLflow setup](#feature-3-1) (EDA readout; baselines; leakage/risk log; MLflow init) | 🟩 🟨 [2.1 First Look – Contoso](#feature-2-1) (semantic model; named measures; v1 report) |
+| 2 | 🟥 [1.2 Silver Cleaning & Harmonization](#feature-1-2) (idempotent writes; Silver schema contract; FX normalization with ECB snapshot; DQ before/after) | 🟥 [3.1 EDA summary & risk log](#feature-3-1); 🟥 [3.2 Feature Engineering](#feature-3-2) (RFM; basket/cross‑brand; versioned feature tables; leakage checks; consumption contract) | 🟩 🟨 [2.2 Raw vs Silver – Contoso + EuroStyle](#feature-2-2) (side‑by‑side KPIs; delta measures; RLS draft; bookmarks/toggles) |
+| 3 | 🟥 [1.3 Gold Business Marts](#feature-1-3) (sales_daily; customer_360; category_perf; margin proxy/notes) | 🟥 [3.3 Model Training](#feature-3-3) (LR churn; RF CLV; calibration/CIs; segment evaluation; registry notes) | 🟩 🟨 [2.3 Executive Post‑Merger Dashboard](#feature-2-3) (GMV/AOV/margin; brand & region splits; RLS configured; perf tuned) |
+| 4 | 🟥→🟩 [4.1 Export Gold to Fabric](#feature-4-1) (Parquet + manifest/Shortcuts; Fabric Pipeline ingest; connectivity validated) | 🟥→🟩 [3.4 Batch Scoring & Integration](#feature-3-4), 🟥→🟩 [4.3 Scoring Export & Validation](#feature-4-3) (batch scoring churn/CLV; join to customer_360; export to Fabric; validate metrics/skew) | 🟩 🟨 [2.4 Customer Segmentation](#feature-2-4), 🟩 🟨 [4.2 Power BI Suite](#feature-4-2) (Executive + Segmentation dashboards; RLS; pipeline Dev→Test; publish suite) |
 | 5 (optional) | 🟥 [5.1 Simplified Data Vault](#feature-5-1); 🟥→🟩 [5.4 Orchestration & E2E Deployment](#feature-5-4) (Airflow DAG + Fabric fallback; manifests/_SUCCESS; QA & notifications) | 🟥 [5.3 Survival/Probabilistic Models](#feature-5-3); 🟥→🟩 [5.4 Orchestration & E2E Deployment](#feature-5-4) (batch scoring export → Fabric ingest; alignment QA) | 🟩 🟨 [5.2 Advanced Segmentation](#feature-5-2); 🟩 🟨 [5.4 Orchestration & E2E Deployment](#feature-5-4) (promotion via Fabric pipelines/app; RLS/share checks) |
 
 Legend: 🟥 Databricks, 🟩 Fabric, 🟨 Power BI, 🟥→🟩 Integration (handoff Databricks → Fabric)
@@ -203,7 +203,7 @@ As a Data Engineer, I want to ingest EuroStyle and Contoso CSVs into Bronze so t
  - Dates and numeric columns parse correctly; consistent column naming applied where feasible across brands.  
  - Basic Data Quality (DQ) summary produced (missing values, duplicate rate on `(order_id, sku, customer_id, order_date)`, top countries/currencies). See Appendix A – DQ Thresholds & Tests.  
  - Mini schema dictionary and a short runbook (how to re-run ingestion, folder structure, naming conventions) added to repo.
- - Azure DevOps DQ tickets opened for any raw→Bronze variance >1% or material DQ issue; links captured in README and referenced by DA in Feature 3.2.
+ - Azure DevOps DQ tickets opened for any raw→Bronze variance >1% or material DQ issue; links captured in README and referenced by DA in Feature 2.2.
 
 **Tasks**:  
 🟥 1) Create raw landing folders in DBFS (`/FileStore/retail/raw/contoso/`, `/FileStore/retail/raw/eurostyle/`) and document paths in the runbook.  
@@ -302,7 +302,7 @@ As a Data Engineer, I want Silver tables with clean, harmonized schemas so Analy
  - Silver data contract published (schema with types/nullability and mapping rules).  
  - DQ report updated (pre/post cleaning: duplicates removed %, nulls reduced %, FX normalization impact). See Appendix A – DQ Thresholds & Tests.  
  - FX snapshot table (`silver.fx_rates_eur`) versioned with valuation date and source metadata.
- - Azure DevOps DQ tickets opened/updated for any Raw→Silver residual issues discovered (e.g., orphan facts, missing FX rates); links added to README and referenced by DA in Feature 3.2.
+ - Azure DevOps DQ tickets opened/updated for any Raw→Silver residual issues discovered (e.g., orphan facts, missing FX rates); links added to README and referenced by DA in Feature 2.2.
 
 **Tasks (15 tasks, prioritized)**:  
 🟥 1) Confirm target Silver table names and create empty schemas (or temp views) with expected columns and types for `sales_clean` and any dims (document in schema contract draft).  
@@ -598,14 +598,14 @@ Notes
 
 ---
 
-<a id="epic-3"></a>
-## Epic 3 – Analytics & Business Intelligence
+<a id="epic-2"></a>
+## Epic 2 – Analytics & Business Intelligence
 **Goal**: Provide dashboards for executives and marketing with unified KPIs.
 
 ---
 
-<a id="feature-3-1"></a>
-### Feature 3.1: First Look – Contoso (Sprint 1)
+<a id="feature-2-1"></a>
+### Feature 2.1: First Look – Contoso (Sprint 1)
 **User Story**:  
 As a Data Analyst, I want KPIs from Bronze so I can deliver a "First Look" dashboard.  
 
@@ -662,7 +662,7 @@ Deliverables
 🟨 Draft KPI Catalog and a lightweight data dictionary (fields, definitions, units).  
 🟨 Prepare a draft RLS matrix (who sees what) for future sprints; no enforcement yet.
 
- - **Provide insights: Storytelling one‑liners (Feature 3.1)**  
+ - **Provide insights: Storytelling one‑liners (Feature 2.1)**  
     - GMV changed by X% vs last week; orders moved by Y% and AOV by Z%.  
     - Yesterday's GMV was X; top category [Category] contributed Y% and [Top Product] led sales.  
     - AOV is X (±Y% vs 7‑day average); customers bought Z items per order on average.  
@@ -693,7 +693,7 @@ Deliverables
 - **Day 4.5:** Buffer; publish to Fabric workspace; verify dataset credentials; collect stakeholder feedback and log actions.  
    - Story focus: capture the one‑liners for the last 7 days (or last week) and paste into the README for hand‑off.  
 
-#### Mini notes — Feature 3.1 (with examples)
+#### Mini notes — Feature 2.1 (with examples)
 - Measures (DAX):
    ```DAX
    GMV = SUMX('Sales Bronze', 'Sales Bronze'[Quantity] * 'Sales Bronze'[Unit Price])
@@ -711,8 +711,8 @@ Deliverables
 
 ---
 
-<a id="feature-3-2"></a>
-### Feature 3.2: Raw vs Silver – Contoso + EuroStyle (Sprint 2)
+<a id="feature-2-2"></a>
+### Feature 2.2: Raw vs Silver – Contoso + EuroStyle (Sprint 2)
 **User Story**:  
 As a Data Analyst, I want to compare KPIs Raw vs Silver to highlight data cleaning impact.  
 
@@ -780,7 +780,7 @@ As a Data Analyst, I want to compare KPIs Raw vs Silver to highlight data cleani
 - **Day 4 (RLS1, OPS1):** Configure brand‑level RLS on Silver; validate with "View as role"; open DevOps items for data‑quality issues and link from report/README.  
 - **Day 4.5 (INS2–INS3, DQ3):** Stakeholder walkthrough; finalize insights one‑liners; add confidence note and polish visuals/documentation.  
 
-#### Mini notes — Feature 3.2 (per day)
+#### Mini notes — Feature 2.2 (per day)
 - Day 1: Import both models (Raw and Silver) with consistent field names/units; create paired measures `*_raw`, `*_silver`, and delta measures; avoid mixed grains.
    - Example DAX:
       ```DAX
@@ -817,8 +817,8 @@ As a Data Analyst, I want to compare KPIs Raw vs Silver to highlight data cleani
          ```
    - Example one‑liner: "After cleaning: GMV −3.4% (−dup 4.1%, +FX +0.7%); biggest delta in Footwear (ES)."
 
-##### Feature 3.1 vs feature 3.2 (quick comparison)
-| Aspect | Feature 3.1: First Look (Contoso, Bronze) | Feature 3.2: Raw vs Silver (EuroStyle + Contoso) |
+##### Feature 2.1 vs feature 2.2 (quick comparison)
+| Aspect | Feature 2.1: First Look (Contoso, Bronze) | Feature 2.2: Raw vs Silver (EuroStyle + Contoso) |
 |---|---|---|
 | Goal | Tell what happened (performance snapshot). | Explain what changed after cleaning (data‑quality impact). |
 | Scope | Contoso only. | Contoso + EuroStyle. |
@@ -832,8 +832,8 @@ As a Data Analyst, I want to compare KPIs Raw vs Silver to highlight data cleani
 
 ---
 
-<a id="feature-3-3"></a>
-### Feature 3.3: Executive Post-Merger Dashboard (Sprint 3)
+<a id="feature-2-3"></a>
+### Feature 2.3: Executive Post-Merger Dashboard (Sprint 3)
 **User Story**:  
 As an Executive, I want consolidated GMV, AOV, and margin so I can track EuroStyle + Contoso performance.  
 
@@ -867,7 +867,7 @@ As an Executive, I want consolidated GMV, AOV, and margin so I can track EuroSty
 🟨 Add regional splits (North vs South Europe).  
 🟩 Apply **RLS (Row-Level Security)** for managers vs executives.  
 
- - **Provide insights: Storytelling one‑liners (Feature 3.3)**  
+ - **Provide insights: Storytelling one‑liners (Feature 2.3)**  
     - Board view: GMV X, AOV Y, margin Z; EuroStyle vs Contoso: X% gap.  
     - North vs South: North is X% of GMV; South grew Y% WoW; margin tighter in [Region].  
     - Today looks normal: KPIs within ±X% of last 7 days; no anomalies flagged.  
@@ -894,7 +894,7 @@ As an Executive, I want consolidated GMV, AOV, and margin so I can track EuroSty
 - **Day 4:** Configure/validate RLS (brand manager vs exec; use "View as"); create demo bookmarks; rehearse narrative.  
 - **Day 4.5:** Buffer; finalize and publish; verify sharing and permissions.
 
-#### Mini notes — Feature 3.3 (per day)
+#### Mini notes — Feature 2.3 (per day)
 - Day 1: Confirm fact/dim relationships on Gold; stub measures and formatting; set consistent date table.
    - Example DAX:
       ```DAX
@@ -929,8 +929,8 @@ As an Executive, I want consolidated GMV, AOV, and margin so I can track EuroSty
    - Bookmarks: create "Executive Overview", "Brand Details", "Region Focus"; wire next/prev buttons.
    - Share: assign audience access; verify RLS in Service; attach quick demo script in README.
 
-##### Feature 3.2 vs Feature 3.3 (quick comparison)
-| Aspect | Feature 3.2: Raw vs Silver (EuroStyle + Contoso) | Feature 3.3: Executive Post‑Merger |
+##### Feature 2.2 vs Feature 2.3 (quick comparison)
+| Aspect | Feature 2.2: Raw vs Silver (EuroStyle + Contoso) | Feature 2.3: Executive Post‑Merger |
 |---|---|---|
 | Goal | Validate Silver vs Raw data, reconcile KPIs, surface DQ issues | Present consolidated GMV, AOV, Margin with brand/region splits |
 | Scope | Data reconciliation and diagnostics; Contoso+EuroStyle parity | Board‑level view; EuroStyle vs Contoso; North vs South |
@@ -946,8 +946,8 @@ As an Executive, I want consolidated GMV, AOV, and margin so I can track EuroSty
 
 ---
 
-<a id="feature-3-4"></a>
-### Feature 3.4: Customer Segmentation Dashboard (Sprint 4)
+<a id="feature-2-4"></a>
+### Feature 2.4: Customer Segmentation Dashboard (Sprint 4)
 **User Story**:  
 As a Marketing Manager, I want to see customer segments & churn risk so I can design campaigns.  
 
@@ -1015,14 +1015,14 @@ As a Marketing Manager, I want to see customer segments & churn risk so I can de
 - Day 4 → Tasks 9–11  
 - Day 4.5 → Tasks 12–14 (15 optional)  
 
-#### Mini notes — Feature 3.4 (per day)
+#### Mini notes — Feature 2.4 (per day)
 - Day 1: Align segment rules with DS; map fields from scored tables; design landing tiles for quick nav.
 - Day 2: Use field parameters for dimension toggles; build segment KPIs and summary visuals.
 - Day 3: Add drill-through to customer detail; wire back buttons; add tooltip pages where helpful.
 - Day 4: Publish; validate RLS interactions with "View as"; test typical filters for performance.
 - Day 4.5: Screenshot key views; document segmentation rules and thresholds in README.
 
-#### Advanced notes — DAX patterns, performance, RLS (Feature 3.4)
+#### Advanced notes — DAX patterns, performance, RLS (Feature 2.4)
 
 - DAX snippets (adapt to your model)
     - RFM bin:
@@ -1071,8 +1071,8 @@ As a Marketing Manager, I want to see customer segments & churn risk so I can de
     - Edge cases: empty/ALL segments; cross‑highlight behavior; totals with slicers; mobile layout sanity.
 
 
-##### Feature 3.3 vs Feature 3.4 (quick comparison)
-| Aspect | Feature 3.3: Executive Post‑Merger | Feature 3.4: Customer Segmentation |
+##### Feature 2.3 vs Feature 2.4 (quick comparison)
+| Aspect | Feature 2.3: Executive Post‑Merger | Feature 2.4: Customer Segmentation |
 |---|---|---|
 | Goal | Board‑level view of consolidated GMV, AOV, margin with brand/region splits | Marketing view of segments (RFM), churn risk, and CLV for action |
 | Scope | EuroStyle vs Contoso; North vs South; executive summary | Segments, cohorts, drill‑through to customer details |
@@ -1088,14 +1088,14 @@ As a Marketing Manager, I want to see customer segments & churn risk so I can de
 
 ---
 
-<a id="epic-2"></a>
-## Epic 2 – Machine Learning & Predictive Analytics
+<a id="epic-3"></a>
+## Epic 3 – Machine Learning & Predictive Analytics
 **Goal**: Develop churn and Customer Lifetime Value (CLV) models using merged Customer 360.
 
 ---
 
-<a id="feature-2-1"></a>
-### Feature 2.1: Exploratory Analysis (Sprint 1–2)
+<a id="feature-3-1"></a>
+### Feature 3.1: Exploratory Analysis (Sprint 1–2)
 **User Story**:  
 As a Data Scientist, I want to perform **Exploratory Data Analysis (EDA)** to understand customer behavior and overlaps.  
 
@@ -1144,7 +1144,7 @@ As a Data Scientist, I want to perform **Exploratory Data Analysis (EDA)** to un
 🟥 9) Compute RFM features and segment customers; record segment distributions.  
 🟥 10) Compare EuroStyle vs Contoso distributions; quantify overlaps; run drift checks (e.g., PSI/KS on top features).  
 🟥 11) Initialize MLflow experiment; log baseline runs, parameters (churn_horizon, cutoff_date), and artifacts (plots/tables).  
-🟥 12) Compile prioritized data-quality issue list with owners/severity and proposed fixes (feeds Feature 2.2 and DE backlog).  
+🟥 12) Compile prioritized data-quality issue list with owners/severity and proposed fixes (feeds Feature 3.2 and DE backlog).  
 🟥 13) Create data risk log (PII handling, leakage risks, gaps) and share in team space.  
 🟥 14) Produce and commit an EDA notebook and a 1–2 page readout; link them in this backlog.  
 🟥 15) Update data dictionary for key fields; note any ambiguous semantics to resolve with DA/DE.  
@@ -1162,7 +1162,7 @@ As a Data Scientist, I want to perform **Exploratory Data Analysis (EDA)** to un
 - Split protocol doc and artifacts (cutoff date, group lists, or date ranges).  
 - Data risk log (PII, leakage, drift) and leakage checklist.  
 - Updated data dictionary entries for core fields.  
- - EDA notebook artifact: `notebooks/feature_2_1_eda.ipynb` (synthetic fallback included; set USE_SYNTHETIC=False for real data).  
+ - EDA notebook artifact: `notebooks/feature_3_1_eda.ipynb` (synthetic fallback included; set USE_SYNTHETIC=False for real data).  
 
 ### Sprint day plan (4.5 days)
 - Day 1 [Tasks 1–3]: Load Bronze; run profiling (distributions, missingness, outliers); capture tables/shapes; note obvious data issues for DE/DA.  
@@ -1173,7 +1173,7 @@ As a Data Scientist, I want to perform **Exploratory Data Analysis (EDA)** to un
 
 Note: Days are not strictly sequential—profiling and fixes may iterate; baselines can start as soon as a stable split exists.
 
-#### Notes — Feature 2.1 (day-by-day + how-to)
+#### Notes — Feature 3.1 (day-by-day + how-to)
 Note: Days are not strictly sequential—profiling and fixes may iterate; baselines can start as soon as a stable split exists.
 
 - Day 1 — Profiling  
@@ -1198,8 +1198,8 @@ Note: Days are not strictly sequential—profiling and fixes may iterate; baseli
 
 ---
 
-<a id="feature-2-2"></a>
-### Feature 2.2: Feature Engineering (Sprint 2)
+<a id="feature-3-2"></a>
+### Feature 3.2: Feature Engineering (Sprint 2)
 **User Story**:  
 As a Data Scientist, I want RFM and behavioral features to build churn & CLV models.  
 
@@ -1263,7 +1263,7 @@ As a Data Scientist, I want RFM and behavioral features to build churn & CLV mod
 - Data quality reports (GE/Evidently) and correlation heatmap; screening decisions log.  
 - Consumption contract doc: schema, keys, join examples to `customer_360_gold`, refresh cadence.  
 - Leakage checklist results and preprocessing spec (imputations/transforms with train‑fit note).  
- - Feature engineering notebook artifact: `notebooks/feature_2_2_feature_engineering.ipynb` (synthetic fallback; Delta write attempted if Spark available).  
+ - Feature engineering notebook artifact: `notebooks/feature_3_2_feature_engineering.ipynb` (synthetic fallback; Delta write attempted if Spark available).  
 
 ### Sprint day plan (4.5 days)
 - Day 1 [Tasks 1–2, 9 (init)]: Compute RFM anchored at as‑of T; create `v1` Delta with metadata (version, created_ts, source_snapshot); register table.  
@@ -1272,7 +1272,7 @@ As a Data Scientist, I want RFM and behavioral features to build churn & CLV mod
 - Day 4 [Tasks 10–12, 11]: Track feature set in MLflow; define consumption contract and validate joinability to `customer_360_gold`; train quick baselines and log metrics.  
 - Day 4.5 [Polish]: Finalize docs, register ownership/permissions, and publish the README notes.  
 
-#### Notes — Feature 2.2 (day-by-day + how-to)
+#### Notes — Feature 3.2 (day-by-day + how-to)
 Note: Days can overlap—persist `v1` early, then iterate.
 
 - Day 1 — RFM and versioning  
@@ -1297,8 +1297,8 @@ Note: Days can overlap—persist `v1` early, then iterate.
 
 ---
 
-<a id="feature-2-3"></a>
-### Feature 2.3: Model Training (Sprint 3)
+<a id="feature-3-3"></a>
+### Feature 3.3: Model Training (Sprint 3)
 **User Story**:  
 As a Data Scientist, I want baseline models for churn and CLV so I can evaluate predictive power.  
 
@@ -1313,11 +1313,11 @@ As a Data Scientist, I want baseline models for churn and CLV so I can evaluate 
 - CLV = regression (baseline: Random Forest Regressor).  
 - Evaluate churn with AUC, AUCPR, accuracy, precision/recall @K; evaluate CLV with RMSE, MAE, R<sup>2</sup>, MAPE.  
 - Calibration matters for churn probabilities (Brier score, reliability curve); choose operating thresholds by business objective (e.g., capture X% of churners).  
-- Reproducibility: fixed seeds, pinned versions, and saved splits from Feature 2.1; train-only transforms from Feature 2.2.  
+- Reproducibility: fixed seeds, pinned versions, and saved splits from Feature 3.1; train-only transforms from Feature 3.2.  
 - Segment-wise evaluation (brand, region, lifecycle) to detect blind spots.  
 
 **Acceptance Criteria**:  
-- Churn LR and CLV RF baselines trained on TRAIN, validated on VALID, and tested on TEST aligned with Feature 2.1 splits.  
+- Churn LR and CLV RF baselines trained on TRAIN, validated on VALID, and tested on TEST aligned with Feature 3.1 splits.  
 - For churn, model beats baseline classifier with 95% CI on AUC (CI not overlapping baseline). Calibration reported with Brier score and reliability plot.  
 - For CLV, model reports RMSE, MAE, R<sup>2</sup> with bootstrap 95% CIs and outperforms mean baseline.  
 - Segment-wise metrics (brand/region) computed and logged; any material gaps noted with next steps.  
@@ -1325,7 +1325,7 @@ As a Data Scientist, I want baseline models for churn and CLV so I can evaluate 
 - Seeds fixed; code and data versions captured; no leakage (train-only fit for imputers/scalers, as-of filtering).  
 
 **Tasks (numbered)**:  
-🟥 1) Load Feature 2.2 dataset(s) and 2.1 split artifacts; verify shapes and label presence; check class balance.  
+🟥 1) Load Feature 3.2 dataset(s) and 3.1 split artifacts; verify shapes and label presence; check class balance.  
 🟥 2) Establish baselines: churn majority-class and CLV mean predictor; compute baseline metrics.  
 🟥 3) Build churn pipeline: train-only imputers/scalers + Logistic Regression (class_weight as needed); train on TRAIN.  
 🟥 4) Evaluate churn on VALID/TEST: AUC, AUCPR, accuracy; plot ROC/PR; compute thresholds @K (e.g., top 10%).  
@@ -1338,11 +1338,11 @@ As a Data Scientist, I want baseline models for churn and CLV so I can evaluate 
 🟥 11) Feature importance: permutation importances (or SHAP if available) for both models; log plots.  
 🟥 12) Persist artifacts: metrics CSV, ROC/PR images, calibration plot, importances; serialize pipelines; log to MLflow; record run IDs.  
 🟥 13) Reproducibility check: re-run on fixed seed; metrics within tolerance; note environment versions.  
-🟥 14) Draft scoring contract preview (inputs/outputs) for Feature 2.4; align column names and dtypes.  
+🟥 14) Draft scoring contract preview (inputs/outputs) for Feature 3.4; align column names and dtypes.  
 🟥 15) Handoff summary: write a short model card (purpose, data, metrics, risks, thresholds).  
 
 **Deliverables**  
-- Notebook: `notebooks/feature_2_3_model_training.ipynb` (synthetic fallback supported).  
+- Notebook: `notebooks/feature_3_3_model_training.ipynb` (synthetic fallback supported).  
 - MLflow runs for churn and CLV, with metrics, params, and artifacts (ROC/PR, calibration, importances).  
 - Artifacts folder: metrics summary CSVs, calibration and importance plots, chosen thresholds, segment metrics.  
 - Model card(s) and a brief readme with run IDs and seed/version info.  
@@ -1354,20 +1354,20 @@ As a Data Scientist, I want baseline models for churn and CLV so I can evaluate 
 - Day 4 [Tasks 12–14]: Persist/MLflow logging, reproducibility check, scoring contract.  
 - Day 4.5 [Task 15]: Model card + handoff.  
 
-#### Notes — Feature 2.3 (day-by-day + how-to)
+#### Notes — Feature 3.3 (day-by-day + how-to)
 - Calibration: Fit on VALID to avoid optimistic bias; prefer Isotonic if enough data; log pre/post Brier and save a reliability plot image for the run.  
 - Thresholds: Pick operating points from VALID based on business goals (e.g., top 10% recall of churners or maximize F1); never pick thresholds on TEST.  
 - CIs: Use bootstrap with stratification for churn and simple bootstrap for CLV; report median and 2.5/97.5 percentiles; store seeds and sample sizes in the artifact.  
 - Imbalanced churn: use class_weight="balanced" as a starting point; compare to threshold tuning on VALID; emphasize AUCPR and recall@K when churn rate is low.  
 - Segment checks: compute metrics by brand/region/lifecycle; flag any segment with >5% AUC drop vs global; capture in a CSV artifact and note remediation ideas.  
 - CLV skew: winsorize/log-transform targets in training only if heavy tails; always report MAE alongside RMSE; consider MAPE only for strictly positive targets.  
-- Leakage guardrails: ensure all imputers/scalers fit on TRAIN only; confirm features are computed using data ≤ as‑of date; rerun the leakage checklist from 2.1 if in doubt.  
+- Leakage guardrails: ensure all imputers/scalers fit on TRAIN only; confirm features are computed using data ≤ as‑of date; rerun the leakage checklist from 3.1 if in doubt.  
 - Determinism: fix seeds in split, model, numpy/random; pin package versions in the notebook header; log data snapshot/Delta version and MLflow run IDs in the model card.  
 
 ---
 
-<a id="feature-2-4"></a>
-### Feature 2.4: Batch Scoring & Integration (Sprint 4)
+<a id="feature-3-4"></a>
+### Feature 3.4: Batch Scoring & Integration (Sprint 4)
 **User Story**:  
 As a Data Scientist, I want to score churn/CLV and join them into Customer 360 so Analysts can use them.  
 
@@ -1392,7 +1392,7 @@ As a Data Scientist, I want to score churn/CLV and join them into Customer 360 s
 
 **Tasks (numbered)**:  
 🟥 1) Freeze model artifacts/versions and feature set version; record MLflow run IDs and URIs.  
-🟥 2) Load Feature 2.2 table(s) at target `as_of_date`; validate schema matches scoring contract.  
+🟥 2) Load Feature 3.2 table(s) at target `as_of_date`; validate schema matches scoring contract.  
 🟥 3) Build loaders: MLflow pyfunc or direct deserialization for churn and CLV models; set seeds for determinism.  
 🟥 4) Score churn probabilities and CLV values in batches/partitions; handle memory with repartition/coalesce.  
 🟥 5) Derive `churn_bucket` (e.g., deciles or business thresholds) and any auxiliary flags needed by DA.  
@@ -1407,7 +1407,7 @@ As a Data Scientist, I want to score churn/CLV and join them into Customer 360 s
 🟥→🟩 14) Optional export manifest for Fabric ingestion (paths, schema, `_SUCCESS`).  
 
 **Deliverables**  
-- Notebook: `notebooks/feature_2_4_batch_scoring.ipynb` (synthetic fallback supported).  
+- Notebook: `notebooks/feature_3_4_batch_scoring.ipynb` (synthetic fallback supported).  
 - `customer_scores_gold` table/view with schema contract and version columns.  
 - Skew/QA report artifacts; explainability summary; consumption guide (paths, sample queries).  
 - Runbook with idempotency and recovery steps; versions and run IDs documented.  
@@ -1419,7 +1419,7 @@ As a Data Scientist, I want to score churn/CLV and join them into Customer 360 s
 - Day 4 [Tasks 10–13]: Explainability, QA report, permissions, and runbook.  
 - Day 4.5 [Task 14]: Optional Fabric export manifest and polish docs.  
 
-#### Notes — Feature 2.4 (day-by-day + how-to)
+#### Notes — Feature 3.4 (day-by-day + how-to)
 - Idempotency: prefer overwrite-by-partition (as_of_date) or MERGE on key + date; always validate no duplicates post-write.  
 - Skew checks: PSI is nice-to-have; simple side-by-side histograms/quantiles often suffice; store the report as an artifact.  
 - Resource use: repartition/coalesce appropriately; avoid collecting to driver; cache when reusing feature DataFrames.  
@@ -2001,7 +2001,7 @@ As a Data Scientist, I want to implement advanced survival analysis and probabil
 🟥 13. Track runs in MLflow (params, metrics, artifacts, seeds); record data snapshot IDs and environment details.  
 🟥 14. Score full population; write `customer_scores_gold` idempotently (MERGE/replaceWhere); enforce Delta constraints (keys, bounds 0–1).  
 🟥→🟩 15. Run E2E checks: bounds/nulls/joins; BI spot‑checks in Power BI; verify "Today looks normal?" banner behavior.  
-🟥→🟩 16. Hand‑off to Feature 3.4: field list (risk bands, CLV tiers), RLS awareness, and dashboard binding notes.  
+🟥→🟩 16. Hand‑off to Feature 2.4: field list (risk bands, CLV tiers), RLS awareness, and dashboard binding notes.  
 🟥 17. Monitoring: feature drift (PSI), performance stability by brand/region, fairness checks; set weekly report and alert thresholds.  
 🟥 18. Documentation: plots, acceptance thresholds, runbook, risks/mitigations, reproducibility notes (seeds, as‑of, schema).  
 🟥 19. (Optional) Prototype sequence model (LSTM/Transformer) as comparator; document performance/calibration deltas.  
@@ -2270,7 +2270,7 @@ As a Data Engineer, I want to orchestrate the end‑to‑end Databricks → Fabr
    - Business lift: Top 10% risk bucket captures ≥ 35% of churn events; CLV top decile explains ≥ 50% of GMV.
    - Stability: Brand/region deltas within ±3 pp week‑over‑week for risk band proportions.
 
-- BI integration hand‑off (to Feature 3.4)
+- BI integration hand‑off (to Feature 2.4)
    - Fields used: churn_prob_30d/60d/90d, prob_alive, clv_12m, exp_txns_90d, rfm_bin, churn_risk_band, clv_tier.
    - Visuals: risk band distribution, CLV tier treemap, top‑N focus table with bookmarks; tooltip shows survival curve snapshot.
    - RLS: respect existing brand/region scoping; do not leak customer PII across roles.
