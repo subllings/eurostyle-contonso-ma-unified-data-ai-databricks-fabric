@@ -595,6 +595,351 @@ Notes
 - If identity columns aren't desired, compute SKs from stable BKs (e.g., `md5(upper(trim(product_code)))`).
 - Keep idempotent loads: use `INSERT OVERWRITE` by date window or write via `MERGE` on `(date_key, product_sk, source_system)`.
 
+ 
+---
+
+<a id="epic-2"></a>
+## Epic 2 – Machine Learning & Predictive Analytics
+**Goal**: Develop churn and Customer Lifetime Value (CLV) models using merged Customer 360.
+
+---
+
+<a id="feature-2-1"></a>
+### Feature 2.1: Exploratory Analysis (Sprint 1–2)
+**User Story**:  
+As a Data Scientist, I want to perform **Exploratory Data Analysis (EDA)** to understand customer behavior and overlaps.  
+
+**Learning Resources**:  
+- [EDA in Databricks](https://docs.databricks.com/exploratory-data-analysis/index.html)  
+- [MLflow Tracking](https://mlflow.org/docs/latest/tracking.html)  
+- [Churn Prediction Basics](https://www.databricks.com/solutions/accelerators/predict-customer-churn)  
+ - [ydata-profiling (pandas-profiling) for quick profiling](https://ydata-profiling.ydata.ai/docs/master/index.html)  
+ - [Great Expectations for Data quality use cases](https://docs.greatexpectations.io/docs/reference/learn/data_quality_use_cases/dq_use_cases_lp/)  
+ - [Evidently AI for drift and data quality reports](https://docs.evidentlyai.com/)  
+ - [Imbalanced-learn: handling class imbalance](https://imbalanced-learn.org/stable/user_guide.html)  
+ - [Time-based and grouped CV (scikit-learn)](https://scikit-learn.org/stable/modules/cross_validation.html#cross-validation-iterators)  
+ - [Delta Lake time travel for reproducibility](https://docs.delta.io/latest/delta-utility.html#time-travel)  
+
+**Key Concepts**:  
+- **EDA (Exploratory Data Analysis)** = profiling data to find patterns, missing values, distributions.  
+- Churn definition = customers inactive for more than 90 days.  
+- **CLV (Customer Lifetime Value)** = net margin expected per customer over a defined horizon (e.g., 12 months).  
+ - Dataset sequence: analyze Contoso first in Sprint 1 to establish baselines; integrate EuroStyle in Sprint 2 to study overlaps and brand differences.  
+ - Bronze/Silver/Gold: start with Bronze (raw-ish), capture issues to inform Silver cleaning and Gold analytics.  
+ - Leakage: any feature that uses future information relative to the label cutoff; avoid by fixing a global cutoff date and deriving features up to T-Δ.  
+ - Non‑leaky splits: prefer time-based splits or GroupKFold by customer_id to prevent cross-contamination across train/validation/test.  
+
+**Acceptance Criteria**:  
+- Missing values, outliers, and overlaps documented.  
+- Clear churn definition (>90 days inactivity).  
+- Draft **CLV** formula validated with business stakeholders.  
+ - EDA profiling summary produced (notebook and 1–2 page readout) with top data-quality issues and EuroStyle vs Contoso overlaps.  
+ - Data risk log created (PII handling, potential label leakage, notable gaps) and shared with team.  
+ - Baseline yardsticks defined: simple rule-based churn heuristic and RFM segmentation for comparison.  
+ - Experiment scaffolding ready: MLflow experiment initialized; evaluation protocol (splits/CV, metrics: AUC for churn, RMSE for CLV) documented in repo.  
+ - Sanity checks: churn prevalence computed; class balance assessed; non‑leaky split strategy chosen (time‑based or customer‑grouped); drift check between brands.  
+ - Reproducibility: dataset snapshot date or Delta version recorded; random seed frozen; split artifacts saved (cutoff date and/or customer_id lists).  
+ - EDA notebook and artifacts committed to repo; readout stored and linked in backlog.  
+ - Data dictionary updated or created for key fields used in labels/features (e.g., last_activity_date, net_margin).  
+
+**Tasks**:  
+🟥 1) Load Bronze tables and sample safely for iteration (record table names, counts, and sample logic).  
+🟥 2) Generate quick profiles (distributions, missingness, outliers) and capture shapes/head/tail for reproducibility.  
+🟥 3) Map entities/joins needed for churn and CLV (customers, transactions, products, brand dimension).  
+🟥 4) Define churn = inactivity > 90 days; compute last_activity_date per customer and create label churn_90d.  
+🟥 5) Draft CLV definition (12-month net margin) and required inputs (gross revenue, returns, costs).  
+🟥 6) Create leakage checklist; flag/remove fields with future info (e.g., cancellation_date after cutoff).  
+🟥 7) Decide split protocol: time-based cutoff and/or GroupKFold by customer; freeze seed; persist split artifacts.  
+🟥 8) Implement rule-based churn baseline (e.g., inactive > X days) and compute AUC/PR‑AUC on validation.  
+🟥 9) Compute RFM features and segment customers; record segment distributions.  
+🟥 10) Compare EuroStyle vs Contoso distributions; quantify overlaps; run drift checks (e.g., PSI/KS on top features).  
+🟥 11) Initialize MLflow experiment; log baseline runs, parameters (churn_horizon, cutoff_date), and artifacts (plots/tables).  
+🟥 12) Compile prioritized data-quality issue list with owners/severity and proposed fixes (feeds Feature 2.2 and DE backlog).  
+🟥 13) Create data risk log (PII handling, leakage risks, gaps) and share in team space.  
+🟥 14) Produce and commit an EDA notebook and a 1–2 page readout; link them in this backlog.  
+🟥 15) Update data dictionary for key fields; note any ambiguous semantics to resolve with DA/DE.  
+
+**User Stories (breakdown)**  
+- As a DS, I document churn prevalence and select a non‑leaky split protocol.  
+- As a DS, I produce an EDA readout and a prioritized DQ issue list.  
+- As a DS, I initialize MLflow with the evaluation plan and baselines.
+
+**Deliverables**:  
+- EDA notebook (with seed, cutoff, and dataset snapshot/version noted).  
+- HTML/PDF export of profiling report (optional) and saved charts.  
+- 1–2 page EDA readout (top issues, overlaps, recommendations).  
+- Baseline metrics table (rule vs RFM) logged to MLflow.  
+- Split protocol doc and artifacts (cutoff date, group lists, or date ranges).  
+- Data risk log (PII, leakage, drift) and leakage checklist.  
+- Updated data dictionary entries for core fields.  
+ - EDA notebook artifact: `notebooks/feature_2_1_eda.ipynb` (synthetic fallback included; set USE_SYNTHETIC=False for real data).  
+
+### Sprint day plan (4.5 days)
+- Day 1 [Tasks 1–3]: Load Bronze; run profiling (distributions, missingness, outliers); capture tables/shapes; note obvious data issues for DE/DA.  
+- Day 2 [Tasks 4–7,10]: Define churn (inactivity horizon); compute prevalence by brand/period; select non‑leaky split (time/customer‑grouped) and freeze seed.  
+- Day 3 [Tasks 8–9,12–13]: Implement naive baselines (rules/RFM); complete leakage checklist; start risk log (PII, drift, label quality).  
+- Day 4 [Tasks 11,14–15]: Initialize MLflow experiment; log baseline runs and artifacts; draft EDA readout and align with DA/DE.  
+- Day 4.5 [Polish]: Buffer; finalize notebooks and readout; link in backlog.  
+
+Note: Days are not strictly sequential—profiling and fixes may iterate; baselines can start as soon as a stable split exists.
+
+#### Notes — Feature 2.1 (day-by-day + how-to)
+Note: Days are not strictly sequential—profiling and fixes may iterate; baselines can start as soon as a stable split exists.
+
+- Day 1 — Profiling  
+   - Do: Profile distributions and missingness; save shapes and head/tail for reproducibility.  
+   - How‑to: Set a single "cutoff date" (T). When deriving features, only use data before T (or T‑Δ if you want a small buffer). Record the dataset snapshot date or Delta table version you used.  
+
+- Day 2 — Churn definition and splits  
+   - Do: Fix churn horizon (e.g., > 90 days); compute prevalence by brand/period; freeze random seed.  
+   - How‑to: Prefer time‑based splits (Train ≤ T1, Validate T1→T2, Test T2→T3). If the same customer may appear across periods/brands, group by customer_id to avoid cross‑contamination. Save the seed, date ranges, and the list of customer_ids per split as artifacts.  
+
+- Day 3 — Baselines and risk log  
+   - Do: Implement rule/RFM baselines; complete the leakage checklist; start the PII/leakage/drift risk log.  
+   - How‑to: For churn, compute AUC and PR‑AUC for the inactivity rule. For CLV, use a simple 12‑month net‑margin baseline and report RMSE/MAE (when future data exists). Log these yardsticks to MLflow so later models can be compared.  
+
+- Day 4 — MLflow runs and drift/overlap checks  
+   - Do: Initialize MLflow; log baseline runs and artifacts (plots/tables).  
+   - How‑to: Compare EuroStyle vs Contoso using KS (distribution difference) and PSI (shift magnitude). For identities, never store raw PII—if needed, compare hashed IDs to estimate overlap. Export figures/tables as artifacts.  
+
+- Day 4.5 — Readout and reproducibility  
+   - Do: Publish a 1–2 page EDA summary with top issues and recommended fixes.  
+   - How‑to: Include the data snapshot or Delta version, key parameters (churn_horizon, cutoff_date, seed), and links to split files and small CSVs of key stats/plots so others can rerun and match your results.  
+
+---
+
+<a id="feature-2-2"></a>
+### Feature 2.2: Feature Engineering (Sprint 2)
+**User Story**:  
+As a Data Scientist, I want RFM and behavioral features to build churn & CLV models.  
+
+**Learning Resources**:  
+- [RFM Analysis](https://clevertap.com/blog/rfm-analysis/)  
+- [Feature Engineering Guide](https://www.databricks.com/glossary/feature-engineering)  
+- [MLflow Tracking Features](https://docs.databricks.com/aws/en/mlflow/tracking)  
+ - [Delta Lake: table versioning and time travel](https://docs.delta.io/latest/delta-utility.html#time-travel)  
+ - [Databricks Feature Engineering/Store](https://docs.databricks.com/en/machine-learning/feature-store/index.html)  
+ - [Great Expectations: data quality checks](https://docs.greatexpectations.io/docs/)  
+ - [Evidently AI: data/drift reports](https://docs.evidentlyai.com/)  
+ - [scikit-learn preprocessing (impute/scale/transform)](https://scikit-learn.org/stable/modules/preprocessing.html)  
+ - [scikit-learn feature selection (mutual information, variance, etc.)](https://scikit-learn.org/stable/modules/feature_selection.html)  
+
+**Key Concepts**:  
+- **RFM** = **Recency, Frequency, Monetary** value (classic segmentation method).  
+- Basket diversity = how many unique categories a customer buys from.  
+- Cross-brand shopping = customers who purchased both EuroStyle & Contoso.  
+- Features must be logged and versioned for reproducibility.  
+ - As‑of date (T): derive features only using events that happened before T (or T‑Δ) to avoid leakage.  
+ - Versioned Delta patterns: persist features with metadata columns (version, created_ts, source_snapshot, as_of_date).  
+ - Train‑only fit: imputers/scalers must be fit on TRAIN split and applied to VAL/TEST consistently.  
+
+**Acceptance Criteria**:  
+- **RFM** metrics computed for all customers.  
+- Basket diversity & cross-brand features available in Silver/Gold.  
+- Feature sets tracked in **MLflow** or Delta tables.  
+ - Features persisted as versioned Delta tables with metadata (version, created_ts, source snapshot) for reproducibility.  
+ - Joinability/consumption contract drafted with DE/DA (score schema, business keys, refresh cadence).  
+ - Leakage checks performed and documented for engineered features.  
+ - If COGS is missing, the agreed CLV proxy approach is documented (see Gold notes) and reflected in downstream features.  
+ - Sanity checks: high-correlation features identified and deduplicated; extreme cardinality/constant fields excluded; imputation/log transforms documented; all preprocessing fit on TRAIN only.
+ - Data quality checks (nulls, ranges, freshness) pass for the feature tables; results stored as artifacts.  
+ - Data dictionary updated for each feature (definition, window, unit, null policy).  
+ - Join keys verified against Gold (`customer_360_gold`) with row counts and uniqueness checks.  
+
+**Tasks**:  
+🟥 1) Fix an as‑of date (T) and feature windows; record source snapshot/Delta versions.  
+🟥 2) Compute RFM anchored at T (Recency days since last tx ≤ T; Frequency count in last 365d; Monetary sum/avg).  
+🟥 3) Add basket diversity (distinct categories in last 12m) and intensity ratios (category share).  
+🟥 4) Add cross‑brand features (has_both_brands, brand_count, brand_switches).  
+🟥 5) Run a leakage checklist for all engineered features; ensure they use only pre‑T information.  
+🟥 6) Correlation and mutual‑information screening; deduplicate highly similar features; log decisions.  
+🟥 7) Cardinality and constant checks; drop extreme high‑card/constant fields; set thresholds and document.  
+🟥 8) Define imputation/log transforms; fit on TRAIN only; persist transform params (e.g., means/medians) as artifacts.  
+🟥 9) Persist features to Delta as versioned tables (e.g., `silver.features_rfm_v1`, `silver.customer_features_v1`) with metadata columns (version, created_ts, source_snapshot, as_of_date).  
+🟥 10) Track feature set metadata in MLflow (params: version, feature_count; artifacts: schema JSON, data dictionary).  
+🟥 11) Define consumption contract with DE/DA (schema, business keys, refresh cadence) for integration into `customer_360_gold`; validate joinability and counts.  
+🟥 12) Train quick baselines on sample data using the features; log metrics to MLflow; compare to rule/RFM yardsticks.  
+🟥 13) Run data quality checks (Great Expectations/Evidently) on feature tables (nulls, ranges, freshness); save reports.  
+🟥 14) Register access and documentation for the feature tables (owners, permissions, table comments).  
+
+**User Stories (breakdown)**  
+- As a DS, I compute and persist RFM and behavior features with versioning.  
+- As a DS, I remove redundant/highly correlated features and document preprocessing.  
+- As a DS, I define a consumption contract with DE/DA for scoring integration.
+
+**Deliverables**:  
+- Versioned Delta tables: `silver.features_rfm_v1`, `silver.customer_features_v1` (with version, created_ts, source_snapshot, as_of_date).  
+- MLflow run(s) with feature set params (version, feature_count) and artifacts (schema.json, data_dictionary.csv).  
+- Data quality reports (GE/Evidently) and correlation heatmap; screening decisions log.  
+- Consumption contract doc: schema, keys, join examples to `customer_360_gold`, refresh cadence.  
+- Leakage checklist results and preprocessing spec (imputations/transforms with train‑fit note).  
+ - Feature engineering notebook artifact: `notebooks/feature_2_2_feature_engineering.ipynb` (synthetic fallback; Delta write attempted if Spark available).  
+
+### Sprint day plan (4.5 days)
+- Day 1 [Tasks 1–2, 9 (init)]: Compute RFM anchored at as‑of T; create `v1` Delta with metadata (version, created_ts, source_snapshot); register table.  
+- Day 2 [Tasks 3–5, 9 (final)]: Add basket diversity and cross‑brand features; verify no leakage (pre‑T only); finalize versioned table(s).  
+- Day 3 [Tasks 6–8, 13]: Run correlation/MI and cardinality screens; define imputations/log transforms (fit on TRAIN only); run data quality checks and save reports.  
+- Day 4 [Tasks 10–12, 11]: Track feature set in MLflow; define consumption contract and validate joinability to `customer_360_gold`; train quick baselines and log metrics.  
+- Day 4.5 [Polish]: Finalize docs, register ownership/permissions, and publish the README notes.  
+
+#### Notes — Feature 2.2 (day-by-day + how-to)
+Note: Days can overlap—persist `v1` early, then iterate.
+
+- Day 1 — RFM and versioning  
+   - Do: Compute RFM at a fixed as‑of date; persist `v1` with metadata.  
+   - How‑to: Use only events ≤ T; add metadata columns (version, created_ts, source_snapshot, as_of_date). Record the Delta version/snapshot used.  
+
+- Day 2 — Behavior features and leakage  
+   - Do: Add basket diversity and cross‑brand features; ensure pre‑T only.  
+   - How‑to: Define 12‑month windows anchored at T; run a leakage checklist before saving.  
+
+- Day 3 — Screening and preprocessing  
+   - Do: Correlation/MI screening; cardinality/constant checks; define imputations/transforms.  
+   - How‑to: Fit imputers/scalers on TRAIN only; log thresholds and dropped columns; export a correlation heatmap.  
+
+- Day 4 — Consumption contract and baselines  
+   - Do: Draft schema/keys/refresh cadence with DE/DA; train quick baselines; log to MLflow.  
+   - How‑to: Validate joins to `customer_360_gold` (row counts, uniqueness); log feature set metadata (version, feature_count) to MLflow.  
+
+- Day 4.5 — Publish  
+   - Do: Finalize docs, register ownership/permissions, publish README.  
+   - How‑to: Include data dictionary entries for each feature and links to quality reports and MLflow runs.  
+
+---
+
+<a id="feature-2-3"></a>
+### Feature 2.3: Model Training (Sprint 3)
+**User Story**:  
+As a Data Scientist, I want baseline models for churn and CLV so I can evaluate predictive power.  
+
+**Learning Resources**:  
+- Spark MLlib: [Classification & Regression](https://spark.apache.org/docs/latest/ml-classification-regression.html)  
+- scikit-learn: [Model evaluation](https://scikit-learn.org/stable/modules/model_evaluation.html), [Calibration](https://scikit-learn.org/stable/modules/calibration.html), [Imbalanced data](https://scikit-learn.org/stable/modules/classes.html#module-sklearn.utils.class_weight)  
+- MLflow: [Experiment Tracking](https://mlflow.org/docs/latest/tracking.html), [Model Registry](https://mlflow.org/docs/latest/model-registry.html)  
+- Reliability/uncertainty: [Bootstrap confidence intervals](https://scikit-learn.org/stable/auto_examples/model_selection/plot_confidence_interval.html)  
+
+**Key Concepts**:  
+- Churn = binary classification (baseline: Logistic Regression).  
+- CLV = regression (baseline: Random Forest Regressor).  
+- Evaluate churn with AUC, AUCPR, accuracy, precision/recall @K; evaluate CLV with RMSE, MAE, R<sup>2</sup>, MAPE.  
+- Calibration matters for churn probabilities (Brier score, reliability curve); choose operating thresholds by business objective (e.g., capture X% of churners).  
+- Reproducibility: fixed seeds, pinned versions, and saved splits from Feature 2.1; train-only transforms from Feature 2.2.  
+- Segment-wise evaluation (brand, region, lifecycle) to detect blind spots.  
+
+**Acceptance Criteria**:  
+- Churn LR and CLV RF baselines trained on TRAIN, validated on VALID, and tested on TEST aligned with Feature 2.1 splits.  
+- For churn, model beats baseline classifier with 95% CI on AUC (CI not overlapping baseline). Calibration reported with Brier score and reliability plot.  
+- For CLV, model reports RMSE, MAE, R<sup>2</sup> with bootstrap 95% CIs and outperforms mean baseline.  
+- Segment-wise metrics (brand/region) computed and logged; any material gaps noted with next steps.  
+- MLflow logs: params, metrics, ROC/PR curves, calibration curve, feature importance/permutation importances; artifacts saved; run IDs and experiment name documented.  
+- Seeds fixed; code and data versions captured; no leakage (train-only fit for imputers/scalers, as-of filtering).  
+
+**Tasks (numbered)**:  
+🟥 1) Load Feature 2.2 dataset(s) and 2.1 split artifacts; verify shapes and label presence; check class balance.  
+🟥 2) Establish baselines: churn majority-class and CLV mean predictor; compute baseline metrics.  
+🟥 3) Build churn pipeline: train-only imputers/scalers + Logistic Regression (class_weight as needed); train on TRAIN.  
+🟥 4) Evaluate churn on VALID/TEST: AUC, AUCPR, accuracy; plot ROC/PR; compute thresholds @K (e.g., top 10%).  
+🟥 5) Calibrate churn probabilities (Platt or Isotonic) on VALID; report Brier score and reliability curve; re-evaluate on TEST.  
+🟥 6) Bootstrap CIs for churn metrics (e.g., AUC, AUCPR) with 500 resamples; log CIs.  
+🟥 7) Build CLV model: Random Forest Regressor (or Gradient Boosting if RF unavailable); train on TRAIN.  
+🟥 8) Evaluate CLV on VALID/TEST: RMSE, MAE, R<sup>2</sup> (and MAPE if nonzero targets); bootstrap 95% CIs.  
+🟥 9) Light tuning (1–2 hyperparams each) using VALID; document chosen params; avoid overfitting.  
+🟥 10) Segment-wise metrics: brand/region deciles for churn; error by segment for CLV; summarize deltas vs global.  
+🟥 11) Feature importance: permutation importances (or SHAP if available) for both models; log plots.  
+🟥 12) Persist artifacts: metrics CSV, ROC/PR images, calibration plot, importances; serialize pipelines; log to MLflow; record run IDs.  
+🟥 13) Reproducibility check: re-run on fixed seed; metrics within tolerance; note environment versions.  
+🟥 14) Draft scoring contract preview (inputs/outputs) for Feature 2.4; align column names and dtypes.  
+🟥 15) Handoff summary: write a short model card (purpose, data, metrics, risks, thresholds).  
+
+**Deliverables**  
+- Notebook: `notebooks/feature_2_3_model_training.ipynb` (synthetic fallback supported).  
+- MLflow runs for churn and CLV, with metrics, params, and artifacts (ROC/PR, calibration, importances).  
+- Artifacts folder: metrics summary CSVs, calibration and importance plots, chosen thresholds, segment metrics.  
+- Model card(s) and a brief readme with run IDs and seed/version info.  
+
+### Sprint day plan (4.5 days)
+- Day 1 [Tasks 1–4]: Data load, baselines, churn LR train + initial evaluation.  
+- Day 2 [Tasks 5–8]: Calibration + CIs for churn; train/evaluate CLV RF with CIs.  
+- Day 3 [Tasks 9–11]: Light tuning, segment-wise metrics, importances.  
+- Day 4 [Tasks 12–14]: Persist/MLflow logging, reproducibility check, scoring contract.  
+- Day 4.5 [Task 15]: Model card + handoff.  
+
+#### Notes — Feature 2.3 (day-by-day + how-to)
+- Calibration: Fit on VALID to avoid optimistic bias; prefer Isotonic if enough data; log pre/post Brier and save a reliability plot image for the run.  
+- Thresholds: Pick operating points from VALID based on business goals (e.g., top 10% recall of churners or maximize F1); never pick thresholds on TEST.  
+- CIs: Use bootstrap with stratification for churn and simple bootstrap for CLV; report median and 2.5/97.5 percentiles; store seeds and sample sizes in the artifact.  
+- Imbalanced churn: use class_weight="balanced" as a starting point; compare to threshold tuning on VALID; emphasize AUCPR and recall@K when churn rate is low.  
+- Segment checks: compute metrics by brand/region/lifecycle; flag any segment with >5% AUC drop vs global; capture in a CSV artifact and note remediation ideas.  
+- CLV skew: winsorize/log-transform targets in training only if heavy tails; always report MAE alongside RMSE; consider MAPE only for strictly positive targets.  
+- Leakage guardrails: ensure all imputers/scalers fit on TRAIN only; confirm features are computed using data ≤ as‑of date; rerun the leakage checklist from 2.1 if in doubt.  
+- Determinism: fix seeds in split, model, numpy/random; pin package versions in the notebook header; log data snapshot/Delta version and MLflow run IDs in the model card.  
+
+---
+
+<a id="feature-2-4"></a>
+### Feature 2.4: Batch Scoring & Integration (Sprint 4)
+**User Story**:  
+As a Data Scientist, I want to score churn/CLV and join them into Customer 360 so Analysts can use them.  
+
+**Learning Resources**:  
+- MLflow: [Model Registry](https://mlflow.org/docs/latest/model-registry.html), [Loading models for inference](https://mlflow.org/docs/latest/models.html#model-deployment)  
+- Databricks: [Batch inference patterns](https://docs.databricks.com/machine-learning/model-inference/index.html), [Delta MERGE](https://docs.databricks.com/delta/merge.html)  
+- Explainability: [Interpretable ML](https://christophm.github.io/interpretable-ml-book/)  
+- Data quality & drift: [Evidently](https://docs.evidentlyai.com/) (PSI, drift), Great Expectations for schema checks  
+
+**Key Concepts**:  
+- Idempotent batch scoring: partition by `as_of_date` and write with MERGE/overwrite-by-partition; include `_SUCCESS`/manifest when exporting.  
+- Stable scoring contract: keys, dtypes, nullability, plus metadata (`model_version`, `feature_version`, `as_of_date`, `scored_ts`).  
+- Train/serve skew: compare scoring inputs vs training distribution (PSI or simple quantiles).  
+- Explainability at scoring time: global importances and simple per-row explanations if feasible.  
+
+**Acceptance Criteria**:  
+- `customer_scores_gold` created with schema: `customer_id`, `churn_score` (0–1), `churn_bucket` (e.g., decile), `clv_pred` (≥0), `model_version`, `feature_version`, `as_of_date`, `scored_ts`.  
+- Write is idempotent and partition-aware (no duplicates across re-runs); primary key uniqueness validated.  
+- Train/serve skew report produced and logged; bounds checks pass (no NaNs, churn within [0,1], non-negative CLV).  
+- Join with `customer_360_gold` validated (counts and keys) and documented for DA.  
+- Model and feature versions, plus MLflow run IDs, recorded in readme.  
+
+**Tasks (numbered)**:  
+🟥 1) Freeze model artifacts/versions and feature set version; record MLflow run IDs and URIs.  
+🟥 2) Load Feature 2.2 table(s) at target `as_of_date`; validate schema matches scoring contract.  
+🟥 3) Build loaders: MLflow pyfunc or direct deserialization for churn and CLV models; set seeds for determinism.  
+🟥 4) Score churn probabilities and CLV values in batches/partitions; handle memory with repartition/coalesce.  
+🟥 5) Derive `churn_bucket` (e.g., deciles or business thresholds) and any auxiliary flags needed by DA.  
+🟥 6) Train/serve skew: compare key features to training distributions (PSI or quantile deltas); log artifacts.  
+🟥 7) Assemble output DataFrame with required columns and metadata (`as_of_date`, timestamps, versions).  
+🟥 8) Write `customer_scores_gold` idempotently (overwrite partition or MERGE on `customer_id` + `as_of_date`); validate uniqueness.  
+🟥 9) Join into `customer_360_gold` or create a view for DA; verify row counts and key coverage.  
+🟥 10) Explainability: compute and log global importances; include a small per-row example if feasible.  
+🟥 11) Quality checks: null rates ≤ thresholds; bounds (0–1 churn, ≥0 CLV); dtypes match contract; save a QA report.  
+🟥 12) Register table/view, set permissions, and document location; add a consumption snippet for DA/BI.  
+🟥→🟩 13) Write a short operational runbook: inputs, outputs, schedule, idempotency strategy, and recovery steps.  
+🟥→🟩 14) Optional export manifest for Fabric ingestion (paths, schema, `_SUCCESS`).  
+
+**Deliverables**  
+- Notebook: `notebooks/feature_2_4_batch_scoring.ipynb` (synthetic fallback supported).  
+- `customer_scores_gold` table/view with schema contract and version columns.  
+- Skew/QA report artifacts; explainability summary; consumption guide (paths, sample queries).  
+- Runbook with idempotency and recovery steps; versions and run IDs documented.  
+
+### Sprint day plan (4.5 days)
+- Day 1 [Tasks 1–3]: Freeze versions, load features, implement model loaders.  
+- Day 2 [Tasks 4–7]: Batch scoring, buckets, skew check, assemble output.  
+- Day 3 [Tasks 8–9]: Persist `customer_scores_gold` and join/validate in `customer_360_gold`.  
+- Day 4 [Tasks 10–13]: Explainability, QA report, permissions, and runbook.  
+- Day 4.5 [Task 14]: Optional Fabric export manifest and polish docs.  
+
+#### Notes — Feature 2.4 (day-by-day + how-to)
+- Idempotency: prefer overwrite-by-partition (as_of_date) or MERGE on key + date; always validate no duplicates post-write.  
+- Skew checks: PSI is nice-to-have; simple side-by-side histograms/quantiles often suffice; store the report as an artifact.  
+- Resource use: repartition/coalesce appropriately; avoid collecting to driver; cache when reusing feature DataFrames.  
+- Contracts: put the schema (name, dtype, nullability) in a markdown/JSON and link it; enforce with a schema validator if possible.  
+- Handoff: supply DA with the table/view name, data dictionary, refresh cadence, and example queries.  
+ - Schema evolution: avoid adding/removing columns mid-release; if needed, bump `feature_version` and reflect it in the contract and view.  
+ - Retries & checkpoints: wrap batch scoring in small partitions with retries; write to a temp location then atomically swap/merge into Gold.  
+ - Partitioning: use `as_of_date` partitioning; for large volumes, add secondary partitioning (e.g., brand) cautiously to avoid small-file problems.  
+ - Monitoring: record per-batch row counts, null rates, and write durations; keep a lightweight log table for operational visibility.  
+ - Quick SQL tests: count distinct keys, check score bounds (0–1, >=0), and verify recent `as_of_date`; include sample queries in the README for DA.  
 
 ---
 
@@ -1087,352 +1432,6 @@ As a Marketing Manager, I want to see customer segments & churn risk so I can de
 
 
 ---
-
-<a id="epic-2"></a>
-## Epic 2 – Machine Learning & Predictive Analytics
-**Goal**: Develop churn and Customer Lifetime Value (CLV) models using merged Customer 360.
-
----
-
-<a id="feature-2-1"></a>
-### Feature 2.1: Exploratory Analysis (Sprint 1–2)
-**User Story**:  
-As a Data Scientist, I want to perform **Exploratory Data Analysis (EDA)** to understand customer behavior and overlaps.  
-
-**Learning Resources**:  
-- [EDA in Databricks](https://docs.databricks.com/exploratory-data-analysis/index.html)  
-- [MLflow Tracking](https://mlflow.org/docs/latest/tracking.html)  
-- [Churn Prediction Basics](https://www.databricks.com/solutions/accelerators/predict-customer-churn)  
- - [ydata-profiling (pandas-profiling) for quick profiling](https://ydata-profiling.ydata.ai/docs/master/index.html)  
- - [Great Expectations for Data quality use cases](https://docs.greatexpectations.io/docs/reference/learn/data_quality_use_cases/dq_use_cases_lp/)  
- - [Evidently AI for drift and data quality reports](https://docs.evidentlyai.com/)  
- - [Imbalanced-learn: handling class imbalance](https://imbalanced-learn.org/stable/user_guide.html)  
- - [Time-based and grouped CV (scikit-learn)](https://scikit-learn.org/stable/modules/cross_validation.html#cross-validation-iterators)  
- - [Delta Lake time travel for reproducibility](https://docs.delta.io/latest/delta-utility.html#time-travel)  
-
-**Key Concepts**:  
-- **EDA (Exploratory Data Analysis)** = profiling data to find patterns, missing values, distributions.  
-- Churn definition = customers inactive for more than 90 days.  
-- **CLV (Customer Lifetime Value)** = net margin expected per customer over a defined horizon (e.g., 12 months).  
- - Dataset sequence: analyze Contoso first in Sprint 1 to establish baselines; integrate EuroStyle in Sprint 2 to study overlaps and brand differences.  
- - Bronze/Silver/Gold: start with Bronze (raw-ish), capture issues to inform Silver cleaning and Gold analytics.  
- - Leakage: any feature that uses future information relative to the label cutoff; avoid by fixing a global cutoff date and deriving features up to T-Δ.  
- - Non‑leaky splits: prefer time-based splits or GroupKFold by customer_id to prevent cross-contamination across train/validation/test.  
-
-**Acceptance Criteria**:  
-- Missing values, outliers, and overlaps documented.  
-- Clear churn definition (>90 days inactivity).  
-- Draft **CLV** formula validated with business stakeholders.  
- - EDA profiling summary produced (notebook and 1–2 page readout) with top data-quality issues and EuroStyle vs Contoso overlaps.  
- - Data risk log created (PII handling, potential label leakage, notable gaps) and shared with team.  
- - Baseline yardsticks defined: simple rule-based churn heuristic and RFM segmentation for comparison.  
- - Experiment scaffolding ready: MLflow experiment initialized; evaluation protocol (splits/CV, metrics: AUC for churn, RMSE for CLV) documented in repo.  
- - Sanity checks: churn prevalence computed; class balance assessed; non‑leaky split strategy chosen (time‑based or customer‑grouped); drift check between brands.  
- - Reproducibility: dataset snapshot date or Delta version recorded; random seed frozen; split artifacts saved (cutoff date and/or customer_id lists).  
- - EDA notebook and artifacts committed to repo; readout stored and linked in backlog.  
- - Data dictionary updated or created for key fields used in labels/features (e.g., last_activity_date, net_margin).  
-
-**Tasks**:  
-🟥 1) Load Bronze tables and sample safely for iteration (record table names, counts, and sample logic).  
-🟥 2) Generate quick profiles (distributions, missingness, outliers) and capture shapes/head/tail for reproducibility.  
-🟥 3) Map entities/joins needed for churn and CLV (customers, transactions, products, brand dimension).  
-🟥 4) Define churn = inactivity > 90 days; compute last_activity_date per customer and create label churn_90d.  
-🟥 5) Draft CLV definition (12-month net margin) and required inputs (gross revenue, returns, costs).  
-🟥 6) Create leakage checklist; flag/remove fields with future info (e.g., cancellation_date after cutoff).  
-🟥 7) Decide split protocol: time-based cutoff and/or GroupKFold by customer; freeze seed; persist split artifacts.  
-🟥 8) Implement rule-based churn baseline (e.g., inactive > X days) and compute AUC/PR‑AUC on validation.  
-🟥 9) Compute RFM features and segment customers; record segment distributions.  
-🟥 10) Compare EuroStyle vs Contoso distributions; quantify overlaps; run drift checks (e.g., PSI/KS on top features).  
-🟥 11) Initialize MLflow experiment; log baseline runs, parameters (churn_horizon, cutoff_date), and artifacts (plots/tables).  
-🟥 12) Compile prioritized data-quality issue list with owners/severity and proposed fixes (feeds Feature 2.2 and DE backlog).  
-🟥 13) Create data risk log (PII handling, leakage risks, gaps) and share in team space.  
-🟥 14) Produce and commit an EDA notebook and a 1–2 page readout; link them in this backlog.  
-🟥 15) Update data dictionary for key fields; note any ambiguous semantics to resolve with DA/DE.  
-
-**User Stories (breakdown)**  
-- As a DS, I document churn prevalence and select a non‑leaky split protocol.  
-- As a DS, I produce an EDA readout and a prioritized DQ issue list.  
-- As a DS, I initialize MLflow with the evaluation plan and baselines.
-
-**Deliverables**:  
-- EDA notebook (with seed, cutoff, and dataset snapshot/version noted).  
-- HTML/PDF export of profiling report (optional) and saved charts.  
-- 1–2 page EDA readout (top issues, overlaps, recommendations).  
-- Baseline metrics table (rule vs RFM) logged to MLflow.  
-- Split protocol doc and artifacts (cutoff date, group lists, or date ranges).  
-- Data risk log (PII, leakage, drift) and leakage checklist.  
-- Updated data dictionary entries for core fields.  
- - EDA notebook artifact: `notebooks/feature_2_1_eda.ipynb` (synthetic fallback included; set USE_SYNTHETIC=False for real data).  
-
-### Sprint day plan (4.5 days)
-- Day 1 [Tasks 1–3]: Load Bronze; run profiling (distributions, missingness, outliers); capture tables/shapes; note obvious data issues for DE/DA.  
-- Day 2 [Tasks 4–7,10]: Define churn (inactivity horizon); compute prevalence by brand/period; select non‑leaky split (time/customer‑grouped) and freeze seed.  
-- Day 3 [Tasks 8–9,12–13]: Implement naive baselines (rules/RFM); complete leakage checklist; start risk log (PII, drift, label quality).  
-- Day 4 [Tasks 11,14–15]: Initialize MLflow experiment; log baseline runs and artifacts; draft EDA readout and align with DA/DE.  
-- Day 4.5 [Polish]: Buffer; finalize notebooks and readout; link in backlog.  
-
-Note: Days are not strictly sequential—profiling and fixes may iterate; baselines can start as soon as a stable split exists.
-
-#### Notes — Feature 2.1 (day-by-day + how-to)
-Note: Days are not strictly sequential—profiling and fixes may iterate; baselines can start as soon as a stable split exists.
-
-- Day 1 — Profiling  
-   - Do: Profile distributions and missingness; save shapes and head/tail for reproducibility.  
-   - How‑to: Set a single "cutoff date" (T). When deriving features, only use data before T (or T‑Δ if you want a small buffer). Record the dataset snapshot date or Delta table version you used.  
-
-- Day 2 — Churn definition and splits  
-   - Do: Fix churn horizon (e.g., > 90 days); compute prevalence by brand/period; freeze random seed.  
-   - How‑to: Prefer time‑based splits (Train ≤ T1, Validate T1→T2, Test T2→T3). If the same customer may appear across periods/brands, group by customer_id to avoid cross‑contamination. Save the seed, date ranges, and the list of customer_ids per split as artifacts.  
-
-- Day 3 — Baselines and risk log  
-   - Do: Implement rule/RFM baselines; complete the leakage checklist; start the PII/leakage/drift risk log.  
-   - How‑to: For churn, compute AUC and PR‑AUC for the inactivity rule. For CLV, use a simple 12‑month net‑margin baseline and report RMSE/MAE (when future data exists). Log these yardsticks to MLflow so later models can be compared.  
-
-- Day 4 — MLflow runs and drift/overlap checks  
-   - Do: Initialize MLflow; log baseline runs and artifacts (plots/tables).  
-   - How‑to: Compare EuroStyle vs Contoso using KS (distribution difference) and PSI (shift magnitude). For identities, never store raw PII—if needed, compare hashed IDs to estimate overlap. Export figures/tables as artifacts.  
-
-- Day 4.5 — Readout and reproducibility  
-   - Do: Publish a 1–2 page EDA summary with top issues and recommended fixes.  
-   - How‑to: Include the data snapshot or Delta version, key parameters (churn_horizon, cutoff_date, seed), and links to split files and small CSVs of key stats/plots so others can rerun and match your results.  
-
----
-
-<a id="feature-2-2"></a>
-### Feature 2.2: Feature Engineering (Sprint 2)
-**User Story**:  
-As a Data Scientist, I want RFM and behavioral features to build churn & CLV models.  
-
-**Learning Resources**:  
-- [RFM Analysis](https://clevertap.com/blog/rfm-analysis/)  
-- [Feature Engineering Guide](https://www.databricks.com/glossary/feature-engineering)  
-- [MLflow Tracking Features](https://docs.databricks.com/aws/en/mlflow/tracking)  
- - [Delta Lake: table versioning and time travel](https://docs.delta.io/latest/delta-utility.html#time-travel)  
- - [Databricks Feature Engineering/Store](https://docs.databricks.com/en/machine-learning/feature-store/index.html)  
- - [Great Expectations: data quality checks](https://docs.greatexpectations.io/docs/)  
- - [Evidently AI: data/drift reports](https://docs.evidentlyai.com/)  
- - [scikit-learn preprocessing (impute/scale/transform)](https://scikit-learn.org/stable/modules/preprocessing.html)  
- - [scikit-learn feature selection (mutual information, variance, etc.)](https://scikit-learn.org/stable/modules/feature_selection.html)  
-
-**Key Concepts**:  
-- **RFM** = **Recency, Frequency, Monetary** value (classic segmentation method).  
-- Basket diversity = how many unique categories a customer buys from.  
-- Cross-brand shopping = customers who purchased both EuroStyle & Contoso.  
-- Features must be logged and versioned for reproducibility.  
- - As‑of date (T): derive features only using events that happened before T (or T‑Δ) to avoid leakage.  
- - Versioned Delta patterns: persist features with metadata columns (version, created_ts, source_snapshot, as_of_date).  
- - Train‑only fit: imputers/scalers must be fit on TRAIN split and applied to VAL/TEST consistently.  
-
-**Acceptance Criteria**:  
-- **RFM** metrics computed for all customers.  
-- Basket diversity & cross-brand features available in Silver/Gold.  
-- Feature sets tracked in **MLflow** or Delta tables.  
- - Features persisted as versioned Delta tables with metadata (version, created_ts, source snapshot) for reproducibility.  
- - Joinability/consumption contract drafted with DE/DA (score schema, business keys, refresh cadence).  
- - Leakage checks performed and documented for engineered features.  
- - If COGS is missing, the agreed CLV proxy approach is documented (see Gold notes) and reflected in downstream features.  
- - Sanity checks: high-correlation features identified and deduplicated; extreme cardinality/constant fields excluded; imputation/log transforms documented; all preprocessing fit on TRAIN only.
- - Data quality checks (nulls, ranges, freshness) pass for the feature tables; results stored as artifacts.  
- - Data dictionary updated for each feature (definition, window, unit, null policy).  
- - Join keys verified against Gold (`customer_360_gold`) with row counts and uniqueness checks.  
-
-**Tasks**:  
-🟥 1) Fix an as‑of date (T) and feature windows; record source snapshot/Delta versions.  
-🟥 2) Compute RFM anchored at T (Recency days since last tx ≤ T; Frequency count in last 365d; Monetary sum/avg).  
-🟥 3) Add basket diversity (distinct categories in last 12m) and intensity ratios (category share).  
-🟥 4) Add cross‑brand features (has_both_brands, brand_count, brand_switches).  
-🟥 5) Run a leakage checklist for all engineered features; ensure they use only pre‑T information.  
-🟥 6) Correlation and mutual‑information screening; deduplicate highly similar features; log decisions.  
-🟥 7) Cardinality and constant checks; drop extreme high‑card/constant fields; set thresholds and document.  
-🟥 8) Define imputation/log transforms; fit on TRAIN only; persist transform params (e.g., means/medians) as artifacts.  
-🟥 9) Persist features to Delta as versioned tables (e.g., `silver.features_rfm_v1`, `silver.customer_features_v1`) with metadata columns (version, created_ts, source_snapshot, as_of_date).  
-🟥 10) Track feature set metadata in MLflow (params: version, feature_count; artifacts: schema JSON, data dictionary).  
-🟥 11) Define consumption contract with DE/DA (schema, business keys, refresh cadence) for integration into `customer_360_gold`; validate joinability and counts.  
-🟥 12) Train quick baselines on sample data using the features; log metrics to MLflow; compare to rule/RFM yardsticks.  
-🟥 13) Run data quality checks (Great Expectations/Evidently) on feature tables (nulls, ranges, freshness); save reports.  
-🟥 14) Register access and documentation for the feature tables (owners, permissions, table comments).  
-
-**User Stories (breakdown)**  
-- As a DS, I compute and persist RFM and behavior features with versioning.  
-- As a DS, I remove redundant/highly correlated features and document preprocessing.  
-- As a DS, I define a consumption contract with DE/DA for scoring integration.
-
-**Deliverables**:  
-- Versioned Delta tables: `silver.features_rfm_v1`, `silver.customer_features_v1` (with version, created_ts, source_snapshot, as_of_date).  
-- MLflow run(s) with feature set params (version, feature_count) and artifacts (schema.json, data_dictionary.csv).  
-- Data quality reports (GE/Evidently) and correlation heatmap; screening decisions log.  
-- Consumption contract doc: schema, keys, join examples to `customer_360_gold`, refresh cadence.  
-- Leakage checklist results and preprocessing spec (imputations/transforms with train‑fit note).  
- - Feature engineering notebook artifact: `notebooks/feature_2_2_feature_engineering.ipynb` (synthetic fallback; Delta write attempted if Spark available).  
-
-### Sprint day plan (4.5 days)
-- Day 1 [Tasks 1–2, 9 (init)]: Compute RFM anchored at as‑of T; create `v1` Delta with metadata (version, created_ts, source_snapshot); register table.  
-- Day 2 [Tasks 3–5, 9 (final)]: Add basket diversity and cross‑brand features; verify no leakage (pre‑T only); finalize versioned table(s).  
-- Day 3 [Tasks 6–8, 13]: Run correlation/MI and cardinality screens; define imputations/log transforms (fit on TRAIN only); run data quality checks and save reports.  
-- Day 4 [Tasks 10–12, 11]: Track feature set in MLflow; define consumption contract and validate joinability to `customer_360_gold`; train quick baselines and log metrics.  
-- Day 4.5 [Polish]: Finalize docs, register ownership/permissions, and publish the README notes.  
-
-#### Notes — Feature 2.2 (day-by-day + how-to)
-Note: Days can overlap—persist `v1` early, then iterate.
-
-- Day 1 — RFM and versioning  
-   - Do: Compute RFM at a fixed as‑of date; persist `v1` with metadata.  
-   - How‑to: Use only events ≤ T; add metadata columns (version, created_ts, source_snapshot, as_of_date). Record the Delta version/snapshot used.  
-
-- Day 2 — Behavior features and leakage  
-   - Do: Add basket diversity and cross‑brand features; ensure pre‑T only.  
-   - How‑to: Define 12‑month windows anchored at T; run a leakage checklist before saving.  
-
-- Day 3 — Screening and preprocessing  
-   - Do: Correlation/MI screening; cardinality/constant checks; define imputations/transforms.  
-   - How‑to: Fit imputers/scalers on TRAIN only; log thresholds and dropped columns; export a correlation heatmap.  
-
-- Day 4 — Consumption contract and baselines  
-   - Do: Draft schema/keys/refresh cadence with DE/DA; train quick baselines; log to MLflow.  
-   - How‑to: Validate joins to `customer_360_gold` (row counts, uniqueness); log feature set metadata (version, feature_count) to MLflow.  
-
-- Day 4.5 — Publish  
-   - Do: Finalize docs, register ownership/permissions, publish README.  
-   - How‑to: Include data dictionary entries for each feature and links to quality reports and MLflow runs.  
-
----
-
-<a id="feature-2-3"></a>
-### Feature 2.3: Model Training (Sprint 3)
-**User Story**:  
-As a Data Scientist, I want baseline models for churn and CLV so I can evaluate predictive power.  
-
-**Learning Resources**:  
-- Spark MLlib: [Classification & Regression](https://spark.apache.org/docs/latest/ml-classification-regression.html)  
-- scikit-learn: [Model evaluation](https://scikit-learn.org/stable/modules/model_evaluation.html), [Calibration](https://scikit-learn.org/stable/modules/calibration.html), [Imbalanced data](https://scikit-learn.org/stable/modules/classes.html#module-sklearn.utils.class_weight)  
-- MLflow: [Experiment Tracking](https://mlflow.org/docs/latest/tracking.html), [Model Registry](https://mlflow.org/docs/latest/model-registry.html)  
-- Reliability/uncertainty: [Bootstrap confidence intervals](https://scikit-learn.org/stable/auto_examples/model_selection/plot_confidence_interval.html)  
-
-**Key Concepts**:  
-- Churn = binary classification (baseline: Logistic Regression).  
-- CLV = regression (baseline: Random Forest Regressor).  
-- Evaluate churn with AUC, AUCPR, accuracy, precision/recall @K; evaluate CLV with RMSE, MAE, R<sup>2</sup>, MAPE.  
-- Calibration matters for churn probabilities (Brier score, reliability curve); choose operating thresholds by business objective (e.g., capture X% of churners).  
-- Reproducibility: fixed seeds, pinned versions, and saved splits from Feature 2.1; train-only transforms from Feature 2.2.  
-- Segment-wise evaluation (brand, region, lifecycle) to detect blind spots.  
-
-**Acceptance Criteria**:  
-- Churn LR and CLV RF baselines trained on TRAIN, validated on VALID, and tested on TEST aligned with Feature 2.1 splits.  
-- For churn, model beats baseline classifier with 95% CI on AUC (CI not overlapping baseline). Calibration reported with Brier score and reliability plot.  
-- For CLV, model reports RMSE, MAE, R<sup>2</sup> with bootstrap 95% CIs and outperforms mean baseline.  
-- Segment-wise metrics (brand/region) computed and logged; any material gaps noted with next steps.  
-- MLflow logs: params, metrics, ROC/PR curves, calibration curve, feature importance/permutation importances; artifacts saved; run IDs and experiment name documented.  
-- Seeds fixed; code and data versions captured; no leakage (train-only fit for imputers/scalers, as-of filtering).  
-
-**Tasks (numbered)**:  
-🟥 1) Load Feature 2.2 dataset(s) and 2.1 split artifacts; verify shapes and label presence; check class balance.  
-🟥 2) Establish baselines: churn majority-class and CLV mean predictor; compute baseline metrics.  
-🟥 3) Build churn pipeline: train-only imputers/scalers + Logistic Regression (class_weight as needed); train on TRAIN.  
-🟥 4) Evaluate churn on VALID/TEST: AUC, AUCPR, accuracy; plot ROC/PR; compute thresholds @K (e.g., top 10%).  
-🟥 5) Calibrate churn probabilities (Platt or Isotonic) on VALID; report Brier score and reliability curve; re-evaluate on TEST.  
-🟥 6) Bootstrap CIs for churn metrics (e.g., AUC, AUCPR) with 500 resamples; log CIs.  
-🟥 7) Build CLV model: Random Forest Regressor (or Gradient Boosting if RF unavailable); train on TRAIN.  
-🟥 8) Evaluate CLV on VALID/TEST: RMSE, MAE, R<sup>2</sup> (and MAPE if nonzero targets); bootstrap 95% CIs.  
-🟥 9) Light tuning (1–2 hyperparams each) using VALID; document chosen params; avoid overfitting.  
-🟥 10) Segment-wise metrics: brand/region deciles for churn; error by segment for CLV; summarize deltas vs global.  
-🟥 11) Feature importance: permutation importances (or SHAP if available) for both models; log plots.  
-🟥 12) Persist artifacts: metrics CSV, ROC/PR images, calibration plot, importances; serialize pipelines; log to MLflow; record run IDs.  
-🟥 13) Reproducibility check: re-run on fixed seed; metrics within tolerance; note environment versions.  
-🟥 14) Draft scoring contract preview (inputs/outputs) for Feature 2.4; align column names and dtypes.  
-🟥 15) Handoff summary: write a short model card (purpose, data, metrics, risks, thresholds).  
-
-**Deliverables**  
-- Notebook: `notebooks/feature_2_3_model_training.ipynb` (synthetic fallback supported).  
-- MLflow runs for churn and CLV, with metrics, params, and artifacts (ROC/PR, calibration, importances).  
-- Artifacts folder: metrics summary CSVs, calibration and importance plots, chosen thresholds, segment metrics.  
-- Model card(s) and a brief readme with run IDs and seed/version info.  
-
-### Sprint day plan (4.5 days)
-- Day 1 [Tasks 1–4]: Data load, baselines, churn LR train + initial evaluation.  
-- Day 2 [Tasks 5–8]: Calibration + CIs for churn; train/evaluate CLV RF with CIs.  
-- Day 3 [Tasks 9–11]: Light tuning, segment-wise metrics, importances.  
-- Day 4 [Tasks 12–14]: Persist/MLflow logging, reproducibility check, scoring contract.  
-- Day 4.5 [Task 15]: Model card + handoff.  
-
-#### Notes — Feature 2.3 (day-by-day + how-to)
-- Calibration: Fit on VALID to avoid optimistic bias; prefer Isotonic if enough data; log pre/post Brier and save a reliability plot image for the run.  
-- Thresholds: Pick operating points from VALID based on business goals (e.g., top 10% recall of churners or maximize F1); never pick thresholds on TEST.  
-- CIs: Use bootstrap with stratification for churn and simple bootstrap for CLV; report median and 2.5/97.5 percentiles; store seeds and sample sizes in the artifact.  
-- Imbalanced churn: use class_weight="balanced" as a starting point; compare to threshold tuning on VALID; emphasize AUCPR and recall@K when churn rate is low.  
-- Segment checks: compute metrics by brand/region/lifecycle; flag any segment with >5% AUC drop vs global; capture in a CSV artifact and note remediation ideas.  
-- CLV skew: winsorize/log-transform targets in training only if heavy tails; always report MAE alongside RMSE; consider MAPE only for strictly positive targets.  
-- Leakage guardrails: ensure all imputers/scalers fit on TRAIN only; confirm features are computed using data ≤ as‑of date; rerun the leakage checklist from 2.1 if in doubt.  
-- Determinism: fix seeds in split, model, numpy/random; pin package versions in the notebook header; log data snapshot/Delta version and MLflow run IDs in the model card.  
-
----
-
-<a id="feature-2-4"></a>
-### Feature 2.4: Batch Scoring & Integration (Sprint 4)
-**User Story**:  
-As a Data Scientist, I want to score churn/CLV and join them into Customer 360 so Analysts can use them.  
-
-**Learning Resources**:  
-- MLflow: [Model Registry](https://mlflow.org/docs/latest/model-registry.html), [Loading models for inference](https://mlflow.org/docs/latest/models.html#model-deployment)  
-- Databricks: [Batch inference patterns](https://docs.databricks.com/machine-learning/model-inference/index.html), [Delta MERGE](https://docs.databricks.com/delta/merge.html)  
-- Explainability: [Interpretable ML](https://christophm.github.io/interpretable-ml-book/)  
-- Data quality & drift: [Evidently](https://docs.evidentlyai.com/) (PSI, drift), Great Expectations for schema checks  
-
-**Key Concepts**:  
-- Idempotent batch scoring: partition by `as_of_date` and write with MERGE/overwrite-by-partition; include `_SUCCESS`/manifest when exporting.  
-- Stable scoring contract: keys, dtypes, nullability, plus metadata (`model_version`, `feature_version`, `as_of_date`, `scored_ts`).  
-- Train/serve skew: compare scoring inputs vs training distribution (PSI or simple quantiles).  
-- Explainability at scoring time: global importances and simple per-row explanations if feasible.  
-
-**Acceptance Criteria**:  
-- `customer_scores_gold` created with schema: `customer_id`, `churn_score` (0–1), `churn_bucket` (e.g., decile), `clv_pred` (≥0), `model_version`, `feature_version`, `as_of_date`, `scored_ts`.  
-- Write is idempotent and partition-aware (no duplicates across re-runs); primary key uniqueness validated.  
-- Train/serve skew report produced and logged; bounds checks pass (no NaNs, churn within [0,1], non-negative CLV).  
-- Join with `customer_360_gold` validated (counts and keys) and documented for DA.  
-- Model and feature versions, plus MLflow run IDs, recorded in readme.  
-
-**Tasks (numbered)**:  
-🟥 1) Freeze model artifacts/versions and feature set version; record MLflow run IDs and URIs.  
-🟥 2) Load Feature 2.2 table(s) at target `as_of_date`; validate schema matches scoring contract.  
-🟥 3) Build loaders: MLflow pyfunc or direct deserialization for churn and CLV models; set seeds for determinism.  
-🟥 4) Score churn probabilities and CLV values in batches/partitions; handle memory with repartition/coalesce.  
-🟥 5) Derive `churn_bucket` (e.g., deciles or business thresholds) and any auxiliary flags needed by DA.  
-🟥 6) Train/serve skew: compare key features to training distributions (PSI or quantile deltas); log artifacts.  
-🟥 7) Assemble output DataFrame with required columns and metadata (`as_of_date`, timestamps, versions).  
-🟥 8) Write `customer_scores_gold` idempotently (overwrite partition or MERGE on `customer_id` + `as_of_date`); validate uniqueness.  
-🟥 9) Join into `customer_360_gold` or create a view for DA; verify row counts and key coverage.  
-🟥 10) Explainability: compute and log global importances; include a small per-row example if feasible.  
-🟥 11) Quality checks: null rates ≤ thresholds; bounds (0–1 churn, ≥0 CLV); dtypes match contract; save a QA report.  
-🟥 12) Register table/view, set permissions, and document location; add a consumption snippet for DA/BI.  
-🟥→🟩 13) Write a short operational runbook: inputs, outputs, schedule, idempotency strategy, and recovery steps.  
-🟥→🟩 14) Optional export manifest for Fabric ingestion (paths, schema, `_SUCCESS`).  
-
-**Deliverables**  
-- Notebook: `notebooks/feature_2_4_batch_scoring.ipynb` (synthetic fallback supported).  
-- `customer_scores_gold` table/view with schema contract and version columns.  
-- Skew/QA report artifacts; explainability summary; consumption guide (paths, sample queries).  
-- Runbook with idempotency and recovery steps; versions and run IDs documented.  
-
-### Sprint day plan (4.5 days)
-- Day 1 [Tasks 1–3]: Freeze versions, load features, implement model loaders.  
-- Day 2 [Tasks 4–7]: Batch scoring, buckets, skew check, assemble output.  
-- Day 3 [Tasks 8–9]: Persist `customer_scores_gold` and join/validate in `customer_360_gold`.  
-- Day 4 [Tasks 10–13]: Explainability, QA report, permissions, and runbook.  
-- Day 4.5 [Task 14]: Optional Fabric export manifest and polish docs.  
-
-#### Notes — Feature 2.4 (day-by-day + how-to)
-- Idempotency: prefer overwrite-by-partition (as_of_date) or MERGE on key + date; always validate no duplicates post-write.  
-- Skew checks: PSI is nice-to-have; simple side-by-side histograms/quantiles often suffice; store the report as an artifact.  
-- Resource use: repartition/coalesce appropriately; avoid collecting to driver; cache when reusing feature DataFrames.  
-- Contracts: put the schema (name, dtype, nullability) in a markdown/JSON and link it; enforce with a schema validator if possible.  
-- Handoff: supply DA with the table/view name, data dictionary, refresh cadence, and example queries.  
- - Schema evolution: avoid adding/removing columns mid-release; if needed, bump `feature_version` and reflect it in the contract and view.  
- - Retries & checkpoints: wrap batch scoring in small partitions with retries; write to a temp location then atomically swap/merge into Gold.  
- - Partitioning: use `as_of_date` partitioning; for large volumes, add secondary partitioning (e.g., brand) cautiously to avoid small-file problems.  
- - Monitoring: record per-batch row counts, null rates, and write durations; keep a lightweight log table for operational visibility.  
- - Quick SQL tests: count distinct keys, check score bounds (0–1, >=0), and verify recent `as_of_date`; include sample queries in the README for DA.  
-
----
-
 <a id="epic-4"></a>
 ## Epic 4 – Platform Integration (Databricks ↔ Fabric)
 **Goal**: Demonstrate end-to-end integration between Databricks and Microsoft Fabric, even on Free Editions.
