@@ -28,39 +28,23 @@ Definitions (naming clarity)
 In this document, "Free (Prototype)" refers to Databricks Free (formerly Community Edition) or Azure Databricks Free Trial and Microsoft Fabric Trial/Free (F2). "Paid (Enterprise)" refers to Azure Databricks Premium/Enterprise and Microsoft Fabric Capacity with governed BI.
 
 Aspect | Free / Trial (Prototype in class) | Paid / Enterprise (Production‑ready)
----|---|---
-Workspace & Compute | Databricks Free or Azure Databricks Free Trial; single/small clusters; session timeouts | Azure Databricks Premium/Enterprise; autoscaling clusters; Jobs/Workflows
-Storage/Lakehouse | Local workspace storage; manual Parquet exports | ADLS Gen2 with Unity Catalog external locations; governed Delta Lake
-Governance/Catalog | No Unity Catalog | Unity Catalog (data/AI governance, lineage, privileges)
-Scheduling/Orchestration | No Jobs API/DLT in Databricks Free; manual notebook runs | Databricks Jobs/Workflows; Delta Live Tables (DLT); REST/SDK automation
-ML lifecycle | MLflow tracking local to runs; limited/no central registry in Databricks Free | MLflow Tracking + Model Registry; batch/real‑time model serving
-Data movement (to Fabric) | Manual download from Databricks → manual upload to Fabric Lakehouse Files | Automated pipelines: Fabric Data Pipelines/Azure Data Factory; OneLake shortcuts; secure connectors
-Fabric capacity & BI | Microsoft Fabric Trial/Free (F2); limited capacity/duration; Direct Lake basic use | Fabric Capacity (F‑skus/Premium); Deployment Pipelines; RLS at scale; ALM/lineage
-Security | Basic workspace ACLs; no Private Link/VNET; minimal governance | AAD, service principals, Key Vault, Private Link/VNET, Sensitivity labels
-CI/CD | Documented manual steps | Azure DevOps/GitHub Actions; Databricks Repos; Fabric Deployment Pipelines rules
-SLA & Scale | No SLA; small volumes; possible throttling | Enterprise SLAs; horizontal scaling; performance tuning features
-Cost | $0 (time‑limited trials) | Metered DBUs and Fabric capacity; enterprise licensing
+**Tasks**:  
 
-Practical implications in this repo
-- Where we state "manual transfer (Free)", it means: Databricks Free or Azure Databricks Free Trial → download Parquet + manifest → upload to Microsoft Fabric Lakehouse /Files.
-– Where we state "no Jobs/DLT", it refers to Databricks Free limitations; in Paid, use Jobs/Workflows and/or DLT for scheduled pipelines.
-- "No Unity Catalog" in Free implies relying on naming conventions; in Paid, define UC catalogs/schemas, permissions, and external locations.
-
----
-
- 
-
-## Sprint Planning Matrix (4.5 days per sprint)
-
-This matrix summarizes the focus and concrete deliverables of each role — **Data Engineer (DE)**, **Data Scientist (DS)**, and **Data Business Analyst (DA)** — across all sprints.  
-It provides a clear mapping of **who delivers what, and when**, ensuring no role is idle.
-
-| Sprint | Data Engineer (DE) | Data Scientist (DS) | Data Business Analyst (DA) |
-|--------|---------------------|---------------------|-------------------|
-| **0 (0.5d)** | 🟥 Set up Databricks workspace and folder structure; define ingestion paths for EuroStyle & Contoso | 🟥 Define hypotheses for churn (inactivity >90 days) and Customer Lifetime Value (CLV); identify required features | 🟩 🟨 Define initial KPI Catalog v0.1 (GMV, AOV, margin, churn rate); map differences EuroStyle vs Contoso |
-| **1 (4.5d)** | 🟥 Ingest EuroStyle & Contoso raw CSVs into Bronze Delta tables; add metadata (`ingest_ts`, `source_system`) | 🟥 Perform **Exploratory Data Analysis (EDA)** on Bronze (Contoso first): distributions, missing values, brand overlap; draft churn & CLV definitions | 🟩 🟨 Build "First Look Dashboard" (Contoso first) with Bronze KPIs: **GMV (Gross Merchandise Value)**, **AOV (Average Order Value)**, order counts |
-| **2 (4.5d)** | 🟥 Transform Bronze → Silver: deduplication, schema harmonization, standardize currencies, align product hierarchies | 🟥 Engineer features: **RFM (Recency, Frequency, Monetary value)**, basket diversity, cross-brand overlap; track feature sets in MLflow | 🟩 🟨 Redesign dashboards on Silver; compare Raw vs Silver KPIs; implement first **Row-Level Security (RLS)** rules |
-| **3 (4.5d)** | 🟥 Build Gold marts: `sales_daily` (sales, GMV, AOV, margin), `category_perf`, `customer_360` with RFM base | 🟥 Train baseline models: Logistic Regression (churn), Random Forest (CLV regression); log experiments in MLflow | 🟩 🟨 Deliver **Executive Dashboard**: consolidated KPIs (GMV, AOV, margin), brand comparisons, North vs South splits |
+1) 🟥 [DBX-DE-Assoc][Medallion][Platform] Create raw landing folders in DBFS (`/FileStore/retail/raw/contoso/`, `/FileStore/retail/raw/eurostyle/`) and document paths in the runbook.  
+2) 🟥 [DBX-DE-Assoc][Medallion] Upload Contoso CSVs to the raw path; note file names, counts, and approximate sizes.  
+3) 🟥 [DBX-DE-Assoc][Delta-Basics][Autoloader][CopyInto][Medallion] Ingest Contoso to Delta Bronze with lineage columns (`ingest_ts`, `source_system='CONTOSO'`) as `bronze.sales_contoso`.  
+4) 🟥 [DBX-DA-Assoc][SQL-Basics][Dashboards] Create a BI‑friendly Contoso view `bronze.v_sales_contoso` with trimmed/typed columns for Power BI DirectQuery.  
+5) 🟥 [DBX-DE-Assoc][UC-Permissions] Register tables/views in the metastore (Unity Catalog or workspace) and add table comments.  
+6) 🟥 [DBX-DE-Assoc][Delta-Basics] Validate Contoso types (dates/numerics), address corrupt records if any, and record issues.  
+7) 🟨 [DBX-DA-Assoc][Dashboards] [MS-PL300][Visualize] Perform a Power BI DirectQuery smoke test to `bronze.v_sales_contoso`; capture steps/screenshot in the README.  
+8) 🟥 [DBX-DE-Assoc][Medallion] Upload EuroStyle CSVs to the raw path and capture source metadata (provenance, obtained date).  
+9) 🟥 [DBX-DE-Assoc][Delta-Basics][Autoloader][CopyInto][Medallion] Ingest EuroStyle to Delta Bronze with lineage columns (`ingest_ts`, `source_system='EUROSTYLE'`) as `bronze.sales_eurostyle`.  
+10) 🟥 [DBX-DE-Prof][Modeling] Create and check in `docs/column_mapping.csv` with `source_name, unified_name, target_type`.  
+11) 🟥 [DBX-DE-Prof][Modeling] Apply initial schema alignment across brands using the mapping and naming conventions (snake_case, consistent date/decimal types); update the runbook.  
+12) 🟥 [DBX-DE-Prof][Monitoring-Logs] Reconcile raw→Bronze row counts per brand (±1% tolerance or explained variance) and persist counts to `monitor.dq_bronze_daily`.  
+13) 🟥 [DBX-DE-Prof][Monitoring-Logs] Compute a basic DQ summary: null rates on keys, duplicate rate on `(order_id, sku, customer_id, order_date)`, top countries/currencies; publish a one‑pager.  
+14) 🟥 [DBX-DE-Assoc][Delta-Basics] Enforce basic Delta constraints where feasible (NOT NULL on business keys, simple CHECKs); record violations.  
+15) 🟥 [DBX-DE-Assoc][Delta-MERGE][Delta-Basics][Medallion] Implement an idempotent re‑run strategy (deterministic overwrite by date window via `replaceWhere` or `MERGE` on business keys) and verify repeatability.
 | **4 (4.5d)** | 🟥→🟩 Export Gold marts to Fabric Lakehouse (Parquet + manifest, or Shortcuts); orchestrate ingestion with Fabric Data Pipelines | 🟥→🟩 Run batch scoring for churn & CLV; join scored tables into Gold `customer_360`; export to Fabric and validate metrics/skew | 🟩 🟨 Build full **Power BI Post-Merger Suite**: Executive + Customer Segmentation dashboards (with churn & CLV); deploy with Fabric pipelines |
 
 Legend: 🟥 Databricks, 🟩 Fabric, 🟨 Power BI, 🟥→🟩 Integration (handoff Databricks → Fabric)
@@ -218,21 +202,38 @@ As a Data Engineer, I want to ingest EuroStyle and Contoso CSVs into Bronze so t
  - Azure DevOps DQ tickets opened for any raw→Bronze variance >1% or material DQ issue; links captured in README and referenced by DA in Feature 3.2.
 
 **Tasks**:  
-🟥 1) Create raw landing folders in DBFS (`/FileStore/retail/raw/contoso/`, `/FileStore/retail/raw/eurostyle/`) and document paths in the runbook.  
-🟥 2) Upload Contoso CSVs to the raw path; note file names, counts, and approximate sizes.  
-🟥 3) Ingest Contoso to Delta Bronze with lineage columns (`ingest_ts`, `source_system='CONTOSO'`) as `bronze.sales_contoso`.  
-🟥 4) Create a BI‑friendly Contoso view `bronze.v_sales_contoso` with trimmed/typed columns for Power BI DirectQuery.  
-🟥 5) Register tables/views in the metastore (Unity Catalog or workspace) and add table comments.  
-🟥 6) Validate Contoso types (dates/numerics), address corrupt records if any, and record issues.  
-🟨 7) Perform a Power BI DirectQuery smoke test to `bronze.v_sales_contoso`; capture steps/screenshot in the README.  
-🟥 8) Upload EuroStyle CSVs to the raw path and capture source metadata (provenance, obtained date).  
-🟥 9) Ingest EuroStyle to Delta Bronze with lineage columns (`ingest_ts`, `source_system='EUROSTYLE'`) as `bronze.sales_eurostyle`.  
-🟥 10) Create and check in `docs/column_mapping.csv` with `source_name, unified_name, target_type`.  
-🟥 11) Apply initial schema alignment across brands using the mapping and naming conventions (snake_case, consistent date/decimal types); update the runbook.  
-🟥 12) Reconcile raw→Bronze row counts per brand (±1% tolerance or explained variance) and persist counts to `monitor.dq_bronze_daily`.  
-🟥 13) Compute a basic DQ summary: null rates on keys, duplicate rate on `(order_id, sku, customer_id, order_date)`, top countries/currencies; publish a one‑pager.  
-🟥 14) Enforce basic Delta constraints where feasible (NOT NULL on business keys, simple CHECKs); record violations.  
-🟥 15) Implement an idempotent re‑run strategy (deterministic overwrite by date window via `replaceWhere` or `MERGE` on business keys) and verify repeatability.
+
+
+1) 🟥 [DBX-DE-Assoc][Medallion][Platform]  
+ Create raw landing folders in DBFS (`/FileStore/retail/raw/contoso/`, `/FileStore/retail/raw/eurostyle/`) and document paths in the runbook.  
+2) 🟥 [DBX-DE-Assoc][Medallion]  
+ Upload Contoso CSVs to the raw path; note file names, counts, and approximate sizes.  
+3) 🟥 [DBX-DE-Assoc][Delta-Basics][Autoloader][CopyInto][Medallion]  
+ Ingest Contoso to Delta Bronze with lineage columns (`ingest_ts`, `source_system='CONTOSO'`) as `bronze.sales_contoso`.  
+4) 🟥 [DBX-DA-Assoc][SQL-Basics][Dashboards]  
+ Create a BI‑friendly Contoso view `bronze.v_sales_contoso` with trimmed/typed columns for Power BI DirectQuery.  
+5) 🟥 [DBX-DE-Assoc][UC-Permissions]  
+ Register tables/views in the metastore (Unity Catalog or workspace) and add table comments.  
+6) 🟥 [DBX-DE-Assoc][Delta-Basics]  
+ Validate Contoso types (dates/numerics), address corrupt records if any, and record issues.  
+7) 🟨 [DBX-DA-Assoc][Dashboards] [MS-PL300][Visualize]  
+ Perform a Power BI DirectQuery smoke test to `bronze.v_sales_contoso`; capture steps/screenshot in the README.  
+8) 🟥 [DBX-DE-Assoc][Medallion]  
+ Upload EuroStyle CSVs to the raw path and capture source metadata (provenance, obtained date).  
+9) 🟥 [DBX-DE-Assoc][Delta-Basics][Autoloader][CopyInto][Medallion]  
+ Ingest EuroStyle to Delta Bronze with lineage columns (`ingest_ts`, `source_system='EUROSTYLE'`) as `bronze.sales_eurostyle`.  
+10) 🟥 [DBX-DE-Prof][Modeling]  
+ Create and check in `docs/column_mapping.csv` with `source_name, unified_name, target_type`.  
+11) 🟥 [DBX-DE-Prof][Modeling]  
+ Apply initial schema alignment across brands using the mapping and naming conventions (snake_case, consistent date/decimal types); update the runbook.  
+12) 🟥 [DBX-DE-Prof][Monitoring-Logs]  
+ Reconcile raw→Bronze row counts per brand (±1% tolerance or explained variance) and persist counts to `monitor.dq_bronze_daily`.  
+13) 🟥 [DBX-DE-Prof][Monitoring-Logs]  
+ Compute a basic DQ summary: null rates on keys, duplicate rate on `(order_id, sku, customer_id, order_date)`, top countries/currencies; publish a one‑pager.  
+14) 🟥 [DBX-DE-Assoc][Delta-Basics]  
+ Enforce basic Delta constraints where feasible (NOT NULL on business keys, simple CHECKs); record violations.  
+15) 🟥 [DBX-DE-Assoc][Delta-MERGE][Delta-Basics][Medallion]  
+ Implement an idempotent re‑run strategy (deterministic overwrite by date window via `replaceWhere` or `MERGE` on business keys) and verify repeatability.
 
 **User Stories (breakdown)**  
 - As a DA, I can connect to Contoso Bronze via DirectQuery on Day 1 to build the First Look.  

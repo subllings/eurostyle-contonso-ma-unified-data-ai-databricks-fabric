@@ -353,7 +353,7 @@ Monitor and optimize an analytics solution
 
 ---
 
-## DE Tag Glossary (quick reference)
+## Data Engineer Tag Glossary (quick reference)
 
 This glossary lists the tags used in this file. For broader definitions shared across roles, see `GLOSSARY.md`.
 

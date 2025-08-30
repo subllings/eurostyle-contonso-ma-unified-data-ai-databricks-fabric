@@ -218,7 +218,7 @@ These strengthen general BA skills (elicitation, requirements, stakeholder mgmt.
 
 ---
 
-## Analyst Tag Glossary (quick reference)
+## Data  Analyst Tag Glossary (quick reference)
 
 This glossary lists the tags used in this file. For broader definitions shared across roles, see `GLOSSARY.md`.
 
