@@ -2507,8 +2507,8 @@ Implement BG/NBD and Gamma-Gamma CLV model with the lifetimes package.
 4) 🟥 [DBX-DS-Assoc][Visualization][Docs]
 Generate visualizations (hazard curves, CLV distributions).
 
-5) 🟥 [DBX-DS-Prof][Modeling][DeepLearning][Optional]
-(Optional) Prototype a sequential NN model (LSTM/Transformer) for churn prediction.
+5) 🟥 [DBX-DS-Prof][Modeling][DeepLearning] (**PhD-level - Optional**)
+Prototype a sequential NN model (LSTM/Transformer) for churn prediction.
 
 6) 🟥 [DBX-DS-Assoc][Docs][Evaluation]
 Document findings and compare with baseline tree-based models.
@@ -2543,14 +2543,14 @@ Run E2E checks: bounds/nulls/joins; BI spot-checks in Power BI; verify "Today lo
 16) 🟥→🟩 [DBX-DS-Assoc][Governance][Docs]
 Hand-off to Feature 3.4: field list (risk bands, CLV tiers), RLS awareness, and dashboard binding notes.
 
-17) 🟥 [DBX-DS-Prof][Monitoring][Testing]
+17) 🟥 [DBX-DS-Prof][Monitoring][Testing] (**Advanced**)
 Monitoring: feature drift (PSI), performance stability by brand/region, fairness checks; set weekly report and alert thresholds.
 
 18) 🟥 [DBX-DS-Assoc][Docs][Governance]
 Documentation: plots, acceptance thresholds, runbook, risks/mitigations, reproducibility notes (seeds, as-of, schema).
 
-19) 🟥 [DBX-DS-Prof][Modeling][DeepLearning][Optional]
-(Optional) Prototype sequence model (LSTM/Transformer) as comparator; document performance/calibration deltas. 
+19) 🟥 [DBX-DS-Prof][Modeling][DeepLearning] (**PhD-level - Optional**)
+Prototype sequence model (LSTM/Transformer) as comparator; document performance/calibration deltas. 
 
 **User Stories (breakdown)**  
 - As a DS, I estimate churn timing and CLV distributions and compare to baselines.  
@@ -2653,7 +2653,7 @@ As a Data Engineer, I want to orchestrate the end‑to‑end Databricks → Fabr
 - A short runbook describes secrets, environment variables, parameters, and manual steps for Free/Trial constraints.  
 - Evidence: one dry‑run (or simulated run) captured with logs/screenshots and a QA checklist (row counts vs manifest).
 
-**Tasks (15 tasks, numbered)**  
+**Tasks**  
 🟥→🟩 1) Decide orchestration mode(s) in scope: Airflow external, Fabric native fallback, or both; document constraints (Free/Trial vs Enterprise).  
 🟥→🟩 2) Define orchestration contract: inputs (Gold tables), export artifacts (Parquet, `_SUCCESS`, `release_manifest.json`/`scores_manifest.json`), and success/failure signals per stage.  
 🟥 3) Parameterize export notebooks/jobs in Databricks (date window, release version); ensure idempotent writes (MERGE/`replaceWhere`) and `_SUCCESS` markers (Feature 4.1/4.3).  
