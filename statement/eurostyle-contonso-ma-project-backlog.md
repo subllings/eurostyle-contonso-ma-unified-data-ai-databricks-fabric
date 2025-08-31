@@ -595,7 +595,8 @@ Register helper views (e.g., top-level selects), set table comments/permissions,
 
 
 
-🟦 Note: Governance — After first Gold load, run a Purview UC scan and validate assets and lineage for `gold.sales_daily`; attach evidence.
+16) 🟦  
+After first Gold load, run a Purview UC scan and validate assets and lineage for `gold.sales_daily`; attach evidence.
 
 
 
@@ -1413,27 +1414,50 @@ As a Data Analyst, I want to compare KPIs Raw vs Silver to highlight data cleani
  - First RLS pass configured on Silver (brand-level roles) and validated on 1–2 visuals.  
  - Azure DevOps cards created for top data-quality fixes, linked in the dashboard/readme.
 
-**Tasks (grouped & numbered by type)**:  
-- Measures & Modeling (MM)
-   - 🟨 MM1) Build DAX measures for Raw vs Silver comparisons and deltas; ensure consistent formatting and tooltips.  
-   - 🟨 MM2) Implement return‑rate measures with consistent handling (negative quantities/credit notes).  
-   - 🟨 MM3) Pair measures as `*_raw`, `*_silver`, `*_delta`; add optional last‑week comparators for context/tooltips.  
-- Dashboard & UX (UX)
-   - 🟨 UX1) Create dashboard pages with GMV, AOV, return rates (before/after cleaning).  
-   - 🟨 UX2) Implement bookmarks/toggles for Raw vs Silver views; annotate differences.  
-   - 🟨 UX3) Sync slicers across pages; align layouts and tooltips for comparability.  
-- Data Quality Analysis (DQ)
-   - 🟨 DQ1) Quantify impacts (duplicates removed, FX normalization effects, schema harmonization effects).  
-   - 🟨 DQ2) Document and present differences; summarize findings in README.  
-   - 🟨 DQ3) Capture confidence note (margin proxy coverage and decision tolerance).  
-- Governance & Security (RLS)
-   - 🟩 RLS1) Configure and test RLS roles on Silver (brand managers vs executives).  
-- DevOps & Hygiene (OPS)
-   - 🟨 OPS1) Log Azure DevOps items for identified data‑quality issues and link them from the report/README.  
-- Insights & Storytelling (INS)
-   - 🟨 INS1) Draft one‑liners: GMV differs by X%; duplicates dropped by Y%; FX normalization changed totals by Z%.  
-   - 🟨 INS2) AOV moved from X to Y; explain the driver (e.g., fewer inflated orders, corrected prices); note return‑rate changes and Contoso limitations.  
-   - 🟨 INS3) Highlight biggest deltas (brand/region/category) and drivers (dup removal, FX to EUR, SKU mapping); add "today normal?" note and margin proxy confidence.  
+**Tasks**
+
+1) 🟨 [DBX-DA-Assoc][MS-PL300][Metrics]  
+Build DAX measures for Raw vs Silver comparisons and deltas; ensure consistent formatting and tooltips.  
+
+2) 🟨 [DBX-DA-Assoc][MS-PL300][Metrics]  
+Implement return-rate measures with consistent handling (negative quantities or credit notes).  
+
+3) 🟨 [DBX-DA-Assoc][MS-PL300][Metrics]  
+Pair measures as *_raw, *_silver, *_delta; add optional last-week comparators for tooltips.  
+
+4) 🟨 [DBX-DA-Assoc][Dashboards]  
+Create dashboard pages with GMV, AOV, and return rates before/after cleaning.  
+
+5) 🟨 [DBX-DA-Assoc][Dashboards]  
+Implement bookmarks and toggles for Raw vs Silver views; annotate key differences.  
+
+6) 🟨 [DBX-DA-Assoc][Dashboards]  
+Sync slicers across pages; align layouts and tooltips for comparability.  
+
+7) 🟨 [DBX-DA-Assoc][Monitoring]  
+Quantify impacts (duplicates removed, FX normalization effects, schema harmonization effects).  
+
+8) 🟨 [DBX-DA-Assoc][Documentation]  
+Document and present differences; summarize findings in README.  
+
+9) 🟨 [DBX-DA-Assoc][Documentation]  
+Capture confidence notes (margin proxy coverage and decision tolerance).  
+
+10) 🟩 [DBX-DA-Assoc][Security]  
+Configure and test RLS roles on Silver (brand managers vs executives).  
+
+11) 🟨 [DBX-DA-Assoc][Monitoring]  
+Log Azure DevOps items for identified data-quality issues and link them from the report or README.  
+
+12) 🟨 [DBX-DA-Assoc][Storytelling]  
+Draft one-liners: GMV differs by X%; duplicates dropped by Y%; FX normalization changed totals by Z%.  
+
+13) 🟨 [DBX-DA-Assoc][Storytelling]  
+Describe AOV movement from X to Y; explain drivers (e.g., fewer inflated orders, corrected prices); note return-rate changes and Contoso limitations.  
+
+14) 🟨 [DBX-DA-Assoc][Storytelling]  
+Highlight biggest deltas by brand, region, or category; add "today normal?" note and margin proxy confidence.  
+
 
 **User Stories (breakdown)**  
 - As a DA, I compare Raw vs Silver KPIs with clear delta measures and toggles.  
