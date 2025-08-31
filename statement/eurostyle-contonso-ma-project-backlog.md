@@ -2,6 +2,27 @@
 
 ## Table of Contents
 
+## Table of Contents
+
+- [Sprint Planning Matrix](#sprint-planning-matrix-45-days-per-sprint)
+- [Epic-to-Sprint and Role Mapping](#epic-to-sprint-and-role-mapping)
+- [Feature-to-Sprint and Role Mapping](#feature-to-sprint-and-role-mapping)
+- [Databricks ↔ Microsoft Fabric — Interoperability](#databricks--microsoft-fabric--interoperability-by-edition-free-trialpremium-enterprise)
+- Epics
+  - [Epic 1 – Data Foundation Platform](#epic-1)
+  - [Epic 2 – Machine Learning & Predictive Analytics](#epic-2)
+  - [Epic 3 – Analytics & Business Intelligence](#epic-3)
+  - [Epic 4 – Platform Integration (Databricks ↔ Fabric)](#epic-4)
+  - [Epic 5 – Optional Extensions](#epic-5)
+- Features
+  - Epic 1: [1.1](#feature-1-1), [1.2](#feature-1-2), [1.3](#feature-1-3)
+  - Governance: [G.1](#feature-g1)
+  - Epic 2: [2.1](#feature-2-1), [2.2](#feature-2-2), [2.3](#feature-2-3), [2.4](#feature-2-4)
+  - Epic 3: [3.1](#feature-3-1), [3.2](#feature-3-2), [3.3](#feature-3-3), [3.4](#feature-3-4)
+  - Epic 4: [4.1](#feature-4-1), [4.2](#feature-4-2), [4.3](#feature-4-3)
+  - Epic 5: [5.1](#feature-5-1), [5.2](#feature-5-2), [5.3](#feature-5-3), [5.4](#feature-5-4)
+
+
 - [Sprint Planning Matrix](#sprint-planning-matrix-45-days-per-sprint)
 - [Epic-to-Sprint and Role Mapping](#epic-to-sprint-and-role-mapping)
 - [Feature-to-Sprint and Role Mapping](#feature-to-sprint-and-role-mapping)
