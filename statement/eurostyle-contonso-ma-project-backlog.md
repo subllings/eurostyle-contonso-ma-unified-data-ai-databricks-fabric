@@ -2459,6 +2459,12 @@ Note: Some items intentionally span days (bookmarks/interactions and cross‑hig
 **User Story**  
 As a Data Scientist, I want to implement advanced survival analysis and probabilistic models so that stakeholders gain deeper insights into customer lifetime and churn timing, beyond standard classification/regression.  
 
+<a id="feature-5-3"></a>
+### Feature 5.3 (DS) – Survival & Probabilistic Models for Churn and CLV  
+
+**User Story**  
+As a Data Scientist, I want to implement advanced survival analysis and probabilistic models so that stakeholders gain deeper insights into customer lifetime and churn timing, beyond standard classification/regression.  
+
 #### Learning Resources (Standard)  
 - [Survival Analysis in Python (lifelines)](https://lifelines.readthedocs.io/en/latest/)  
 - [BG/NBD – step-by-step derivation (Fader, Hardie & Lee, 2019, PDF)](https://www.brucehardie.com/notes/039/bgnbd_derivation__2019-11-06.pdf)  
@@ -2474,27 +2480,24 @@ As a Data Scientist, I want to implement advanced survival analysis and probabil
 - [Delta Lake — MERGE, constraints, replaceWhere](https://docs.databricks.com/delta/)  
 
 #### PhD-Level / Advanced References  
-- [Harrell — Regression Modeling Strategies (survival best practices)](https://hbiostat.org/rms)  
+- [Harrell (2015) — Regression Modeling Strategies (Springer, 2nd ed.)](https://link.springer.com/book/10.1007/978-3-319-19425-7)  
 - [Klein & Moeschberger (2005) — Survival Analysis: Techniques for Censored and Truncated Data (Springer)](https://link.springer.com/book/10.1007/0-387-21645-6)  
 - [Hosmer, Lemeshow & May (2008) — Applied Survival Analysis: Regression Modeling of Time-to-Event Data (Wiley)](https://www.wiley.com/en-us/Applied+Survival+Analysis%3A+Regression+Modeling+of+Time+to+Event+Data%2C+2nd+Edition-p-9780471754992)  
-- [Harrell (2015) — Regression Modeling Strategies (Springer, 2nd ed.)](https://link.springer.com/book/10.1007/978-3-319-19425-7)  
-- [Fader & Hardie — Customer-Base Analysis and Probability Models (BTYD research hub)](https://www.brucehardie.com)  
 - [Bishop (2006) — Pattern Recognition and Machine Learning (Springer)](https://www.springer.com/gp/book/9780387310732)  
 - [Goodfellow, Bengio & Courville (2016) — Deep Learning (MIT Press)](https://www.deeplearningbook.org/)  
 
-
 **Key Concepts**  
 - **Survival models** predict *time until churn*, producing hazard curves and probabilities per customer.  
-- **BG/NBD (Beta‑Geometric/Negative Binomial Distribution) & Gamma‑Gamma models** estimate **CLV (Customer Lifetime Value)** using probabilistic purchase frequency and monetary value.  
+- **BG/NBD (Beta-Geometric/Negative Binomial Distribution) & Gamma-Gamma models** estimate **CLV (Customer Lifetime Value)** using probabilistic purchase frequency and monetary value.  
 - **Sequential deep learning (optional)** models customer purchase history as a sequence for richer churn signals.  
 
 ##### Explanation
-- Why survival? We often don't observe churn for everyone (right-censoring). Survival models estimate the time‑to‑event and produce calibrated risk by horizon (30/60/90d).
-- Hazard vs survival: hazard is instantaneous risk at time t; survival S(t) is probability the customer remains active by t. Churn probability by horizon ≈ 1 − S(h).
-- BG/NBD (Beta‑Geometric/Negative Binomial Distribution) intuition: in non‑contractual settings we infer "alive" status from purchase patterns. Combine BG/NBD (frequency) with Gamma‑Gamma (Γ‑Γ; monetary) to estimate **CLV (Customer Lifetime Value)**.
-- Censoring and leakage: fix an as‑of date; build features only from data before it; label churn using a forward inactivity window (e.g., 90 days).
-- Calibration matters: risk buckets should match observed rates; check reliability plots and adjust thresholds accordingly.
-- Choose the tool: need churn timing bands → survival; need expected purchases/CLV → BG/NBD + Γ‑Γ; need richer patterns → optional sequence model (LSTM/Transformer).
+- Why survival? We often don't observe churn for everyone (right-censoring). Survival models estimate the time-to-event and produce calibrated risk by horizon (30/60/90d).  
+- Hazard vs survival: hazard is instantaneous risk at time t; survival S(t) is probability the customer remains active by t. Churn probability by horizon ≈ 1 − S(h).  
+- BG/NBD + Gamma-Gamma intuition: in non-contractual settings we infer "alive" status from purchase patterns. Combine BG/NBD (frequency) with Gamma-Gamma (monetary value) to estimate **CLV (Customer Lifetime Value)**.  
+- Censoring and leakage: fix an as-of date; build features only from data before it; label churn using a forward inactivity window (e.g., 90 days).  
+- Calibration matters: risk buckets should match observed rates; check reliability plots and adjust thresholds accordingly.  
+- Choose the tool: need churn timing bands → survival; need expected purchases/CLV → BG/NBD + Gamma-Gamma; need richer patterns → optional sequence model (LSTM/Transformer).  
 
 **Acceptance Criteria**  
 - Train a Cox Proportional Hazards or BG/NBD model for churn timing.  
@@ -2502,6 +2505,56 @@ As a Data Scientist, I want to implement advanced survival analysis and probabil
 - Visualize survival curves and CLV probability distributions for segments.  
 - Compare survival/CLV outputs against RFM-based baselines.  
 - Document in README with plots and interpretation (e.g., "50% of Segment A expected to churn within 6 months").  
+
+**Tasks**  
+1) 🟥 [DBX-DS-Assoc][DataPrep] Prepare survival dataset (event = churn, duration = days since last purchase).  
+2) 🟥 [DBX-DS-Assoc][Modeling][Lifelines] Train Cox model or Kaplan-Meier survival curves using lifelines.  
+3) 🟥 [DBX-DS-Assoc][Modeling][BTYD] Implement BG/NBD and Gamma-Gamma CLV model with the lifetimes package.  
+4) 🟥 [DBX-DS-Assoc][Visualization][Docs] Generate visualizations (hazard curves, CLV distributions).  
+5) 🟥 [DBX-DS-Prof][Modeling][DeepLearning] (**PhD-level - Optional**) Prototype a sequential NN model (LSTM/Transformer) for churn prediction.  
+6) 🟥 [DBX-DS-Assoc][Docs][Evaluation] Document findings and compare with baseline tree-based models.  
+7) 🟥 [DBX-DS-Assoc][Governance][DataPrep] Fix as-of date, churn horizon, and censoring rules; implement leakage guardrails (features pre as-of only, labels from forward inactivity window).  
+8) 🟥 [DBX-DS-Assoc][Modeling][Platform] Build survival and BTYD modeling frames; persist feature views with version metadata (snapshot, schema hash).  
+9) 🟥 [DBX-DS-Assoc][Testing][Evaluation] Create temporal splits with rolling-origin backtests; include segment-wise evaluation (brand/region).  
+10) 🟥 [DBX-DS-Prof][Testing][Evaluation] Validate assumptions: Cox PH tests; BG/NBD and Gamma-Gamma convergence/identifiability; record diagnostics.  
+11) 🟥 [DBX-DS-Assoc][Metrics][Evaluation] Compute metrics: C-index, IBS, calibration/reliability plots; lift/gains for top-N; CLV error (MAPE/RMSE).  
+12) 🟥 [DBX-DS-Assoc][Calibration][Evaluation] Calibrate and set acceptance thresholds and operating points by horizon (30/60/90d).  
+13) 🟥 [DBX-DS-Assoc][Ops][Tracking] Track runs in MLflow (params, metrics, artifacts, seeds); record data snapshot IDs and environment details.  
+14) 🟥 [DBX-DS-Assoc][Ops][Platform] Score full population; write customer_scores_gold idempotently (MERGE/replaceWhere); enforce Delta constraints (keys, bounds 0–1).  
+15) 🟥→🟩 [DBX-DS-Assoc][Testing][Ops] Run E2E checks: bounds/nulls/joins; BI spot-checks in Power BI; verify "Today looks normal?" banner behavior.  
+16) 🟥→🟩 [DBX-DS-Assoc][Governance][Docs] Hand-off to Feature 3.4: field list (risk bands, CLV tiers), RLS awareness, and dashboard binding notes.  
+17) 🟥 [DBX-DS-Prof][Monitoring][Testing] (**Advanced**) Monitoring: feature drift (PSI), performance stability by brand/region, fairness checks; set weekly report and alert thresholds.  
+18) 🟥 [DBX-DS-Assoc][Docs][Governance] Documentation: plots, acceptance thresholds, runbook, risks/mitigations, reproducibility notes (seeds, as-of, schema).  
+19) 🟥 [DBX-DS-Prof][Modeling][DeepLearning] (**PhD-level - Optional**) Prototype sequence model (LSTM/Transformer) as comparator; document performance/calibration deltas.  
+20) 🟥 [DBX-DS-Prof][Bayesian][Modeling] (**PhD-level - Optional**) Implement Bayesian survival analysis (e.g., PyMC, Stan) for churn timing; compare posterior intervals with frequentist estimates.  
+21) 🟥 [DBX-DS-Prof][CausalInference][Modeling] (**PhD-level - Optional**) Apply causal inference to churn interventions (e.g., uplift modeling, treatment effect estimation); test campaign targeting strategies.  
+22) 🟥 [DBX-DS-Prof][Explainability][Evaluation] (**PhD-level - Optional**) Use SHAP/Integrated Gradients for survival & CLV models; document how feature effects vary over time and by horizon.  
+23) 🟥 [DBX-DS-Prof][Fairness][Monitoring] (**PhD-level - Optional**) Audit churn models for bias/fairness across segments; log fairness metrics in monitoring pipeline.  
+24) 🟥 [DBX-DS-Prof][Research][Docs] (**PhD-level - Optional**) Write a research-style technical note (5–10 pages) summarizing methodology, statistical assumptions, diagnostics, and managerial implications.  
+ 
+
+**User Stories (breakdown)**  
+- As a DS, I estimate churn timing and CLV distributions and compare to baselines.  
+- As a DA, I receive segment-level visuals (survival/CLV).  
+
+### Sprint day plan (4.5 days)
+
+- **Day 1 (Tasks 1, 7, 8):** Prepare datasets with censoring rules and define the time origin. Validate churn horizons and event definitions, and perform sanity checks.  
+- **Day 2 (Tasks 2, 9, 10):** Train Cox/Kaplan-Meier models, run proportional hazards tests, and start rolling-origin backtests with initial segment-level evaluations.  
+- **Day 3 (Tasks 3, 10):** Implement BG/NBD and Gamma-Gamma models, initialize parameters, and check convergence and plausibility against observed patterns.  
+- **Day 4 (Tasks 4, 11, 12):** Build survival and CLV visualizations, compute quantiles and calibration metrics, compare against baselines, and define operating thresholds by horizon.  
+- **Day 4.5 (Tasks 13, 18):** Consolidate documentation, capture seeds and reproducibility notes (MLflow run IDs, snapshot IDs), and finalize acceptance thresholds.  
+
+> This 4.5-day plan focuses on the **core deliverables** that can be realistically achieved within the sprint.  
+> More advanced tasks — such as deep learning, Bayesian survival, causal inference, or fairness audits — are intentionally excluded from this tight timeline.  
+> They remain available as **optional explorations** for those who are curious and motivated to go further, either during the sprint if time allows, or afterwards as part of continuous learning and professional growth.
+
+---
+
+#### Advanced notes — Survival / BTYD / Deep Learning / Bayesian / Causal / Fairness (PhD-level)
+
+(... keep the detailed advanced notes, derivations, simulations, assumptions, etc. — unchanged except duplicates removed ...)
+
 
 **Tasks**  
 1) 🟥 [DBX-DS-Assoc][DataPrep]
