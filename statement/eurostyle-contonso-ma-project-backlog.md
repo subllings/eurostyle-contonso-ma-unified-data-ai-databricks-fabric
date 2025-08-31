@@ -1305,14 +1305,29 @@ Deliverables
  - Mini data dictionary for exposed fields added to the repo.
 
 **Tasks**:  
-🟨 Compute **GMV (Gross Merchandise Value)**.  
-🟨 Compute **AOV (Average Order Value)**.  
-🟨 Build dashboard with Raw/Bronze metrics.  
-🟨 Model work: define relationships (star-like), hide technical columns, set sort-by columns, configure formats and display folders.  
-🟨 Create named measures (GMV, AOV, Orders) and a landing page wireframe with 2–3 visuals.  
-🟨 Run Performance Analyzer; document and apply quick improvements (e.g., reduce visuals on a page, limit bidirectional filters).  
-🟨 Draft KPI Catalog and a lightweight data dictionary (fields, definitions, units).  
-🟨 Prepare a draft RLS matrix (who sees what) for future sprints; no enforcement yet.
+1) 🟨 [DBX-DA-Assoc][MS-PL300][Metrics]  
+Compute GMV (Gross Merchandise Value).  
+
+2) 🟨 [DBX-DA-Assoc][MS-PL300][Metrics]  
+Compute AOV (Average Order Value).  
+
+3) 🟨 [DBX-DA-Assoc][Dashboards]  
+Build dashboard with Raw/Bronze metrics.  
+
+4) 🟨 [DBX-DA-Assoc][Modeling]  
+Define relationships (star-like), hide technical columns, set sort-by columns, configure formats and display folders.  
+
+5) 🟨 [DBX-DA-Assoc][MS-PL300][Metrics]  
+Create named measures (GMV, AOV, Orders) and design a landing page wireframe with 2–3 visuals.  
+
+6) 🟨 [DBX-DA-Assoc][Monitoring]  
+Run Performance Analyzer; document and apply quick improvements (reduce visuals, limit bidirectional filters).  
+
+7) 🟨 [DBX-DA-Assoc][Documentation]  
+Draft KPI Catalog and a lightweight data dictionary (fields, definitions, units).  
+
+8) 🟨 [DBX-DA-Assoc][Security]  
+Prepare a draft RLS matrix (who sees what) for future sprints; no enforcement yet.
 
  - **Provide insights: Storytelling one‑liners (Feature 3.1)**  
     - GMV changed by X% vs last week; orders moved by Y% and AOV by Z%.  
