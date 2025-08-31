@@ -12,14 +12,14 @@ Together they serve **350k+ customers** and manage **80k+ SKUs** across apparel,
 The merger created both opportunities and challenges:  
 - **Data fragmentation**: two separate systems (files, ERPs, CRMs) must be consolidated.  
 - **Inconsistent KPIs**: Gross Merchandise Value (GMV), Average Order Value (AOV), margin, and return rates are defined differently, creating confusion at board level.  
-- **Post-merger visibility gap**: leaders need both **comparative views** (EuroStyle vs Contoso) and a **unified Customer 360°**.  
+- **Post-merger visibility gap**: leaders need both **comparative views** (EuroStyle vs Contoso) and a **unified Customer 360**.  
 - **Churn risk & cannibalization**: overlapping customers and product lines increase churn risk.  
 
 To address this, the CMO and CDAO asked the **Data Engineer**, **Data Scientist**, and **Data Business Analyst** teams to deliver a **prototype platform** combining **Databricks** and **Microsoft Fabric**:
 
 - **Databricks**: ingestion pipelines, Medallion architecture (Bronze/Silver/Gold), schema harmonization, feature engineering, MLflow for model tracking.  
 - **Fabric**: Lakehouse, semantic models, Power BI dashboards with Direct Lake for executives and marketing.  
- - **Integration**: Shortcut-first; otherwise export + pipeline. Supports Direct Lake and CI/CD.
+ - **Integration**: OneLake shortcuts (zero-copy) preferred; otherwise Parquet + manifest with Fabric Data Pipelines. Supports Direct Lake and CI/CD.
  - **Profiles**: DE (Medallion + handover), DS (EDA→churn/CLV + scoring), Data Business Analyst (Fabric/Power BI, RLS, dashboards).
  
 
@@ -46,7 +46,7 @@ Either path demonstrates the **end-to-end integration** between Databricks (pipe
 
 In a production environment, this would be automated and governed using:  
 - **Databricks Premium/Enterprise**: Delta Live Tables, Unity Catalog, Workflows, Jobs.  
-- **Azure Data Lake Gen2 + Fabric Shortcuts**: zero-copy integration for Direct Lake.  
+- **OneLake Shortcuts (to ADLS Gen2 paths)**: zero-copy integration that enables Direct Lake.
 - **Fabric Deployment Pipelines**: Dev/Test/Prod environments.  
 - **Enterprise Security**: Managed Identity, Key Vault, Private Endpoints, RBAC.  
 
@@ -54,14 +54,21 @@ In a production environment, this would be automated and governed using:
 
 ## Deliverables Journey
 
-| Level | Data Engineer | Data Scientist | Data Business Analyst | Objective |
-|-------|---------------|----------------|--------------|-----------|
-| Essentials | 🟥 Bronze ingestion | 🟥 Churn & CLV hypotheses | 🟨 Raw KPIs dashboard | First insights |
-| Robustness | 🟥 Silver harmonization, Gold marts | 🟥 Feature engineering (RFM, overlap) | 🟩 🟨 Silver dashboards + RLS | Reliable reporting |
-| Advanced | 🟥 Gold marts enriched with scores | 🟥 Baseline churn & CLV models | 🟩 🟨 Predictive KPIs dashboards | Predictive insights |
-| Mastery | 🟥→🟩 Reusable pipelines & exports | 🟥 Finalized models + metrics (Accuracy, AUC, RMSE) | 🟩 🟨 Executive storytelling dashboards | Portfolio-ready prototype |
+| Level       | Data Engineer                                                                  | Data Scientist                                                              | Data Business Analyst                                           | Governance & Quality                                                                    | Objective                 | Evidence (examples)                                                                                     |
+|-------------|---------------------------------------------------------------------------------|-----------------------------------------------------------------------------|-----------------------------------------------------------------|--------------------------------------------------------------------------------------------------------|---------------------------|---------------------------------------------------------------------------------------------------------|
+| Essentials  | 🟥 Bronze ingestion (landing tables, schema capture, basic constraints)        | 🟥 Churn and customer-lifetime hypotheses; quick exploration of the data    | 🟨 First-look dashboard on raw data (key indicators)            | 🟦 Define data owners; simple naming standards; initial workspace access (least privilege)             | First insights            | Bronze table list and schemas; short data-quality note; screenshot of first dashboard; access matrix    |
+| Robustness  | 🟥 Silver harmonization; 🟥 Gold marts (core dimensions/facts; idempotent loads) | 🟥 Feature set: recency, frequency, monetary; overlap and consistency checks | 🟩🟨 Dashboards on Silver/Gold with draft row-level security     | 🟦 Schema contracts; before/after data-quality checks; lineage captured in Purview / Unity Catalog     | Reliable reporting        | Schema contract JSON; before/after DQ summary; Purview scan screenshot; "View as" role test; validations |
+| Advanced    | 🟥 Gold marts enriched with **scored** outputs                                  | 🟥 Baseline churn and lifetime models with calibration and segment metrics   | 🟩🟨 Predictive views with small explainability highlights       | 🟦 Sensitivity labels on key assets; row-level security verified; promotion with Fabric deployment flows | Predictive insights       | Evaluation charts; metrics file; short explainability image; label screenshot; pipeline run log         |
+| Mastery     | 🟥→🟩 Reusable pipelines and export to Fabric (manifest-driven, zero-copy)       | 🟥 Finalized models with monitoring (quality/drift and simple alerts)        | 🟩🟨 Executive storytelling app/report (audience & sharing set) | 🟦 Policy-as-code for permissions; lineage/audit reporting; periodic access reviews                    | Portfolio-ready prototype | Release manifest; pipeline screenshots; published app link; QA checklist; lineage report; audit extract |
 
-Icon legend: 🟥 Databricks, 🟥→🟩 Databricks & Fabric integration, 🟩 Fabric, 🟨 Power BI.
+**Icon legend:** 🟥 Databricks · 🟥→🟩 Databricks → Fabric integration · 🟩 Fabric · 🟨 Power BI · 🟦 Governance (Purview, Unity Catalog, labels, row-level security)
+
+**Light glossary:**
+- **Row-level security:** limits what each audience can see in reports.  
+- **Recency / Frequency / Monetary:** common features summarizing customer behavior.  
+- **Customer lifetime:** expected longevity/value of a customer relationship.  
+- **Zero-copy (shortcuts):** reference data without duplicating it.
+
 
 ---
 
