@@ -218,57 +218,6 @@ As a Data Engineer, I want to ingest EuroStyle and Contoso CSVs into Bronze so t
  - Azure DevOps DQ tickets opened for any raw→Bronze variance >1% or material DQ issue; links captured in README and referenced by DA in Feature 3.2.
 
 **Tasks**
-**Tasks**
-
-1) 🟥 [DBX-DE-Prof][Modeling]  
-Define star schema contracts: fact grains, conformed dims, keys (surrogate vs natural), naming and formats (snake_case, DECIMAL scales).  
-
-2) 🟥 [DBX-DE-Prof][Modeling][DBX-DE-Assoc][Delta-Basics]  
-Create `gold.date_dim` and populate from Silver order_date window; add `date_key` (yyyymmdd), year/month/day.  
-
-3) 🟥 [DBX-DE-Prof][Modeling][DBX-DE-Assoc][Delta-Basics]  
-Create `gold.product_dim` with surrogate key (IDENTITY or hashed BK); populate attributes (product_code, category, brand).  
-
-4) 🟥 [DBX-DE-Prof][Modeling][DBX-DE-Assoc][Delta-Basics]  
-Create `gold.customer_dim` with surrogate key and unified customer identifier; include `source_system` where relevant.  
-
-5) 🟥 [DBX-DE-Prof][Modeling][DBX-DE-Assoc][Spark-Aggregations][Delta-Basics]  
-Specify the `gold.sales_daily` schema (keys/measures) and write the first load query (GMV, Orders, Units, Estimated Margin proxy).  
-
-6) 🟥 [DBX-DE-Assoc][Spark-Aggregations][Delta-Basics]  
-Implement `gold.sales_daily` load handling returns (negative qty → returns) and label margin as proxy when COGS absent.  
-
-7) 🟥 [DBX-DE-Assoc][Delta-Basics]  
-Add Delta constraints/checks to `gold.sales_daily` (NOT NULL on keys, non-negative checks on units/revenue).  
-
-8) 🟥 [DBX-DE-Prof][Modeling][DBX-DE-Assoc][Spark-Aggregations]  
-Define and build `gold.category_perf` (aggregations by product/category/brand/date; include GMV, Units, Orders).  
-
-9) 🟥 [DBX-DE-Prof][Modeling][DBX-DE-Assoc][Spark-Aggregations]  
-Define `gold.customer_360` base schema (one row per customer) and populate core aggregates (orders, units, GMV).  
-
-10) 🟥 [DBX-DE-Assoc][Spark-Aggregations][DBX-DE-Prof][Modeling]  
-Compute and attach RFM metrics to `gold.customer_360` (Recency, Frequency, Monetary) and optional RFM segment/bucket; carry `source_system`.  
-
-11) 🟥 [DBX-DE-Assoc][Delta-MERGE][Delta-Basics]  
-Make loads idempotent: choose MERGE or deterministic INSERT OVERWRITE by date/snapshot for each mart; validate repeatability.  
-
-12) 🟥 [DBX-DE-Assoc][Platform]  
-Partitioning/optimization: choose partitioning (e.g., by date), coalesce/compact files, and note file size targets.  
-
-13) 🟥 [DBX-DE-Prof][Testing]  
-Validate vs Silver: reconcile counts/KPIs, run orphan/RI checks, and execute smoke queries with DA/DS; capture results.  
-
-14) 🟥 [DBX-DE-Prof][Modeling]  
-Document schemas and assumptions: contracts for all marts, margin proxy method, and any caveats; update README.  
-
-15) 🟥 [DBX-DE-Assoc][UC-Permissions]  
-Register helper views (e.g., top-level selects), set table comments/permissions, and finalize hand-off notes.  
-
-🟦 Governance
-After first Gold load, run a Purview UC scan and validate assets and lineage for `gold.sales_daily`; attach evidence.
-
-**Tasks**
 
 1) 🟥 [DBX-DE-Assoc][Medallion][Platform]  
 Create raw landing folders in DBFS (`/FileStore/retail/raw/contoso/`, `/FileStore/retail/raw/eurostyle/`) and document paths in the runbook.  
@@ -852,8 +801,9 @@ Produce and commit an EDA notebook and a 1–2 page readout; link them in this b
 15) 🟥 [DBX-ML-Assoc][EDA]  
 Update data dictionary for key fields; note any ambiguous semantics to resolve with DA/DE.  
 
-🟦 Governance
-Tag PII in Purview (classifications/labels) for customer fields surfaced in EDA; link glossary terms to churn/CLV concepts.
+16) 🟦 [Governance]  
+Tag PII in Purview (classifications/labels) for customer fields surfaced in EDA; link glossary terms to churn/CLV concepts.  
+
 
 **User Stories (breakdown)**  
 - As a DS, I document churn prevalence and select a non‑leaky split protocol.  
@@ -1230,20 +1180,47 @@ As a Data Scientist, I want to score churn/CLV and join them into Customer 360 s
 - Model and feature versions, plus MLflow run IDs, recorded in readme.  
 
 **Tasks (numbered)**:  
-🟥 1) Freeze model artifacts/versions and feature set version; record MLflow run IDs and URIs.  
-🟥 2) Load Feature 2.2 table(s) at target `as_of_date`; validate schema matches scoring contract.  
-🟥 3) Build loaders: MLflow pyfunc or direct deserialization for churn and CLV models; set seeds for determinism.  
-🟥 4) Score churn probabilities and CLV values in batches/partitions; handle memory with repartition/coalesce.  
-🟥 5) Derive `churn_bucket` (e.g., deciles or business thresholds) and any auxiliary flags needed by DA.  
-🟥 6) Train/serve skew: compare key features to training distributions (PSI or quantile deltas); log artifacts.  
-🟥 7) Assemble output DataFrame with required columns and metadata (`as_of_date`, timestamps, versions).  
-🟥 8) Write `customer_scores_gold` idempotently (overwrite partition or MERGE on `customer_id` + `as_of_date`); validate uniqueness.  
-🟥 9) Join into `customer_360_gold` or create a view for DA; verify row counts and key coverage.  
-🟥 10) Explainability: compute and log global importances; include a small per-row example if feasible.  
-🟥 11) Quality checks: null rates ≤ thresholds; bounds (0–1 churn, ≥0 CLV); dtypes match contract; save a QA report.  
-🟥 12) Register table/view, set permissions, and document location; add a consumption snippet for DA/BI.  
-🟥→🟩 13) Write a short operational runbook: inputs, outputs, schedule, idempotency strategy, and recovery steps.  
-🟥→🟩 14) Optional export manifest for Fabric ingestion (paths, schema, `_SUCCESS`).  
+1) 🟥 [DBX-ML-Assoc][MLflow]  
+Freeze model artifacts/versions and feature set version; record MLflow run IDs and URIs.  
+
+2) 🟥 [DBX-ML-Assoc][EDA]  
+Load Feature 2.2 table(s) at target `as_of_date`; validate schema matches scoring contract.  
+
+3) 🟥 [DBX-ML-Assoc][MLflow]  
+Build loaders with MLflow pyfunc or direct deserialization for churn and CLV models; set seeds for determinism.  
+
+4) 🟥 [DBX-ML-Assoc][Spark-Aggregations]  
+Score churn probabilities and CLV values in batches/partitions; handle memory with repartition/coalesce.  
+
+5) 🟥 [DBX-ML-Assoc][Feature-Engineering]  
+Derive `churn_bucket` (deciles or business thresholds) and any auxiliary flags needed by DA.  
+
+6) 🟥 [DBX-ML-Assoc][Monitoring]  
+Compare scoring inputs to training distributions (PSI or quantile deltas) to detect train/serve skew; log artifacts.  
+
+7) 🟥 [DBX-ML-Assoc][Modeling]  
+Assemble output DataFrame with required columns and metadata (`as_of_date`, timestamps, versions).  
+
+8) 🟥 [DBX-ML-Assoc][Delta-MERGE][Delta-Basics]  
+Write `customer_scores_gold` idempotently (overwrite partition or MERGE on `customer_id` + `as_of_date`); validate uniqueness.  
+
+9) 🟥 [DBX-ML-Assoc][Modeling]  
+Join results into `customer_360_gold` or create a view for DA; verify row counts and key coverage.  
+
+10) 🟥 [DBX-ML-Assoc][Explainability]  
+Compute and log global importances; include a small per-row example if feasible.  
+
+11) 🟥 [DBX-ML-Assoc][Monitoring]  
+Run quality checks: null rates ≤ thresholds; churn within [0,1]; CLV ≥ 0; dtypes match contract; save a QA report.  
+
+12) 🟥 [DBX-DE-Assoc][UC-Permissions]  
+Register table/view, set permissions, and document location; add a consumption snippet for DA/BI.  
+
+13) 🟥→🟩 [Platform][CI-CD]  
+Write a short operational runbook: inputs, outputs, schedule, idempotency strategy, and recovery steps.  
+
+14) 🟥→🟩 [Platform][Lakehouse]  
+Optional export manifest for Fabric ingestion (paths, schema, `_SUCCESS`).  
 
 **Deliverables**  
 - Notebook: `notebooks/feature_2_4_batch_scoring.ipynb` (synthetic fallback supported).  
