@@ -2561,21 +2561,20 @@ Documentation: plots, acceptance thresholds, runbook, risks/mitigations, reprodu
 19) 🟥 [DBX-DS-Prof][Modeling][DeepLearning] (**PhD-level - Optional**)
 Prototype sequence model (LSTM/Transformer) as comparator; document performance/calibration deltas. 
 
-20) 🟥 [DBX-DS-Prof][Bayesian][Modeling] (**PhD-level**)  
+20) 🟥 [DBX-DS-Prof][Bayesian][Modeling] (**PhD-level - Optional**)  
 Implement Bayesian survival analysis (e.g., PyMC, Stan) for churn timing; compare posterior intervals with frequentist estimates.  
 
-21) 🟥 [DBX-DS-Prof][CausalInference][Modeling] (**PhD-level**)  
+21) 🟥 [DBX-DS-Prof][CausalInference][Modeling] (**PhD-level - Optional**)  
 Apply causal inference to churn interventions (e.g., uplift modeling, treatment effect estimation); test campaign targeting strategies.  
 
-22) 🟥 [DBX-DS-Prof][Explainability][Evaluation] (**PhD-level**)  
-Use SHAP/Integrated Gradients for survival & CLV models; document how feature effects vary over time and by horizon.  
+22) 🟥 [DBX-DS-Prof][Explainability][Evaluation] (**PhD-level - Optional**)  
+Use SHAP/Integrated Gradients for survival & CLV models; document how feature effects vary over time and by horizon.
 
-23) 🟥 [DBX-DS-Prof][Fairness][Monitoring] (**PhD-level**)  
-Audit churn models for bias/fairness across segments (brand, region, gender if available); log fairness metrics in monitoring pipeline.  
+23) 🟥 [DBX-DS-Prof][Fairness][Monitoring] (**PhD-level - Optional**)  
+Audit churn models for bias/fairness across segments (brand, region, gender if available); log fairness metrics in monitoring pipeline.
 
-24) 🟥 [DBX-DS-Prof][Research][Docs] (**PhD-level**)  
-Write a research-style technical note (5–10 pages) summarizing methodology, statistical assumptions, diagnostics, and managerial implications; structured like an academic paper.  
-
+24) 🟥 [DBX-DS-Prof][Research][Docs] (**PhD-level - Optional**)  
+Write a research-style technical note (5–10 pages) summarizing methodology, statistical assumptions, diagnostics, and managerial implications; structured like an academic paper.
 
 
 **User Stories (breakdown)**  
@@ -2591,21 +2590,57 @@ Write a research-style technical note (5–10 pages) summarizing methodology, st
 
 Note on numbering: Tasks are grouped by workflow (prep → train → validate → calibrate → ops) rather than strictly sequential order; some tasks run in parallel (e.g., backtests with training) or occur post‑modeling (scoring/monitoring/hand‑off).
 
-#### Advanced notes — Survival/BG‑NBD; export/validation (PhD‑level)
+#### Advanced notes — Survival / BTYD / Deep Learning / Bayesian / Causal / Fairness (PhD-level)
 
-- Modeling tracks (choose 1–2 primary; others optional for contrast)
-   - Survival (time‑to‑churn)
-      - Time origin: first purchase vs cohort entry; clock resets on purchase or uses renewal‑type survival; define censoring at snapshot.
-      - Models: Kaplan‑Meier (non‑param), Cox PH (semi‑param; check PH via Schoenfeld residuals), AFT (log‑normal/log‑logistic), time‑varying covariates for recency/frequency windows.
-      - Outputs per customer: S(t) survival curve, hazard(t), churn_prob_30d/60d/90d, expected time‑to‑churn (E[T|x]).
-      - Metrics: concordance index (C‑idx), IBS (Integrated Brier Score), calibration by horizon (reliability), segment C‑idx deltas.
-   - BTYD (repeat‑purchase)
-      - BG/NBD for purchase frequency: parameters {r, α, a, b}; initialization via method‑of‑moments then MLE; guardrails: r, a, b > 0; α > 0.
-      - Gamma‑Gamma for monetary value (stationary monetary assumption): parameters {p, q, γ}; validate independence from frequency.
-      - Outputs: prob_alive, expected_txns_H (e.g., 90d/180d/365d), clv_H (combine with Γ‑Γ), credible intervals via param bootstrap.
-      - Diagnostics: QQ plots of monetary, KS on inter‑purchase times, posterior checks; lift vs RFM.
-   - Sequential deep learning (optional, for comparison)
-      - Sequence building: sessionized purchases; embeddings for product/brand/channel; positional encodings; masking.
+- **Survival (time-to-churn)**  
+   - Time origin: first purchase vs cohort entry; clock resets on purchase or uses renewal-type survival; define censoring at snapshot.  
+   - Models: Kaplan-Meier (non-param), Cox PH (semi-param; check PH via Schoenfeld residuals), AFT (log-normal/log-logistic), time-varying covariates for recency/frequency windows.  
+   - Outputs per customer: S(t) survival curve, hazard(t), churn_prob_30d/60d/90d, expected time-to-churn (E[T|x]).  
+   - Metrics: concordance index (C-idx), IBS (Integrated Brier Score), calibration by horizon (reliability), segment C-idx deltas.  
+
+- **BTYD (repeat-purchase CLV)**  
+   - BG/NBD for purchase frequency: parameters {r, α, a, b}; initialization via method-of-moments then MLE; guardrails: r, a, b > 0; α > 0.  
+   - Gamma-Gamma for monetary value: parameters {p, q, γ}; validate independence from frequency.  
+   - Outputs: prob_alive, expected_txns_H (e.g., 90d/180d/365d), clv_H (combine with Γ-Γ), credible intervals via param bootstrap.  
+   - Diagnostics: QQ plots of monetary, KS on inter-purchase times, posterior checks; lift vs RFM.  
+
+- **Sequential Deep Learning (optional)**  
+   - Sequence building: sessionized purchases; embeddings for product/brand/channel; positional encodings; masking.  
+   - Models: LSTM, GRU, Transformer encoder.  
+   - Training: truncated backprop through time, padding/masking, dropout for regularization.  
+   - Outputs: next-event prediction, churn probability, expected horizon.  
+   - Risks: overfitting small datasets; interpretability (explain with SHAP/attention weights).  
+
+- **Bayesian Survival & CLV**  
+   - Tools: PyMC, Stan, or TensorFlow Probability.  
+   - Survival: Bayesian Cox or Weibull models; posterior intervals capture churn horizon uncertainty.  
+   - CLV: hierarchical Gamma-Poisson (BG/NBD) or Gamma-Gamma with priors on heterogeneity; posterior predictive checks required.  
+   - Advantages: full uncertainty quantification, flexible priors for business knowledge.  
+   - Outputs: posterior distributions for churn timing, CLV, and segment-level heterogeneity.  
+
+- **Causal Inference for Churn Interventions**  
+   - Framing: uplift modeling / treatment effect estimation (who benefits from a retention campaign?).  
+   - Methods: causal forests, doubly-robust estimators, propensity score weighting, CATE (Conditional Average Treatment Effect).  
+   - Evaluation: Qini and uplift curves, policy gain metrics.  
+   - Business value: identify "persuadables" (customers at high churn risk but campaign-sensitive).  
+
+- **Explainability & Interpretability**  
+   - Tools: SHAP, Integrated Gradients, LIME adapted for survival models.  
+   - Survival: partial dependence of hazard with respect to covariates; horizon-specific SHAP values.  
+   - CLV: drivers of high/low CLV (price sensitivity, frequency, tenure).  
+   - Output: "Top features driving churn in 90d vs CLV uplift segments."  
+
+- **Fairness & Monitoring**  
+   - Metrics: disparate impact, equal opportunity difference, calibration parity across segments.  
+   - Monitoring: PSI drift per feature, churn prevalence drift, fairness drift across gender/region/brand.  
+   - Ops: weekly fairness report, alerts when metrics exceed tolerance.  
+   - Goal: avoid biased churn predictions that systematically over/underestimate risk for sub-groups.  
+
+- **Research & Documentation**  
+   - Deliverables: a research-style technical note (5–10 pages) structured like an academic paper (Intro, Methods, Results, Discussion).  
+   - Content: statistical assumptions, diagnostics, managerial implications, limitations, reproducibility (seed, snapshot, version).  
+   - Bonus: prepare slides with hazard curves, uplift charts, and fairness dashboards → useful for job interviews and portfolio.  
+
 
 ---
 
