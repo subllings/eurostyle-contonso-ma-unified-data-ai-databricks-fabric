@@ -2495,26 +2495,62 @@ As a Data Scientist, I want to implement advanced survival analysis and probabil
 - Document in README with plots and interpretation (e.g., "50% of Segment A expected to churn within 6 months").  
 
 **Tasks**  
-🟥 1. Prepare survival dataset (event = churn, duration = days since last purchase).  
-🟥 2. Train Cox model or Kaplan-Meier survival curves using `lifelines`.  
-🟥 3. Implement BG/NBD and Gamma-Gamma CLV model with the `lifetimes` package.  
-🟥 4. Generate visualizations (hazard curves, CLV distributions).  
-🟥 5. (Optional) Prototype a sequential NN model (LSTM) for churn prediction.  
-🟥 6. Document findings and compare with baseline tree-based models.  
+🟥 [DBX-DS-Assoc][DataPrep]
+Prepare survival dataset (event = churn, duration = days since last purchase).
 
-🟥 7. Fix as‑of date, churn horizon, and censoring rules; implement leakage guardrails (features from pre as‑of only; labels from forward inactivity window).  
-🟥 8. Build survival and BTYD modeling frames; persist feature views with version metadata (snapshot, schema hash).  
-🟥 9. Create temporal splits with rolling‑origin backtests; include segment‑wise evaluation (brand/region).  
-🟥 10. Validate assumptions: Cox PH tests; BG/NBD and Gamma‑Gamma convergence/identifiability; record diagnostics.  
-🟥 11. Compute metrics: C‑index, IBS, calibration/reliability plots; lift/gains for top‑N; CLV error (MAPE/RMSE).  
-🟥 12. Calibrate and set acceptance thresholds and operating points by horizon (30/60/90d).  
-🟥 13. Track runs in MLflow (params, metrics, artifacts, seeds); record data snapshot IDs and environment details.  
-🟥 14. Score full population; write `customer_scores_gold` idempotently (MERGE/replaceWhere); enforce Delta constraints (keys, bounds 0–1).  
-🟥→🟩 15. Run E2E checks: bounds/nulls/joins; BI spot‑checks in Power BI; verify "Today looks normal?" banner behavior.  
-🟥→🟩 16. Hand‑off to Feature 3.4: field list (risk bands, CLV tiers), RLS awareness, and dashboard binding notes.  
-🟥 17. Monitoring: feature drift (PSI), performance stability by brand/region, fairness checks; set weekly report and alert thresholds.  
-🟥 18. Documentation: plots, acceptance thresholds, runbook, risks/mitigations, reproducibility notes (seeds, as‑of, schema).  
-🟥 19. (Optional) Prototype sequence model (LSTM/Transformer) as comparator; document performance/calibration deltas.  
+🟥 [DBX-DS-Assoc][Modeling][Lifelines]
+Train Cox model or Kaplan-Meier survival curves using lifelines.
+
+🟥 [DBX-DS-Assoc][Modeling][BTYD]
+Implement BG/NBD and Gamma-Gamma CLV model with the lifetimes package.
+
+🟥 [DBX-DS-Assoc][Visualization][Docs]
+Generate visualizations (hazard curves, CLV distributions).
+
+🟥 [DBX-DS-Prof][Modeling][DeepLearning][Optional]
+(Optional) Prototype a sequential NN model (LSTM/Transformer) for churn prediction.
+
+🟥 [DBX-DS-Assoc][Docs][Evaluation]
+Document findings and compare with baseline tree-based models.
+
+🟥 [DBX-DS-Assoc][Governance][DataPrep]
+Fix as-of date, churn horizon, and censoring rules; implement leakage guardrails (features pre as-of only, labels from forward inactivity window).
+
+🟥 [DBX-DS-Assoc][Modeling][Platform]
+Build survival and BTYD modeling frames; persist feature views with version metadata (snapshot, schema hash).
+
+🟥 [DBX-DS-Assoc][Testing][Evaluation]
+Create temporal splits with rolling-origin backtests; include segment-wise evaluation (brand/region).
+
+🟥 [DBX-DS-Prof][Testing][Evaluation]
+Validate assumptions: Cox PH tests; BG/NBD and Gamma-Gamma convergence/identifiability; record diagnostics.
+
+🟥 [DBX-DS-Assoc][Metrics][Evaluation]
+Compute metrics: C-index, IBS, calibration/reliability plots; lift/gains for top-N; CLV error (MAPE/RMSE).
+
+🟥 [DBX-DS-Assoc][Calibration][Evaluation]
+Calibrate and set acceptance thresholds and operating points by horizon (30/60/90d).
+
+🟥 [DBX-DS-Assoc][Ops][Tracking]
+Track runs in MLflow (params, metrics, artifacts, seeds); record data snapshot IDs and environment details.
+
+🟥 [DBX-DS-Assoc][Ops][Platform]
+Score full population; write customer_scores_gold idempotently (MERGE/replaceWhere); enforce Delta constraints (keys, bounds 0–1).
+
+🟥→🟩 [DBX-DS-Assoc][Testing][Ops]
+Run E2E checks: bounds/nulls/joins; BI spot-checks in Power BI; verify "Today looks normal?" banner behavior.
+
+🟥→🟩 [DBX-DS-Assoc][Governance][Docs]
+Hand-off to Feature 3.4: field list (risk bands, CLV tiers), RLS awareness, and dashboard binding notes.
+
+🟥 [DBX-DS-Prof][Monitoring][Testing]
+Monitoring: feature drift (PSI), performance stability by brand/region, fairness checks; set weekly report and alert thresholds.
+
+🟥 [DBX-DS-Assoc][Docs][Governance]
+Documentation: plots, acceptance thresholds, runbook, risks/mitigations, reproducibility notes (seeds, as-of, schema).
+
+🟥 [DBX-DS-Prof][Modeling][DeepLearning][Optional]
+(Optional) Prototype sequence model (LSTM/Transformer) as comparator; document performance/calibration deltas. 
 
 **User Stories (breakdown)**  
 - As a DS, I estimate churn timing and CLV distributions and compare to baselines.  
