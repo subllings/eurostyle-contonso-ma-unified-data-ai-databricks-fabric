@@ -1,9 +1,7 @@
 # EuroStyle–Contoso M&A – Product Backlog (Databricks & Fabric)
 
-
----
-# EuroStyle–Contoso M&A – Product Backlog (Databricks & Fabric)
 ## Table of Contents
+
 - [Sprint Planning Matrix](#sprint-planning-matrix-45-days-per-sprint)
 - [Epic-to-Sprint and Role Mapping](#epic-to-sprint-and-role-mapping)
 - [Feature-to-Sprint and Role Mapping](#feature-to-sprint-and-role-mapping)
@@ -933,6 +931,10 @@ Note: Days are not strictly sequential—profiling and fixes may iterate; baseli
 
 <a id="feature-2-2"></a>
 ### Feature 2.2: Feature Engineering (Sprint 2)
+Owner | Status | Effort | Dependencies
+---|---|---|---
+*Single-threaded owner* | *Progress state (Draft / Planned / In Progress / Blocked / Done)* | *T-shirt sizing (S / M / L / XL)* | *Prereqs or links to other features (anchor or note)*
+TBD | Draft | M | -
 **User Story**:  
 As a Data Scientist, I want RFM and behavioral features to build churn & CLV models.  
 
@@ -1066,6 +1068,10 @@ Note: Days can overlap—persist `v1` early, then iterate.
 
 <a id="feature-2-3"></a>
 ### Feature 2.3: Model Training (Sprint 3)
+Owner | Status | Effort | Dependencies
+---|---|---|---
+*Single-threaded owner* | *Progress state (Draft / Planned / In Progress / Blocked / Done)* | *T-shirt sizing (S / M / L / XL)* | *Prereqs or links to other features (anchor or note)*
+TBD | Draft | M | -
 **User Story**:  
 As a Data Scientist, I want baseline models for churn and CLV so I can evaluate predictive power.  
 
@@ -1175,6 +1181,13 @@ TBD | Draft | M | -
 **User Story**:  
 As a Data Platform team, we want Microsoft Purview to catalog and govern our Azure Databricks Unity Catalog assets (metadata, classification, and lineage) so stakeholders can search and trust governed data.  
 
+**Learning Resources**:  
+- [Microsoft Purview — Connect Azure Databricks Unity Catalog](https://learn.microsoft.com/purview/register-scan-azure-databricks-unity-catalog)  
+- [Microsoft Purview — Data Quality for Unity Catalog](https://learn.microsoft.com/purview/unified-catalog-data-quality-azure-databricks-unity-catalog)  
+- [Azure Databricks — Unity Catalog setup and privileges](https://learn.microsoft.com/azure/databricks/data-governance/unity-catalog/)  
+
+
+
 **Context**:  
 - Workspace is Azure Databricks Trial Premium in our subscription (not Community Edition).  
 - Unity Catalog is required; scanning uses a Databricks SQL Warehouse HTTP Path and authenticates via PAT/Managed Identity/Service Principal.  
@@ -1229,11 +1242,6 @@ Document setup (identity, permissions, warehouse, HTTP Path, IR mode) and add Pu
 - Credential in Purview (PAT/MI/SP) referencing a Key Vault secret.  
 - Evidence pack: screenshots of scan, assets, and lineage; brief README notes and links.  
 - Optional: Data profiling/quality report for one UC table.  
-
-**Learning Resources**:  
-- [Microsoft Purview — Connect Azure Databricks Unity Catalog](https://learn.microsoft.com/purview/register-scan-azure-databricks-unity-catalog)  
-- [Microsoft Purview — Data Quality for Unity Catalog](https://learn.microsoft.com/purview/unified-catalog-data-quality-azure-databricks-unity-catalog)  
-- [Azure Databricks — Unity Catalog setup and privileges](https://learn.microsoft.com/azure/databricks/data-governance/unity-catalog/)  
 
 
 <a id="feature-2-4"></a>
@@ -2560,13 +2568,7 @@ Note: Some items intentionally span days (bookmarks/interactions and cross‑hig
 
 - Performance
     - Prefer Direct Lake or Import for key visuals; if DirectQuery, use aggregations and limit visuals; enable query reduction.
-    - Use Performance Analyzer; aim ≥ 30% median visual improvement vs baseline; keep any visual < 2s.
-
-- Accessibility and consistency
-    - Contrast ≥ 4.5:1; set focus order per page; alt text on key visuals; consistent number formats.
-
-- RLS validation
-    - Roles: BrandManager (filters Brand), Executive (no brand filter). Validate with "View as"; ensure drill-through respects RLS.
+   See **Appendix C — Shared NFRs & Conventions**.
 
 
 
@@ -3018,6 +3020,7 @@ As a Data Engineer, I want to orchestrate the end‑to‑end Databricks → Fabr
 - Added feature meta headers
 - Normalized sprint plan
 - Removed patch markers + After it runs — quick checks
+- Promoted normalized copy to canonical (overwrote original file)
 
 ### Appendix C — Shared NFRs & Conventions
 
