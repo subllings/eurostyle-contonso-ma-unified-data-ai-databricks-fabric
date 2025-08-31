@@ -1677,21 +1677,53 @@ As a Marketing Manager, I want to see customer segments & churn risk so I can de
 - Accessibility: color contrast ≥ 4.5:1, keyboard focus order set, alt text on key visuals, consistent currency/percent formats.  
 
 **Tasks**:  
-🟨 1. Map inputs and integrate DS outputs: connect to `customer_360_gold` and `customer_scores_gold`; validate relationships and row counts.  
-🟨 2. Define segmentation rules (RFM buckets, churn risk bands, CLV tiers) with defaults; align with DS.  
-🟨 3. Implement What–if parameters (recency window, churn cutoff, CLV tier split points) and bind to measures.  
-🟨 4. Build parameter/measure tables; create field parameters for dimension and measure switching.  
-🟨 5. Design the landing page: navigation tiles, KPIs (segment counts, GMV, margin), and a methods banner.  
-🟨 6. Build segment visuals (treemaps/tables) and summary cards; ensure consistent legends and formats.  
-🟨 7. Create drill–through pages (Segment detail, Customer detail) with Back buttons; maintain filter context.  
-🟨 8. Add tooltip pages (mini customer profile: last purchase, risk band, CLV tier).  
-🟩 9. Implement RLS roles (BrandManager, Executive) and validate with "View as" in Desktop and Service.  
-🟨 10. Optimize performance: limit visuals per page, avoid high–cardinality slicers, consider aggregated tables if needed.  
-🟨 11. Configure bookmarks and sync slicers; verify cross–highlighting/interactions behave as intended.  
-🟨 12. Accessibility pass: contrast, focus order, alt text, titles/tooltips, number formats.  
-🟨 13. Validation: totals vs slicers, empty/ALL segment states, mobile layout sanity.  
-🟨 14. Documentation: README with segmentation rules, thresholds, screenshots, navigation map, and RLS notes.  
-🟨 15. (Optional) Add a "Focus list" page for top–risk/low–CLV segments with exportable table.  
+**Tasks**
+
+1) 🟨 [DBX-DA-Assoc][Dashboards]  
+Map inputs and integrate DS outputs: connect to `customer_360_gold` and `customer_scores_gold`; validate relationships and row counts.  
+
+2) 🟨 [DBX-DA-Assoc][Dashboards]  
+Define segmentation rules (RFM buckets, churn risk bands, CLV tiers) with defaults; align with DS.  
+
+3) 🟨 [DBX-DA-Assoc][Dashboards]  
+Implement What–if parameters (recency window, churn cutoff, CLV tier split points) and bind to measures.  
+
+4) 🟨 [DBX-DA-Assoc][Dashboards]  
+Build parameter/measure tables; create field parameters for dimension and measure switching.  
+
+5) 🟨 [DBX-DA-Assoc][Dashboards]  
+Design the landing page: navigation tiles, KPIs (segment counts, GMV, margin), and a methods banner.  
+
+6) 🟨 [DBX-DA-Assoc][Dashboards]  
+Build segment visuals (treemaps/tables) and summary cards; ensure consistent legends and formats.  
+
+7) 🟨 [DBX-DA-Assoc][Dashboards]  
+Create drill–through pages (Segment detail, Customer detail) with Back buttons; maintain filter context.  
+
+8) 🟨 [DBX-DA-Assoc][Dashboards]  
+Add tooltip pages (mini customer profile: last purchase, risk band, CLV tier).  
+
+9) 🟩 [DBX-DA-Assoc][RLS]  
+Implement RLS roles (BrandManager, Executive) and validate with "View as" in Desktop and Service.  
+
+10) 🟨 [DBX-DA-Assoc][Dashboards]  
+Optimize performance: limit visuals per page, avoid high–cardinality slicers, consider aggregated tables if needed.  
+
+11) 🟨 [DBX-DA-Assoc][Dashboards]  
+Configure bookmarks and sync slicers; verify cross–highlighting/interactions behave as intended.  
+
+12) 🟨 [DBX-DA-Assoc][Dashboards]  
+Accessibility pass: contrast, focus order, alt text, titles/tooltips, number formats.  
+
+13) 🟨 [DBX-DA-Assoc][Dashboards]  
+Validation: totals vs slicers, empty/ALL segment states, mobile layout sanity.  
+
+14) 🟨 [DBX-DA-Assoc][Dashboards]  
+Documentation: README with segmentation rules, thresholds, screenshots, navigation map, and RLS notes.  
+
+15) 🟨 [DBX-DA-Assoc][Dashboards]  
+(Optional) Add a "Focus list" page for top–risk/low–CLV segments with exportable table.  
+
 
 **User Stories (breakdown)**  
 - As a Marketing Manager, I explore segments (RFM, churn risk, CLV tiers) and drill‑through to details.  
