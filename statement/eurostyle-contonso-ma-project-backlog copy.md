@@ -33,36 +33,69 @@ A certification‑compliant use case that maps backlog tasks to exam‑aligned c
 
 ---
 
-## Platform Architecture – Free vs Paid (Databricks ↔ Microsoft Fabric)
-This project was built in class on free/trial tiers. Below is how the prototype constraints differ from a paid, production-ready setup. Names are explicit to avoid ambiguity.
+## Databricks ↔ Microsoft Fabric — Interoperability by Edition (Free, Trial/Premium, Enterprise)
+
+This project was prototyped during class on free/trial tiers. Below is a clear, explicit guide to how data moves between Databricks and Microsoft Fabric in three cases, what governance (including Microsoft Purview) is possible, and how a prototype differs from production.
 
 Definitions (naming clarity)
-- Databricks Free (formerly Community Edition): always‑free classroom workspace (no Unity Catalog, limited features).
-- Azure Databricks Free Trial: time‑limited Azure workspace with constrained features/quotas.
-- Microsoft Fabric Trial (Tenant trial): time‑limited Fabric capacity for evaluation.
-- Microsoft Fabric Free (F2): always‑free small capacity for learning/testing.
-- Paid (Enterprise): Azure Databricks (Premium/Enterprise) + Microsoft Fabric Capacity (e.g., F‑skus/Premium) with standard enterprise capabilities.
+- Databricks Free Edition (formerly Community Edition): always-free classroom sandbox, outside your Azure tenant. No Unity Catalog; no enterprise identity; no VNet/Private Link.
+- Azure Databricks Trial/Premium: time-limited trial or paid workspace in your tenant, with enterprise identity, Unity Catalog (Premium/Enterprise), Jobs/Workflows, etc.
+- Microsoft Fabric
+   - Fabric Free (F2) / Tenant Trial: small/time-limited capacity for learning/evaluation.
+   - Fabric Capacity (F-SKUs/Premium): paid capacity for governed, production BI & data apps.
 
-In this document, "Free (Prototype)" refers to Databricks Free (formerly Community Edition) or Azure Databricks Free Trial and Microsoft Fabric Trial/Free (F2). "Paid (Enterprise)" refers to Azure Databricks Premium/Enterprise and Microsoft Fabric Capacity with governed BI.
+### Interop scenarios (choose the one that matches your environment)
 
-Aspect | Free / Trial (Prototype in class) | Paid / Enterprise (Production‑ready)
----|---|---
-Workspace & Compute | Databricks Free or Azure Databricks Free Trial; single/small clusters; session timeouts | Azure Databricks Premium/Enterprise; autoscaling clusters; Jobs/Workflows
-Storage/Lakehouse | Local workspace storage; manual Parquet exports | ADLS Gen2 with Unity Catalog external locations; governed Delta Lake
-Governance/Catalog | No Unity Catalog | Unity Catalog (data/AI governance, lineage, privileges)
-Scheduling/Orchestration | No Jobs API/DLT in Databricks Free; manual notebook runs | Databricks Jobs/Workflows; Delta Live Tables (DLT); REST/SDK automation
-ML lifecycle | MLflow tracking local to runs; limited/no central registry in Databricks Free | MLflow Tracking + Model Registry; batch/real‑time model serving
-Data movement (to Fabric) | Manual download from Databricks → manual upload to Fabric Lakehouse Files | Automated pipelines: Fabric Data Pipelines/Azure Data Factory; OneLake shortcuts; secure connectors
-Fabric capacity & BI | Microsoft Fabric Trial/Free (F2); limited capacity/duration; Direct Lake basic use | Fabric Capacity (F‑skus/Premium); Deployment Pipelines; RLS at scale; ALM/lineage
-Security | Basic workspace ACLs; no Private Link/VNET; minimal governance | AAD, service principals, Key Vault, Private Link/VNET, Sensitivity labels
-CI/CD | Documented manual steps | Azure DevOps/GitHub Actions; Databricks Repos; Fabric Deployment Pipelines rules
-SLA & Scale | No SLA; small volumes; possible throttling | Enterprise SLAs; horizontal scaling; performance tuning features
-Cost | $0 (time‑limited trials) | Metered DBUs and Fabric capacity; enterprise licensing
+#### Case A — Databricks Free Edition (classroom sandbox)
+- How data moves: Export Parquet (+ optional manifest) from Databricks Free → manually upload into Fabric Lakehouse /Files.
+- Why: Free Edition is outside your tenant and cannot authenticate to ADLS Gen2 / OneLake.
+- Use when: Teaching, quick demos, offline practice.
+
+#### Case B — Azure Databricks Trial/Premium (direct interop in your tenant)
+- Path B1 — No-copy shortcut: Databricks writes Delta/Parquet to ADLS Gen2 → in Fabric, create a OneLake Shortcut to that ADLS path so data appears in the Lakehouse without moving it.
+- Path B2 — Direct OneLake: From Azure Databricks, read/write directly to OneLake via its ADLS Gen2-compatible endpoint (service principal or Entra ID; Premium/Enterprise recommended).
+- Use when: Integrated prototypes/pilots with minimal manual steps.
+
+#### Case C — Enterprise (governed, automated pipelines)
+- How data moves: Use Fabric Data Pipelines (or ADF/Synapse pipelines) to orchestrate Databricks ↔ Fabric with private networking, retries, monitoring, alerts, and approvals.
+- Combine with: OneLake Shortcuts and/or Direct OneLake writes.
+- Use when: Production reliability, cost control, lineage, CI/CD, SLAs are required.
+
+### Purview governance — what's supported per case
+
+#### Case A (Databricks Free Edition)
+- Databricks Free: Not governable by Purview (not in your tenant).
+- Fabric Lakehouse: If Purview is enabled in your tenant, you can register/scan Lakehouses (including Shortcut databases), apply sensitivity labels, and run data quality (DQ) on Fabric assets.
+
+#### Case B (Azure Databricks Trial/Premium)
+- ADLS Gen2: Register & scan in Purview (metadata, classification, lineage).
+- Unity Catalog (Databricks): Register in Purview for discovery & lineage.
+- Fabric (OneLake/Lakehouse/Shortcuts): Discover & govern; run DQ on Lakehouse tables and Shortcut databases.
+
+#### Case C (Enterprise)
+- Everything in Case B plus operational governance: labels/policies, monitored pipelines, private networking, CI/CD, environment promotion, audits.
+
+### Comparison matrix (by case)
+
+Aspect | Case A — Databricks Free Edition | Case B — Azure Databricks Trial/Premium | Case C — Enterprise (governed pipelines)
+---|---|---|---
+Workspace & Compute | Free Edition; single small cluster; session timeouts | Azure Databricks Premium/Enterprise; autoscaling; Jobs/Workflows | Same as B, with runbooks and SRE practices
+Storage/Lakehouse | Local workspace storage; manual Parquet exports | ADLS Gen2 external locations (Unity Catalog) and/or direct OneLake | ADLS Gen2 + OneLake under governed namespaces; lifecycle policies
+Governance/Catalog | No Unity Catalog; no Purview on DBX Free | Unity Catalog + Purview over ADLS/UC/Fabric | UC + Fabric governance + Purview end-to-end (incl. Power BI lineage)
+Scheduling/Orchestration | No Jobs API/DLT; manual notebook runs | Databricks Jobs/Workflows; optional DLT | Fabric Data Pipelines / ADF; monitored with alerts/retries/approvals
+ML lifecycle | MLflow tracking local to runs | MLflow Tracking + Model Registry; batch/real-time serving | Same as B, plus promotion gates, canary, SLIs/SLOs
+Data movement Databricks ↔ Fabric | Manual: download from DBX → upload to Lakehouse /Files | B1: ADLS Gen2 → OneLake Shortcut (no-copy) * B2: Direct OneLake read/write from DBX | Pipelines orchestrate moves and/or register Shortcuts; optional CDC/partitioning; private networking
+Fabric capacity & BI | Fabric Free/Trial; limited capacity/duration | Optional Fabric Capacity; Direct Lake/DirectQuery at pilot scale | Fabric Capacity (F-SKUs/Premium); Deployment Pipelines; RLS at scale; ALM/lineage
+Security & Networking | Basic ACLs only; no Private Link/VNET | Entra ID/service principals; Key Vault; VNET/Private Link where applicable | Same as B, plus private endpoints, RBAC reviews, secrets rotation, audit
+CI/CD | Documented manual steps | GitHub Actions/Azure DevOps; Databricks Repos; Fabric Deployment Pipelines | Full CI/CD across DBX + Fabric with approvals and environment parity
+SLA & Scale | No SLA; small volumes; throttling risk | Higher scale; performance features available | Enterprise SLAs; horizontal scaling; capacity management & observability
+Cost | $0 (class use) | Metered DBUs; optional Fabric Capacity | Metered DBUs + Fabric Capacity; enterprise licensing
 
 Practical implications in this repo
-- Where we state "manual transfer (Free)", it means: Databricks Free or Azure Databricks Free Trial → download Parquet + manifest → upload to Microsoft Fabric Lakehouse /Files.
-– Where we state "no Jobs/DLT", it refers to Databricks Free limitations; in Paid, use Jobs/Workflows and/or DLT for scheduled pipelines.
-- "No Unity Catalog" in Free implies relying on naming conventions; in Paid, define UC catalogs/schemas, permissions, and external locations.
+- "Manual transfer (Free)" = Case A: export Parquet from Databricks Free (or Trial without storage auth) and upload into Fabric Lakehouse /Files.
+- "Shortcut / no-copy" = Case B1 or C: Databricks writes to ADLS Gen2; Fabric uses a OneLake Shortcut to that path.
+- "Direct OneLake" = Case B2 or C: Azure Databricks reads/writes via the ADLS Gen2–compatible OneLake endpoint with enterprise auth.
+- "No Jobs/DLT (Free)" = Case A limitations; in Case B/C, use Jobs/Workflows, DLT, and/or Fabric Data Pipelines for scheduled, monitored runs.
 
 ---
 
