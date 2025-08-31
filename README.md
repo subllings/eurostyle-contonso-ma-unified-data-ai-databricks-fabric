@@ -75,7 +75,7 @@ Icon legend: 🟥 Databricks, 🟥→🟩 Databricks & Fabric integration, 🟩 
 - [Business Case](./statement/eurostyle-contonso-ma-business-case.md)
 - [Product Backlog](./statement/eurostyle-contonso-ma-project-backlog.md)
 - [Getting Started (free/trial setup)](./GETTING_STARTED.md)
-- [Certification-compliant mapping](./statement/eurostyle-contonso-certification-compliant.md)
+- [Certification-compliant mapping](./statement/eurostyle-contonso-ma-certification-compliant.md)
 - [Certification guides (DE/DS/DA)](./certification/)
 - [Glossary](./GLOSSARY.md)
 
