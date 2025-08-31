@@ -231,9 +231,9 @@ _All links point to features inside the backlog file._
 ## Appendix — anchor quicklinks
 _Backlog file:_ `./eurostyle-contonso-ma-project-backlog.md`
 
-- 1.1 [1.1](./eurostyle-contonso-ma-project-backlog.md#feature-1-1) · 1.2 [1.2](./eurostyle-contonso-ma-project-backlog.md#feature-1-2) · 1.3 [1.3](./eurostyle-contonso-ma-project-backlog.md#feature-1-3)  
-- G.1 [G.1](./eurostyle-contonso-ma-project-backlog.md#feature-g-1)  
-- 2.1 [2.1](./eurostyle-contonso-ma-project-backlog.md#feature-2-1) · 2.2 [2.2](./eurostyle-contonso-ma-project-backlog.md#feature-2-2) · 2.3 [2.3](./eurostyle-contonso-ma-project-backlog.md#feature-2-3) · 2.4 [2.4](./eurostyle-contonso-ma-project-backlog.md#feature-2-4)  
-- 3.1 [3.1](./eurostyle-contonso-ma-project-backlog.md#feature-3-1) · 3.2 [3.2](./eurostyle-contonso-ma-project-backlog.md#feature-3-2) · 3.3 [3.3](./eurostyle-contonso-ma-project-backlog.md#feature-3-3) · 3.4 [3.4](./eurostyle-contonso-ma-project-backlog.md#feature-3-4)  
-- 4.1 [4.1](./eurostyle-contonso-ma-project-backlog.md#feature-4-1) · 4.2 [4.2](./eurostyle-contonso-ma-project-backlog.md#feature-4-2) · 4.3 [4.3](./eurostyle-contonso-ma-project-backlog.md#feature-4-3)  
-- 5.1 [5.1](./eurostyle-contonso-ma-project-backlog.md#feature-5-1) · 5.2 [5.2](./eurostyle-contonso-ma-project-backlog.md#feature-5-2) · 5.3 [5.3](./eurostyle-contonso-ma-project-backlog.md#feature-5-3) · 5.4 [5.4](./eurostyle-contonso-ma-project-backlog.md#feature-5-4)
+- [Feature 1.1](./eurostyle-contonso-ma-project-backlog.md#feature-1-1) · [Feature 1.2](./eurostyle-contonso-ma-project-backlog.md#feature-1-2) · [Feature 1.3](./eurostyle-contonso-ma-project-backlog.md#feature-1-3)  
+- [Feature G.1](./eurostyle-contonso-ma-project-backlog.md#feature-g-1)  
+- [Feature 2.1](./eurostyle-contonso-ma-project-backlog.md#feature-2-1) · [Feature 2.2](./eurostyle-contonso-ma-project-backlog.md#feature-2-2) · [Feature 2.3](./eurostyle-contonso-ma-project-backlog.md#feature-2-3) · [Feature 2.4](./eurostyle-contonso-ma-project-backlog.md#feature-2-4)  
+- [Feature 3.1](./eurostyle-contonso-ma-project-backlog.md#feature-3-1) · [Feature 3.2](./eurostyle-contonso-ma-project-backlog.md#feature-3-2) · [Feature 3.3](./eurostyle-contonso-ma-project-backlog.md#feature-3-3) · [Feature 3.4](./eurostyle-contonso-ma-project-backlog.md#feature-3-4)  
+- [Feature 4.1](./eurostyle-contonso-ma-project-backlog.md#feature-4-1) · [Feature 4.2](./eurostyle-contonso-ma-project-backlog.md#feature-4-2) · [Feature 4.3](./eurostyle-contonso-ma-project-backlog.md#feature-4-3)  
+- [Feature 5.1](./eurostyle-contonso-ma-project-backlog.md#feature-5-1) · [Feature 5.2](./eurostyle-contonso-ma-project-backlog.md#feature-5-2) · [Feature 5.3](./eurostyle-contonso-ma-project-backlog.md#feature-5-3) · [Feature 5.4](./eurostyle-contonso-ma-project-backlog.md#feature-5-4)
