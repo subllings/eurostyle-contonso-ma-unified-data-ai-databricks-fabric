@@ -2,6 +2,24 @@
 
 
 ---
+# EuroStyle–Contoso M&A – Product Backlog (Databricks & Fabric)
+## Table of Contents
+- [Sprint Planning Matrix](#sprint-planning-matrix-45-days-per-sprint)
+- [Epic-to-Sprint and Role Mapping](#epic-to-sprint-and-role-mapping)
+- [Feature-to-Sprint and Role Mapping](#feature-to-sprint-and-role-mapping)
+- Epics
+   - [Epic 1 – Data Foundation Platform](#epic-1)
+   - [Epic 2 – Machine Learning & Predictive Analytics](#epic-2)
+   - [Epic 3 – Analytics & Business Intelligence](#epic-3)
+   - [Epic 4 – Platform Integration (Databricks ↔ Fabric)](#epic-4)
+   - [Epic 5 – Optional Extensions](#epic-5)
+- Features
+   - Epic 1: [1.1](#feature-1-1), [1.2](#feature-1-2), [1.3](#feature-1-3)
+   - Governance: [G.1](#feature-g-1)
+   - Epic 2: [2.1](#feature-2-1), [2.2](#feature-2-2), [2.3](#feature-2-3), [2.4](#feature-2-4)
+   - Epic 3: [3.1](#feature-3-1), [3.2](#feature-3-2), [3.3](#feature-3-3), [3.4](#feature-3-4)
+   - Epic 4: [4.1](#feature-4-1), [4.2](#feature-4-2), [4.3](#feature-4-3)
+   - Epic 5: [5.1](#feature-5-1), [5.2](#feature-5-2), [5.3](#feature-5-3), [5.4](#feature-5-4)
 
 ## Certifications — where to study and how this backlog maps
 
@@ -115,6 +133,8 @@ This backlog follows Agile methodology with hierarchical organization:
 - **User Stories**: Specific user needs and outcomes
 - **Tasks**: Technical implementation items
 
+Conventions and shared non-functional requirements are centralized to avoid repetition. See Appendix C — Shared NFRs & Conventions.
+
 Note – Working board (Kanban)
 - Platform: Azure DevOps Boards.
 - Columns: Backlog → Selected for Sprint → In Progress → In Review → Done (optional: Blocked).
@@ -181,6 +201,15 @@ The project will follow an agile approach adapted to the constraints of Databric
 
 <a id="feature-1-1"></a>
 ### Feature 1.1: Raw Data Ingestion (Sprint 1)
+
+
+
+
+
+Owner | Status | Effort | Dependencies
+---|---|---|---
+*Single-threaded owner* | *Progress state (Draft / Planned / In Progress / Blocked / Done)* | *T-shirt sizing (S / M / L / XL)* | *Prereqs or links to other features (anchor or note)*
+TBD | Draft | M | -
 **User Story**:  
 As a Data Engineer, I want to ingest EuroStyle and Contoso CSVs into Bronze so the teams can start analyzing real data.  
 
@@ -273,6 +302,7 @@ Implement an idempotent re-run strategy (deterministic overwrite by date window 
 - As a DE, I publish a mini schema dictionary and runbook so the team can re‑run ingestion.
 
 ### Sprint day plan (4.5 days)
+Note: plan ~70% capacity for committed tasks and reserve ~30% for buffer, unplanned work, and spillover.
 - Day 1 — Contoso live (covers Tasks 1–7): Create landing folders; upload Contoso; ingest to Bronze; create BI view; register; validate types; run Power BI DirectQuery smoke test.  
 - Day 2 — EuroStyle ingestion (covers Tasks 8–10): Upload EuroStyle; ingest to Bronze; create `column_mapping.csv`.  
 - Day 3 — Alignment & counts (covers Tasks 11–12): Apply initial schema alignment + naming conventions; update runbook; reconcile raw→Bronze counts and persist monitoring.  
@@ -317,6 +347,10 @@ Implement an idempotent re-run strategy (deterministic overwrite by date window 
 
 <a id="feature-1-2"></a>
 ### Feature 1.2: Silver Cleaning & Harmonization (Sprint 2)
+Owner | Status | Effort | Dependencies
+---|---|---|---
+*Single-threaded owner* | *Progress state (Draft / Planned / In Progress / Blocked / Done)* | *T-shirt sizing (S / M / L / XL)* | *Prereqs or links to other features (anchor or note)*
+TBD | Draft | M | -
 **User Story**:  
 As a Data Engineer, I want Silver tables with clean, harmonized schemas so Analysts and Scientists can trust the data.  
 
@@ -392,6 +426,7 @@ Register Silver catalog/schema in Purview (UC connector), run scan, apply classi
 - As a DE, I ensure idempotent Silver writes so re‑runs are safe and deterministic.
 
 ### Sprint day plan (4.5 days)
+Note: plan ~70% capacity for committed tasks and reserve ~30% for buffer, unplanned work, and spillover.
 - **Day 1 — BKs, Dedup, Types (covers Tasks 1–4, 12 init):** Define BKs and dedup strategy; profile duplicates; create Silver schema skeletons; normalize core types; draft initial Delta constraints.
    - Outcome: documented BKs; first dedup pass per brand; type normalization applied; constraints plan drafted.
 
@@ -427,8 +462,8 @@ Register Silver catalog/schema in Purview (UC connector), run scan, apply classi
    ```
    Join rule: convert amounts by matching `order_date` (or chosen valuation date) and `currency`.
 
-- Rounding/precision and null‑handling (what to document):
-   - Types: use DECIMAL(18,2) for money amounts, DECIMAL(18,8) for FX rates; avoid FLOAT for currency.
+ - Rounding/precision and null‑handling (what to document):
+    - See Appendix C — Shared NFRs & Conventions for typing and monetary precision; apply those here.
    - Rounding: round at the final amount step to 2 decimals; state the function (e.g., `ROUND(x, 2)`) and rounding mode (Spark `round` is HALF_UP). Example SQL:
       ```sql
       SELECT ROUND(quantity * unit_price * rate_to_eur, 2) AS revenue_eur
@@ -489,6 +524,10 @@ Register Silver catalog/schema in Purview (UC connector), run scan, apply classi
 
 <a id="feature-1-3"></a>
 ### Feature 1.3: Gold Business Marts (Sprint 3)
+Owner | Status | Effort | Dependencies
+---|---|---|---
+*Single-threaded owner* | *Progress state (Draft / Planned / In Progress / Blocked / Done)* | *T-shirt sizing (S / M / L / XL)* | *Prereqs or links to other features (anchor or note)*
+TBD | Draft | M | -
 **User Story**:  
 As a Data Engineer, I want Gold marts for sales and customers so the business gets reliable KPIs.  
 
@@ -605,6 +644,7 @@ After first Gold load, run a Purview UC scan and validate assets and lineage for
 - As a DA/DS, I can query Gold marts with documented schema and consistent keys.  
 
 ### Sprint day plan (4.5 days)
+Note: plan ~70% capacity for committed tasks and reserve ~30% for buffer, unplanned work, and spillover.
 - **Day 1 [Tasks 1–4]:** Define star schemas and contracts; decide keys; implement and populate `date_dim`, `product_dim`, and `customer_dim`.  
 - **Day 2 [Tasks 5–7, 11 (init)]:** Build `sales_daily` (GMV/AOV/margin proxy), handle returns; add Delta constraints; start idempotent load pattern.  
 - **Day 3 [Tasks 8–10]:** Build `category_perf` and `customer_360`; compute and attach RFM metrics; ensure one‑row‑per‑customer.  
@@ -617,7 +657,7 @@ Define the star schema (concise)
 - Grain: one row per day × product (optionally carry `source_system` for splits).
 - Conformed dims: `gold.date_dim`, `gold.product_dim`, `gold.customer_dim` with stable business attributes.
 - Keys: use surrogate keys on dims (IDENTITY for product/customer; `date_key` as `yyyymmdd` int). Facts store SKs.
-- Naming/formats: snake_case; dates as DATE; money as DECIMAL(18,2); avoid nullable keys.
+- See Appendix C — Shared NFRs & Conventions for naming, keying, and typing conventions.
 
 Starter SQL — reference dimensions
 ```sql
@@ -715,6 +755,10 @@ Notes
 
 <a id="feature-2-1"></a>
 ### Feature 2.1: Exploratory Analysis (Sprint 1–2)
+Owner | Status | Effort | Dependencies
+---|---|---|---
+*Single-threaded owner* | *Progress state (Draft / Planned / In Progress / Blocked / Done)* | *T-shirt sizing (S / M / L / XL)* | *Prereqs or links to other features (anchor or note)*
+TBD | Draft | M | -
 **User Story**:  
 As a Data Scientist, I want to perform **Exploratory Data Analysis (EDA)** to understand customer behavior and overlaps.  
 
@@ -820,6 +864,7 @@ Tag PII in Purview (classifications/labels) for customer fields surfaced in EDA;
  - EDA notebook artifact: `notebooks/feature_2_1_eda.ipynb` (synthetic fallback included; set USE_SYNTHETIC=False for real data).  
 
 ### Sprint day plan (4.5 days)
+Note: plan ~70% capacity for committed tasks and reserve ~30% for buffer, unplanned work, and spillover.
 - Day 1 [Tasks 1–3]: Load Bronze; run profiling (distributions, missingness, outliers); capture tables/shapes; note obvious data issues for DE/DA.  
 - Day 2 [Tasks 4–7,10]: Define churn (inactivity horizon); compute prevalence by brand/period; select non‑leaky split (time/customer‑grouped) and freeze seed.  
 - Day 3 [Tasks 8–9,12–13]: Implement naive baselines (rules/RFM); complete leakage checklist; start risk log (PII, drift, label quality).  
@@ -954,6 +999,7 @@ Register access and documentation for the feature tables (owners, permissions, t
  - Governance evidence: Purview asset entries for feature tables and applied glossary terms (where applicable).
 
 ### Sprint day plan (4.5 days)
+Note: plan ~70% capacity for committed tasks and reserve ~30% for buffer, unplanned work, and spillover.
 - Day 1 [Tasks 1–2, 9 (init)]: Compute RFM anchored at as‑of T; create `v1` Delta with metadata (version, created_ts, source_snapshot); register table.  
 - Day 2 [Tasks 3–5, 9 (final)]: Add basket diversity and cross‑brand features; verify no leakage (pre‑T only); finalize versioned table(s).  
 - Day 3 [Tasks 6–8, 13]: Run correlation/MI and cardinality screens; define imputations/log transforms (fit on TRAIN only); run data quality checks and save reports.  
@@ -1068,6 +1114,7 @@ Handoff summary: write a short model card (purpose, data, metrics, risks, thresh
 - Model card(s) and a brief readme with run IDs and seed/version info.  
 
 ### Sprint day plan (4.5 days)
+Note: plan ~70% capacity for committed tasks and reserve ~30% for buffer, unplanned work, and spillover.
 - Day 1 [Tasks 1–4]: Data load, baselines, churn LR train + initial evaluation.  
 - Day 2 [Tasks 5–8]: Calibration + CIs for churn; train/evaluate CLV RF with CIs.  
 - Day 3 [Tasks 9–11]: Light tuning, segment-wise metrics, importances.  
@@ -1088,6 +1135,10 @@ Handoff summary: write a short model card (purpose, data, metrics, risks, thresh
 
 <a id="feature-g-1"></a>
 ### Feature G.1: Governance — Purview + Unity Catalog Scanning (Sprint 1–2)
+Owner | Status | Effort | Dependencies
+---|---|---|---
+*Single-threaded owner* | *Progress state (Draft / Planned / In Progress / Blocked / Done)* | *T-shirt sizing (S / M / L / XL)* | *Prereqs or links to other features (anchor or note)*
+TBD | Draft | M | -
 **User Story**:  
 As a Data Platform team, we want Microsoft Purview to catalog and govern our Azure Databricks Unity Catalog assets (metadata, classification, and lineage) so stakeholders can search and trust governed data.  
 
@@ -1105,7 +1156,6 @@ As a Data Platform team, we want Microsoft Purview to catalog and govern our Azu
 - README updated with steps, links to Purview account, and scan schedule.  
 
 **Tasks (numbered)**:  
-**Tasks**
 
 1) 🟥 [DBX-DE-Assoc][Platform]  
 Verify workspace is UC-enabled and attached to the intended metastore; record metastore ID and default catalog.  
@@ -1155,6 +1205,10 @@ Document setup (identity, permissions, warehouse, HTTP Path, IR mode) and add Pu
 
 <a id="feature-2-4"></a>
 ### Feature 2.4: Batch Scoring & Integration (Sprint 4)
+Owner | Status | Effort | Dependencies
+---|---|---|---
+*Single-threaded owner* | *Progress state (Draft / Planned / In Progress / Blocked / Done)* | *T-shirt sizing (S / M / L / XL)* | *Prereqs or links to other features (anchor or note)*
+TBD | Draft | M | -
 **User Story**:  
 As a Data Scientist, I want to score churn/CLV and join them into Customer 360 so Analysts can use them.  
 
@@ -1229,6 +1283,7 @@ Optional export manifest for Fabric ingestion (paths, schema, `_SUCCESS`).
  - Governance evidence: Purview lineage for scoring write into `customer_scores_gold` and updated classifications.
 
 ### Sprint day plan (4.5 days)
+Note: plan ~70% capacity for committed tasks and reserve ~30% for buffer, unplanned work, and spillover.
 - Day 1 [Tasks 1–3]: Freeze versions, load features, implement model loaders.  
 - Day 2 [Tasks 4–7]: Batch scoring, buckets, skew check, assemble output.  
 - Day 3 [Tasks 8–9]: Persist `customer_scores_gold` and join/validate in `customer_360_gold`.  
@@ -1257,6 +1312,10 @@ Optional export manifest for Fabric ingestion (paths, schema, `_SUCCESS`).
 
 <a id="feature-3-1"></a>
 ### Feature 3.1: First Look – Contoso (Sprint 1)
+Owner | Status | Effort | Dependencies
+---|---|---|---
+*Single-threaded owner* | *Progress state (Draft / Planned / In Progress / Blocked / Done)* | *T-shirt sizing (S / M / L / XL)* | *Prereqs or links to other features (anchor or note)*
+TBD | Draft | M | -
 **User Story**:  
 As a Data Analyst, I want KPIs from Bronze so I can deliver a "First Look" dashboard.  
 
@@ -1344,6 +1403,7 @@ Prepare a draft RLS matrix (who sees what) for future sprints; no enforcement ye
 - As a DA, I capture perf/accessibility quick wins and a draft RLS matrix.  
 
 ### Sprint day plan (4.5 days)
+Note: plan ~70% capacity for committed tasks and reserve ~30% for buffer, unplanned work, and spillover.
 - **Day 1:** Connect via Databricks DirectQuery; set storage mode; define relationships; hide technical columns; create base DAX measures (GMV, AOV, Orders) and build a simple landing page.  
    - Story focus: add simple deltas vs last week (GMV, Orders, AOV) and 7‑day averages for "normal day" checks.  
    - Prepare Top Category and Top Product (share of GMV) for the one‑liners; keep one small table per item.  
@@ -1379,6 +1439,10 @@ Prepare a draft RLS matrix (who sees what) for future sprints; no enforcement ye
 
 <a id="feature-3-2"></a>
 ### Feature 3.2: Raw vs Silver – Contoso + EuroStyle (Sprint 2)
+Owner | Status | Effort | Dependencies
+---|---|---|---
+*Single-threaded owner* | *Progress state (Draft / Planned / In Progress / Blocked / Done)* | *T-shirt sizing (S / M / L / XL)* | *Prereqs or links to other features (anchor or note)*
+TBD | Draft | M | -
 **User Story**:  
 As a Data Analyst, I want to compare KPIs Raw vs Silver to highlight data cleaning impact.  
 
@@ -1463,6 +1527,7 @@ Highlight biggest deltas by brand, region, or category; add "today normal?" note
 - As a DA, I configure first RLS roles on Silver and validate.  
 
 ### Sprint day plan (4.5 days)
+Note: plan ~70% capacity for committed tasks and reserve ~30% for buffer, unplanned work, and spillover.
 - **Day 1 (MM1–MM3, UX1):** Connect to both Raw and Silver (consistent fields/units); implement paired measures (`*_raw`, `*_silver`, `*_delta`); ensure returns handling is consistent; scaffold first page.  
 - **Day 2 (UX1–UX3, MM refinements):** Build side‑by‑side pages and bookmark toggles; sync slicers across pages; align layouts and tooltips for comparability.  
 - **Day 3 (DQ1–DQ2, INS1):** Quantify impacts (% dup reduction, FX normalization effect, schema harmonization); annotate visuals; summarize findings in README.  
@@ -1523,6 +1588,10 @@ Highlight biggest deltas by brand, region, or category; add "today normal?" note
 
 <a id="feature-3-3"></a>
 ### Feature 3.3: Executive Post-Merger Dashboard (Sprint 3)
+Owner | Status | Effort | Dependencies
+---|---|---|---
+*Single-threaded owner* | *Progress state (Draft / Planned / In Progress / Blocked / Done)* | *T-shirt sizing (S / M / L / XL)* | *Prereqs or links to other features (anchor or note)*
+TBD | Draft | M | -
 **User Story**:  
 As an Executive, I want consolidated GMV, AOV, and margin so I can track EuroStyle + Contoso performance.  
 
@@ -1582,6 +1651,7 @@ Apply RLS (Row-Level Security) for managers vs executives
 - As a DA, I enforce RLS for managers vs executives.  
 
 ### Sprint day plan (4.5 days)
+Note: plan ~70% capacity for committed tasks and reserve ~30% for buffer, unplanned work, and spillover.
 - **Day 1:** Connect to Gold marts; outline pages/sections; confirm grain and relationships; stub key measures with proper formats.  
 - **Day 2:** Implement brand/regional comparisons (consistent axes, legends); add drill targets (brand→region→product).  
 - **Day 3:** Add margin (proxy/final); run Performance Analyzer; consider Power BI aggregation tables or summarizations if needed.  
@@ -1642,6 +1712,10 @@ Apply RLS (Row-Level Security) for managers vs executives
 
 <a id="feature-3-4"></a>
 ### Feature 3.4: Customer Segmentation Dashboard (Sprint 4)
+Owner | Status | Effort | Dependencies
+---|---|---|---
+*Single-threaded owner* | *Progress state (Draft / Planned / In Progress / Blocked / Done)* | *T-shirt sizing (S / M / L / XL)* | *Prereqs or links to other features (anchor or note)*
+TBD | Draft | M | -
 **User Story**:  
 As a Marketing Manager, I want to see customer segments & churn risk so I can design campaigns.  
 
@@ -1675,7 +1749,6 @@ As a Marketing Manager, I want to see customer segments & churn risk so I can de
 - Accessibility: color contrast ≥ 4.5:1, keyboard focus order set, alt text on key visuals, consistent currency/percent formats.  
 
 **Tasks**:  
-**Tasks**
 
 1) 🟨 [DBX-DA-Assoc][Dashboards]  
 Map inputs and integrate DS outputs: connect to `customer_360_gold` and `customer_scores_gold`; validate relationships and row counts.  
@@ -1728,18 +1801,14 @@ Documentation: README with segmentation rules, thresholds, screenshots, navigati
 - As a DA, I wire What‑if parameters and publish via Fabric.  
 
 ### Sprint day plan (4.5 days)
+Note: plan ~70% capacity for committed tasks and reserve ~30% for buffer, unplanned work, and spillover.
 - **Day 1:** Integrate churn/CLV scored tables; define segment rules (RFM buckets, risk tiers); design navigation and landing tiles.  
 - **Day 2:** Build segment visuals (treemaps/tables) and KPIs; use field parameters for flexible dimension toggles.  
 - **Day 3:** Implement drill‑through to customer detail; add What‑if parameters for thresholds and bind into measures.  
 - **Day 4:** Publish in Fabric; test RLS interactions (use "View as") and cross-highlighting; validate performance on typical filters.  
 - **Day 4.5:** Buffer; capture screenshots and document segmentation logic.
 
-### Sprint day plan (annotated)
-- Day 1 → Tasks 1–5  
-- Day 2 → Tasks 6, 4  
-- Day 3 → Tasks 7–8, 3  
-- Day 4 → Tasks 9–11  
-- Day 4.5 → Tasks 12–14 (15 optional)  
+ 
 
 #### Mini notes — Feature 3.4 (per day)
 - Day 1: Align segment rules with DS; map fields from scored tables; design landing tiles for quick nav.
@@ -1821,6 +1890,10 @@ Documentation: README with segmentation rules, thresholds, screenshots, navigati
 
 <a id="feature-4-1"></a>
 ### Feature 4.1: Export Gold to Fabric (Sprint 4)
+Owner | Status | Effort | Dependencies
+---|---|---|---
+*Single-threaded owner* | *Progress state (Draft / Planned / In Progress / Blocked / Done)* | *T-shirt sizing (S / M / L / XL)* | *Prereqs or links to other features (anchor or note)*
+TBD | Draft | M | -
 **User Story**:  
 As a Data Engineer, I want Gold marts exported to Fabric so dashboards can consume them via Direct Lake.  
 
@@ -1849,7 +1922,6 @@ For your information
 
 
 **Tasks**  
-**Tasks (numbered)**  
 
 1) 🟥 [DBX-DE-Assoc][Platform]  
 List Gold tables to export (e.g., `sales_daily_gold`, `customer_360_gold`, `customer_scores_gold`) and confirm owners.  
@@ -1911,6 +1983,7 @@ Establish versioned releases and a `current` pointer/view; document rollback ste
 - As a DE, I ingest them into Fabric Lakehouse tables via Data Pipelines.  
 
 ### Sprint day plan (4.5 days)
+Note: plan ~70% capacity for committed tasks and reserve ~30% for buffer, unplanned work, and spillover.
 - Day 1 [Tasks 1–5]: Define export contract (tables/layout), file sizing, manifest fields; dry‑run on one small table.  
 - Day 2 [Tasks 6–9]: Package all Gold marts; manual transfer to Fabric; configure Data Pipeline mappings and create Delta tables.  
 - Day 3 [Tasks 10–12]: Validate ingestion and partitions; create views/shortcuts; test Direct Lake connectivity.  
@@ -1934,6 +2007,10 @@ Establish versioned releases and a `current` pointer/view; document rollback ste
 
 <a id="feature-4-2"></a>
 ### Feature 4.2: Power BI Suite (Sprint 4)
+Owner | Status | Effort | Dependencies
+---|---|---|---
+*Single-threaded owner* | *Progress state (Draft / Planned / In Progress / Blocked / Done)* | *T-shirt sizing (S / M / L / XL)* | *Prereqs or links to other features (anchor or note)*
+TBD | Draft | M | -
 **User Story**:  
 As a Data Analyst, I want Power BI dashboards published through Fabric so executives can access the post-merger suite.  
 
@@ -2021,6 +2098,7 @@ Add a "How to use" + QA checklist page; verify responsiveness and accessibility;
 - As a DA, I deploy via Fabric pipelines across stages.  
 
 ### Sprint day plan (4.5 days)
+Note: plan ~70% capacity for committed tasks and reserve ~30% for buffer, unplanned work, and spillover.
 - Day 1 [Tasks 1–4]: Build Executive and initial Segmentation pages; ensure consistent formats/tooltips; validate basic interactions/performance.  
 - Day 2 [Tasks 5–7]: Configure RLS roles, test with "View as" (first pass), and prepare Deployment Pipeline (Dev → Test).  
 - Day 3 [Tasks 8–10]: Promote to Test; validate connections/parameters/lineage; polish visuals and document sharing/links.  
@@ -2045,6 +2123,10 @@ Add a "How to use" + QA checklist page; verify responsiveness and accessibility;
 ---
 <a id="feature-4-3"></a>
 ### Feature 4.3: Model Scoring Export & Validation in Fabric (Sprint 4)  
+Owner | Status | Effort | Dependencies
+---|---|---|---
+*Single-threaded owner* | *Progress state (Draft / Planned / In Progress / Blocked / Done)* | *T-shirt sizing (S / M / L / XL)* | *Prereqs or links to other features (anchor or note)*
+TBD | Draft | M | -
 **User Story**:  
 As a Data Scientist, I want churn and CLV scores exported from Databricks into Fabric so that business dashboards can consume and validate predictive insights.  
 
@@ -2095,6 +2177,7 @@ As a Data Scientist, I want churn and CLV scores exported from Databricks into F
 - As a DA, I confirm dashboards consume the new tables consistently.  
 
 ### Sprint day plan (4.5 days)
+Note: plan ~70% capacity for committed tasks and reserve ~30% for buffer, unplanned work, and spillover.
 - Day 1 [Tasks 1–4]: Confirm schemas/versions; run batch scoring to Gold; initial validation and sample snapshot.  
 - Day 2 [Tasks 5–8]: Export Parquet + `_SUCCESS`; generate manifest; package release; manual transfer to Fabric `/Files`.  
 - Day 3 [Tasks 9–11]: Configure/run Fabric Pipeline; validate Lakehouse tables; bind dashboards and refresh.  
@@ -2126,7 +2209,10 @@ As a Data Scientist, I want churn and CLV scores exported from Databricks into F
 
 <a id="feature-5-1"></a>
 ### Feature 5.1 (DE) – Simplified Data Vault in Silver  
-
+Owner | Status | Effort | Dependencies
+---|---|---|---
+*Single-threaded owner* | *Progress state (Draft / Planned / In Progress / Blocked / Done)* | *T-shirt sizing (S / M / L / XL)* | *Prereqs or links to other features (anchor or note)*
+TBD | Draft | M | -
 **User Story**  
 As a Data Engineer, I want a simplified Data Vault (Hubs, Links, Satellites) in the Silver layer so downstream Gold marts are consistent, modular, and easy to evolve.
 
@@ -2221,6 +2307,7 @@ Integration validation: derive a thin Gold (e.g., `sales_daily`) from DV compone
 - As a DA/DS, I query hubs/links for consistent keys and history.  
 
 ### Sprint day plan (4.5 days)
+Note: plan ~70% capacity for committed tasks and reserve ~30% for buffer, unplanned work, and spillover.
 - **Day 1 [Tasks 1–5]:** Define DV standards; build hubs (customer/product/calendar); implement idempotent hub load and validate re-run.  
 - **Day 2 [Tasks 6–8]:** Design/load `sales_link`; resolve FKs and unknowns; enforce RI/uniqueness and idempotent link loads.  
 - **Day 3 [Tasks 9–11]:** Design/implement SCD2 for `customer_satellite`; add `product_satellite`; validate no overlaps.  
@@ -2304,7 +2391,10 @@ Free Edition Limitations (Databricks Free Edition + Fabric Student)
 
 <a id="feature-5-2"></a>
 ### Feature 5.2 (DA) – Advanced Segmentation & Dynamic Dashboards  
-
+Owner | Status | Effort | Dependencies
+---|---|---|---
+*Single-threaded owner* | *Progress state (Draft / Planned / In Progress / Blocked / Done)* | *T-shirt sizing (S / M / L / XL)* | *Prereqs or links to other features (anchor or note)*
+TBD | Draft | M | -
 **User Story**  
 As a Data Analyst, I want to implement advanced segmentation logic and dynamic drill-through dashboards so that business stakeholders can interactively explore customer behavior (RFM segments, churn risk, CLV tiers) across multiple dimensions.
 
@@ -2388,6 +2478,7 @@ Document thresholds, navigation map, screenshots, RLS notes in README.
 - As a Marketing user, I can navigate from KPIs to segment to customer.  
 
 ### Sprint day plan (4.5 days)
+Note: plan ~70% capacity for committed tasks and reserve ~30% for buffer, unplanned work, and spillover.
 - Day 1 [Tasks 1–3]: Define segmentation logic and default thresholds; set up What‑if parameters and parameter/measure tables; align with stakeholders.  
 - Day 2 [Tasks 4, 11 (init), 13 (init)]: Build dynamic visuals with field parameters and wire measure/dimension switching; start bookmarks/sync slicers; verify cross‑highlighting on main pages.  
 - Day 3 [Tasks 5–6, 11 (back nav)]: Create drill‑through pages (Segment and Customer detail) with Back buttons; add tooltip pages; refine bookmarks/navigation flows.  
@@ -2444,24 +2535,19 @@ Note: Some items intentionally span days (bookmarks/interactions and cross‑hig
 - RLS validation
     - Roles: BrandManager (filters Brand), Executive (no brand filter). Validate with "View as"; ensure drill-through respects RLS.
 
-### Sprint day plan (annotated)
-- Day 1 → Tasks 1–3, 7
-- Day 2 → Tasks 4–6, 10–11
-- Day 3 → Tasks 5–6, 11–12
-- Day 4 → Tasks 8–9, 13–14
-- Day 4.5 → Tasks 14–15
+
 
 <a id="feature-5-3"></a>
 ### Feature 5.3 (DS) – Survival & Probabilistic Models for Churn and CLV  
 
+Owner | Status | Effort | Dependencies
+---|---|---|---
+*Single-threaded owner* | *Progress state (Draft / Planned / In Progress / Blocked / Done)* | *T-shirt sizing (S / M / L / XL)* | *Prereqs or links to other features (anchor or note)*
+TBD | Draft | M | -
 **User Story**  
 As a Data Scientist, I want to implement advanced survival analysis and probabilistic models so that stakeholders gain deeper insights into customer lifetime and churn timing, beyond standard classification/regression.  
 
-<a id="feature-5-3"></a>
-### Feature 5.3 (DS) – Survival & Probabilistic Models for Churn and CLV  
-
-**User Story**  
-As a Data Scientist, I want to implement advanced survival analysis and probabilistic models so that stakeholders gain deeper insights into customer lifetime and churn timing, beyond standard classification/regression.  
+ 
 
 #### Learning Resources (Standard)  
 - [Survival Analysis in Python (lifelines)](https://lifelines.readthedocs.io/en/latest/)  
@@ -2542,6 +2628,7 @@ As a Data Scientist, I want to implement advanced survival analysis and probabil
 - **Day 3 (Tasks 3, 10):** Implement BG/NBD and Gamma-Gamma models, initialize parameters, and check convergence and plausibility against observed patterns.  
 - **Day 4 (Tasks 4, 11, 12):** Build survival and CLV visualizations, compute quantiles and calibration metrics, compare against baselines, and define operating thresholds by horizon.  
 - **Day 4.5 (Tasks 13, 18):** Consolidate documentation, capture seeds and reproducibility notes (MLflow run IDs, snapshot IDs), and finalize acceptance thresholds.  
+We'll commit ~70% of capacity and treat ~30% as stretch ('Free time') to protect quality; anything not done flows forward without blame.
 
 > This 4.5-day plan focuses on the **core deliverables** that can be realistically achieved within the sprint.  
 > More advanced tasks — such as deep learning, Bayesian survival, causal inference, or fairness audits — are intentionally excluded from this tight timeline.  
@@ -2686,6 +2773,10 @@ Ownership & cadence
 <a id="feature-5-4"></a>
 ### Feature 5.4 (All) – Orchestration & E2E Deployment (Airflow + Fabric)
 
+Owner | Status | Effort | Dependencies
+---|---|---|---
+*Single-threaded owner* | *Progress state (Draft / Planned / In Progress / Blocked / Done)* | *T-shirt sizing (S / M / L / XL)* | *Prereqs or links to other features (anchor or note)*
+TBD | Draft | M | -
 **User Story**  
 As a Data Engineer, I want to orchestrate the end‑to‑end Databricks → Fabric workflow so releases are reproducible, observable, and easy to re‑run. Airflow is used as an external orchestrator, with a native Fabric Data Pipeline fallback when Airflow is not available.
 
@@ -2884,7 +2975,24 @@ As a Data Engineer, I want to orchestrate the end‑to‑end Databricks → Fabr
    - Data drift → weekly PSI and recalibration; freeze FX and timezones; document schema changes.
 
 
-*** End Patch
+
+## Changelog
+
+2025-08-31
+- Added TOC
+- Deduplicated Feature 5.3 & Backlog Structure
+- Consolidated NFRs (Appendix C)
+- Added feature meta headers
+- Normalized sprint plan
+- Removed patch markers + After it runs — quick checks
+
+### Appendix C — Shared NFRs & Conventions
+
+This appendix centralizes repeated guidance. In feature sections, replace repeated bullets with: "See Appendix C — Shared NFRs & Conventions."
+
+- Naming & typing conventions: snake_case; stable business keys; dates as DATE; currency amounts as DECIMAL(18,2); FX rates as DECIMAL(18,8). Avoid FLOAT for currency.
+- Idempotency & contracts: re-runs must yield the same end state (MERGE on BKs or overwrite-by-window with replaceWhere); publish schema/data contracts with keys, types, nullability.
+- Security & governance: prefer Unity Catalog with Purview scans and classifications; store secrets in Key Vault; apply sensitivity labels; capture lineage evidence.
 
 ## Acronyms
 
