@@ -1554,9 +1554,14 @@ As an Executive, I want consolidated GMV, AOV, and margin so I can track EuroSty
  - RLS validated in Power BI Service (View as role) and sharing permissions verified.  
 
 **Tasks**:  
-🟨 Add brand comparison (EuroStyle vs Contoso).  
-🟨 Add regional splits (North vs South Europe).  
-🟩 Apply **RLS (Row-Level Security)** for managers vs executives.  
+1) 🟨 [DBX-DA-Assoc][Dashboards]  
+Add brand comparison (EuroStyle vs Contoso).  
+
+2) 🟨 [DBX-DA-Assoc][Dashboards]  
+Add regional splits (North vs South Europe).  
+
+3) 🟩 [DBX-DA-Assoc][Security]  
+Apply RLS (Row-Level Security) for managers vs executives 
 
  - **Provide insights: Storytelling one‑liners (Feature 3.3)**  
     - Board view: GMV X, AOV Y, margin Z; EuroStyle vs Contoso: X% gap.  
