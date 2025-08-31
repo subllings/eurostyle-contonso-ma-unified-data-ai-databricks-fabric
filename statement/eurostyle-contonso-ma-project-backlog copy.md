@@ -326,9 +326,9 @@ As a Data Engineer, I want Silver tables with clean, harmonized schemas so Analy
 - [PySpark DataFrame API](https://api-docs.databricks.com/python/pyspark/latest/pyspark.sql/api/pyspark.sql.DataFrame.html)  
  - [Star schema guidance (natural/business vs surrogate keys)](https://learn.microsoft.com/power-bi/guidance/star-schema)  
  - [Delta Lake — overwrite specific partitions with replaceWhere](https://learn.microsoft.com/azure/databricks/delta/delta-batch#overwrite-specific-partitions-with-replacewhere)  
- - Microsoft Purview — Connect Azure Databricks Unity Catalog: https://learn.microsoft.com/purview/register-scan-azure-databricks-unity-catalog  
- - Microsoft Purview — Classifications and sensitivity labels: https://learn.microsoft.com/purview/sensitivity-labels-overview  
- - Microsoft Purview — Glossary and business terms: https://learn.microsoft.com/purview/glossary-terms
+ - [Microsoft Purview — Connect Azure Databricks Unity Catalog](https://learn.microsoft.com/purview/register-scan-azure-databricks-unity-catalog)  
+ - [Microsoft Purview — Classifications and sensitivity labels](https://learn.microsoft.com/purview/sensitivity-labels-overview)  
+ - [Microsoft Purview — Glossary and business terms](https://learn.microsoft.com/purview/glossary-terms)
 
 **Key Concepts**:  
 - Silver = cleaned and standardized layer.  
