@@ -218,6 +218,55 @@ As a Data Engineer, I want to ingest EuroStyle and Contoso CSVs into Bronze so t
  - Azure DevOps DQ tickets opened for any raw→Bronze variance >1% or material DQ issue; links captured in README and referenced by DA in Feature 3.2.
 
 **Tasks**
+**Tasks**
+
+1) 🟥 [DBX-DE-Prof][Modeling]  
+Define star schema contracts: fact grains, conformed dims, keys (surrogate vs natural), naming and formats (snake_case, DECIMAL scales).  
+
+2) 🟥 [DBX-DE-Prof][Modeling][DBX-DE-Assoc][Delta-Basics]  
+Create `gold.date_dim` and populate from Silver order_date window; add `date_key` (yyyymmdd), year/month/day.  
+
+3) 🟥 [DBX-DE-Prof][Modeling][DBX-DE-Assoc][Delta-Basics]  
+Create `gold.product_dim` with surrogate key (IDENTITY or hashed BK); populate attributes (product_code, category, brand).  
+
+4) 🟥 [DBX-DE-Prof][Modeling][DBX-DE-Assoc][Delta-Basics]  
+Create `gold.customer_dim` with surrogate key and unified customer identifier; include `source_system` where relevant.  
+
+5) 🟥 [DBX-DE-Prof][Modeling][DBX-DE-Assoc][Spark-Aggregations][Delta-Basics]  
+Specify the `gold.sales_daily` schema (keys/measures) and write the first load query (GMV, Orders, Units, Estimated Margin proxy).  
+
+6) 🟥 [DBX-DE-Assoc][Spark-Aggregations][Delta-Basics]  
+Implement `gold.sales_daily` load handling returns (negative qty → returns) and label margin as proxy when COGS absent.  
+
+7) 🟥 [DBX-DE-Assoc][Delta-Basics]  
+Add Delta constraints/checks to `gold.sales_daily` (NOT NULL on keys, non-negative checks on units/revenue).  
+
+8) 🟥 [DBX-DE-Prof][Modeling][DBX-DE-Assoc][Spark-Aggregations]  
+Define and build `gold.category_perf` (aggregations by product/category/brand/date; include GMV, Units, Orders).  
+
+9) 🟥 [DBX-DE-Prof][Modeling][DBX-DE-Assoc][Spark-Aggregations]  
+Define `gold.customer_360` base schema (one row per customer) and populate core aggregates (orders, units, GMV).  
+
+10) 🟥 [DBX-DE-Assoc][Spark-Aggregations][DBX-DE-Prof][Modeling]  
+Compute and attach RFM metrics to `gold.customer_360` (Recency, Frequency, Monetary) and optional RFM segment/bucket; carry `source_system`.  
+
+11) 🟥 [DBX-DE-Assoc][Delta-MERGE][Delta-Basics]  
+Make loads idempotent: choose MERGE or deterministic INSERT OVERWRITE by date/snapshot for each mart; validate repeatability.  
+
+12) 🟥 [DBX-DE-Assoc][Platform]  
+Partitioning/optimization: choose partitioning (e.g., by date), coalesce/compact files, and note file size targets.  
+
+13) 🟥 [DBX-DE-Prof][Testing]  
+Validate vs Silver: reconcile counts/KPIs, run orphan/RI checks, and execute smoke queries with DA/DS; capture results.  
+
+14) 🟥 [DBX-DE-Prof][Modeling]  
+Document schemas and assumptions: contracts for all marts, margin proxy method, and any caveats; update README.  
+
+15) 🟥 [DBX-DE-Assoc][UC-Permissions]  
+Register helper views (e.g., top-level selects), set table comments/permissions, and finalize hand-off notes.  
+
+🟦 Governance
+After first Gold load, run a Purview UC scan and validate assets and lineage for `gold.sales_daily`; attach evidence.
 
 **Tasks**
 
@@ -757,7 +806,6 @@ As a Data Scientist, I want to perform **Exploratory Data Analysis (EDA)** to un
  - Data dictionary updated or created for key fields used in labels/features (e.g., last_activity_date, net_margin).  
 
 **Tasks**:  
-**Tasks**
 
 1) 🟥 [DBX-ML-Assoc][EDA]  
 Load Bronze tables and sample safely for iteration (record table names, counts, and sample logic).  
@@ -804,7 +852,8 @@ Produce and commit an EDA notebook and a 1–2 page readout; link them in this b
 15) 🟥 [DBX-ML-Assoc][EDA]  
 Update data dictionary for key fields; note any ambiguous semantics to resolve with DA/DE.  
 
-🟦 Note: Governance — Tag PII in Purview (classifications/labels) for customer fields surfaced in EDA; link glossary terms to churn/CLV concepts.
+🟦 Governance
+Tag PII in Purview (classifications/labels) for customer fields surfaced in EDA; link glossary terms to churn/CLV concepts.
 
 **User Stories (breakdown)**  
 - As a DS, I document churn prevalence and select a non‑leaky split protocol.  
@@ -895,7 +944,7 @@ As a Data Scientist, I want RFM and behavioral features to build churn & CLV mod
  - Data dictionary updated for each feature (definition, window, unit, null policy).  
  - Join keys verified against Gold (`customer_360_gold`) with row counts and uniqueness checks.  
 
-**Tasks**:  
+
 **Tasks**
 
 1) 🟥 [DBX-ML-Assoc][EDA]  
@@ -1107,17 +1156,41 @@ As a Data Platform team, we want Microsoft Purview to catalog and govern our Azu
 - README updated with steps, links to Purview account, and scan schedule.  
 
 **Tasks (numbered)**:  
-🟥 1) [DBX-DE-Assoc][Platform] Verify workspace is UC‑enabled and attached to the intended metastore; record metastore ID and default catalog.  
-🟥 2) [DBX-DE-Assoc][Platform] Create or reuse a SQL Warehouse; capture Workspace URL and HTTP Path; grant "Can Use" to the scanning identity.  
-🟥 3) [DBX-DE-Assoc][UC-Permissions] Enable system tables and grant SELECT on `system.access.table_lineage` and `system.access.column_lineage` to the scanning identity.  
-🟥 4) [Governance] Create Microsoft Purview account (if missing) and Azure Key Vault; grant Purview access to read secrets in Key Vault.  
-🟥 5) [Governance] Generate a Databricks PAT (or configure Managed Identity/Service Principal); store secret in Key Vault with clear naming/versioning.  
-🟥 6) [Governance] Register source "Azure Databricks Unity Catalog" in Purview; create/select credential; input Workspace URL + HTTP Path; toggle lineage; Test connection.  
-🟥 7) [Governance] Scope catalogs/schemas for the first scan; run on‑demand; confirm asset count and classifications appear.  
-🟥 8) [DBX-DE-Prof][Monitoring-Logs] Execute a small UC notebook/SQL that reads/writes between two tables; re‑run scan (or wait for schedule) and verify lineage graph in Purview.  
-🟥 9) [Workspaces] If private networking is required, configure Managed vNet or self‑hosted Integration Runtime and private endpoints for Databricks/Key Vault.  
-🟥 10) [Governance] Optional: Configure Unified Catalog Data Quality profiling/scan on one table; save results as artifacts.  
-🟥 11) [DBX-DE-Prof][Monitoring-Logs] Document setup (identity, permissions, warehouse, HTTP Path, IR mode) and add Purview links/screenshots to evidence folder; update README.  
+**Tasks**
+
+1) 🟥 [DBX-DE-Assoc][Platform]  
+Verify workspace is UC-enabled and attached to the intended metastore; record metastore ID and default catalog.  
+
+2) 🟥 [DBX-DE-Assoc][Platform]  
+Create or reuse a SQL Warehouse; capture Workspace URL and HTTP Path; grant "Can Use" to the scanning identity.  
+
+3) 🟥 [DBX-DE-Assoc][UC-Permissions]  
+Enable system tables and grant SELECT on `system.access.table_lineage` and `system.access.column_lineage` to the scanning identity.  
+
+4) 🟦 [Governance]  
+Create Microsoft Purview account (if missing) and Azure Key Vault; grant Purview access to read secrets in Key Vault.  
+
+5) 🟦 [Governance]  
+Generate a Databricks PAT (or configure Managed Identity/Service Principal); store secret in Key Vault with clear naming/versioning.  
+
+6) 🟦 [Governance]  
+Register source "Azure Databricks Unity Catalog" in Purview; create/select credential; input Workspace URL + HTTP Path; toggle lineage; Test connection.  
+
+7) 🟦 [Governance]  
+Scope catalogs/schemas for the first scan; run on-demand; confirm asset count and classifications appear.  
+
+8) 🟥 [DBX-DE-Prof][Monitoring-Logs]  
+Execute a small UC notebook/SQL that reads/writes between two tables; re-run scan (or wait for schedule) and verify lineage graph in Purview.  
+
+9) 🟦 [Workspaces]  
+If private networking is required, configure Managed vNet or self-hosted Integration Runtime and private endpoints for Databricks/Key Vault.  
+
+10) 🟦 [Governance]  
+Optional: Configure Unified Catalog Data Quality profiling/scan on one table; save results as artifacts.  
+
+11) 🟥 [DBX-DE-Prof][Monitoring-Logs]  
+Document setup (identity, permissions, warehouse, HTTP Path, IR mode) and add Purview links/screenshots to evidence folder; update README.  
+ 
 
 **Deliverables**:  
 - Purview source registration with successful scan and lineage visualization.  
