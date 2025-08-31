@@ -231,9 +231,9 @@ _All links point to features inside the backlog file._
 ## Appendix — anchor quicklinks
 _Backlog file:_ `./eurostyle-contonso-ma-project-backlog.md`
 
-- 1.1 `#feature-1-1` · 1.2 `#feature-1-2` · 1.3 `#feature-1-3`  
-- G.1 `#feature-g-1`  
-- 2.1 `#feature-2-1` · 2.2 `#feature-2-2` · 2.3 `#feature-2-3` · 2.4 `#feature-2-4`  
-- 3.1 `#feature-3-1` · 3.2 `#feature-3-2` · 3.3 `#feature-3-3` · 3.4 `#feature-3-4`  
-- 4.1 `#feature-4-1` · 4.2 `#feature-4-2` · 4.3 `#feature-4-3`  
-- 5.1 `#feature-5-1` · 5.2 `#feature-5-2` · 5.3 `#feature-5-3` · 5.4 `#feature-5-4`
+- 1.1 [1.1](./eurostyle-contonso-ma-project-backlog.md#feature-1-1) · 1.2 [1.2](./eurostyle-contonso-ma-project-backlog.md#feature-1-2) · 1.3 [1.3](./eurostyle-contonso-ma-project-backlog.md#feature-1-3)  
+- G.1 [G.1](./eurostyle-contonso-ma-project-backlog.md#feature-g-1)  
+- 2.1 [2.1](./eurostyle-contonso-ma-project-backlog.md#feature-2-1) · 2.2 [2.2](./eurostyle-contonso-ma-project-backlog.md#feature-2-2) · 2.3 [2.3](./eurostyle-contonso-ma-project-backlog.md#feature-2-3) · 2.4 [2.4](./eurostyle-contonso-ma-project-backlog.md#feature-2-4)  
+- 3.1 [3.1](./eurostyle-contonso-ma-project-backlog.md#feature-3-1) · 3.2 [3.2](./eurostyle-contonso-ma-project-backlog.md#feature-3-2) · 3.3 [3.3](./eurostyle-contonso-ma-project-backlog.md#feature-3-3) · 3.4 [3.4](./eurostyle-contonso-ma-project-backlog.md#feature-3-4)  
+- 4.1 [4.1](./eurostyle-contonso-ma-project-backlog.md#feature-4-1) · 4.2 [4.2](./eurostyle-contonso-ma-project-backlog.md#feature-4-2) · 4.3 [4.3](./eurostyle-contonso-ma-project-backlog.md#feature-4-3)  
+- 5.1 [5.1](./eurostyle-contonso-ma-project-backlog.md#feature-5-1) · 5.2 [5.2](./eurostyle-contonso-ma-project-backlog.md#feature-5-2) · 5.3 [5.3](./eurostyle-contonso-ma-project-backlog.md#feature-5-3) · 5.4 [5.4](./eurostyle-contonso-ma-project-backlog.md#feature-5-4)
