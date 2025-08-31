@@ -2561,6 +2561,23 @@ Documentation: plots, acceptance thresholds, runbook, risks/mitigations, reprodu
 19) 🟥 [DBX-DS-Prof][Modeling][DeepLearning] (**PhD-level - Optional**)
 Prototype sequence model (LSTM/Transformer) as comparator; document performance/calibration deltas. 
 
+20) 🟥 [DBX-DS-Prof][Bayesian][Modeling] (**PhD-level**)  
+Implement Bayesian survival analysis (e.g., PyMC, Stan) for churn timing; compare posterior intervals with frequentist estimates.  
+
+21) 🟥 [DBX-DS-Prof][CausalInference][Modeling] (**PhD-level**)  
+Apply causal inference to churn interventions (e.g., uplift modeling, treatment effect estimation); test campaign targeting strategies.  
+
+22) 🟥 [DBX-DS-Prof][Explainability][Evaluation] (**PhD-level**)  
+Use SHAP/Integrated Gradients for survival & CLV models; document how feature effects vary over time and by horizon.  
+
+23) 🟥 [DBX-DS-Prof][Fairness][Monitoring] (**PhD-level**)  
+Audit churn models for bias/fairness across segments (brand, region, gender if available); log fairness metrics in monitoring pipeline.  
+
+24) 🟥 [DBX-DS-Prof][Research][Docs] (**PhD-level**)  
+Write a research-style technical note (5–10 pages) summarizing methodology, statistical assumptions, diagnostics, and managerial implications; structured like an academic paper.  
+
+
+
 **User Stories (breakdown)**  
 - As a DS, I estimate churn timing and CLV distributions and compare to baselines.  
 - As a DA, I receive segment‑level visuals (survival/CLV).  
