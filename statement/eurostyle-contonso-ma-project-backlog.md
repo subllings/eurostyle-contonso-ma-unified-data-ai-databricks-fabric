@@ -219,6 +219,8 @@ As a Data Engineer, I want to ingest EuroStyle and Contoso CSVs into Bronze so t
 
 **Tasks**
 
+**Tasks**
+
 1) 🟥 [DBX-DE-Assoc][Medallion][Platform]  
 Create raw landing folders in DBFS (`/FileStore/retail/raw/contoso/`, `/FileStore/retail/raw/eurostyle/`) and document paths in the runbook.  
 
@@ -237,7 +239,7 @@ Register tables/views in the metastore (Unity Catalog or workspace) and add tabl
 6) 🟥 [DBX-DE-Assoc][Delta-Basics]  
 Validate Contoso types (dates/numerics), address corrupt records if any, and record issues.  
 
-7) 🟨 [DBX-DA-Assoc][Dashboards] [MS-PL300][Visualize]  
+7) 🟨 [DBX-DA-Assoc][Dashboards][MS-PL300][Visualize]  
 Perform a Power BI DirectQuery smoke test to `bronze.v_sales_contoso`; capture steps/screenshot in the README.  
 
 8) 🟥 [DBX-DE-Assoc][Medallion]  
@@ -263,6 +265,7 @@ Enforce basic Delta constraints where feasible (NOT NULL on business keys, simpl
 
 15) 🟥 [DBX-DE-Assoc][Delta-MERGE][Delta-Basics][Medallion]  
 Implement an idempotent re-run strategy (deterministic overwrite by date window via `replaceWhere` or `MERGE` on business keys) and verify repeatability.  
+
 
 
 **User Stories (breakdown)**  
