@@ -2170,21 +2170,53 @@ Trade-offs and when to skip
 - Short README section explaining schema, keys, and historization policy.
 
 **Tasks (15 tasks, numbered)**  
-🟥 1. Define Data Vault standards: naming conventions, BK normalization (upper/trim), hash algorithm (e.g., sha2), delimiter policy, null handling, `record_source`, and audit columns (`load_ts`, `batch_id`).  
-🟥 2. Build `silver.customer_hub`: deduplicate/harmonize business keys, compute `customer_hk`, enforce uniqueness (constraints/checks), add lineage/audit fields.  
-🟥 3. Build `silver.product_hub`: normalize `sku/product_code`, compute `product_hk`, enforce uniqueness, and add lineage/audit fields.  
-🟥 4. Build `silver.calendar_hub`: generate required date range, decide natural vs hashed key (`date_key` vs `date_hk`), and persist attributes (year, month, day).  
-🟥 5. Implement idempotent hub loads: MERGE on BK hashes or deterministic `replaceWhere` windows; validate re-run yields identical end state.  
-🟥 6. Design `silver.sales_link`: define grain (e.g., order_line), compute `sales_lk` as hash of participating hub keys, carry minimal invariants (e.g., source_system).  
-🟥 7. Resolve FKs from cleaned sales to hubs: handle late-arriving/unknown keys with sentinel HKs, log exceptions, and persist a reconciliation table.  
-🟥 8. Load `silver.sales_link` idempotently: apply constraints (non-null HKs), RI checks (anti-joins), and uniqueness on `sales_lk`; measure violations and fix.  
-🟥 9. Design `silver.customer_satellite` (SCD2): choose descriptive attributes (country, segment), define SCD2 columns (`effective_from`, `effective_to`, `is_current`), and compute change hash.  
-🟥 10. Implement SCD2 change detection: window over BK, compare change hashes, close/open rows with correct timestamps; ensure no overlaps and time-travel correctness.  
-🟥 11. Add a second satellite (optional but recommended): `silver.product_satellite` for category/brand with SCD2 handling and change hash.  
-🟥 12. Performance & storage: choose partitioning/Z-ORDER (e.g., by `effective_from` or `order_date`), compact small files, set table properties (e.g., retention/VACUUM policy).  
-🟥 13. Data quality & RI validation: cardinality checks (1:1 hubs, 1:N link), orphan detection, duplicate rates; publish a DV QA report table with metrics per entity.  
-🟥 14. Documentation & contracts: publish DV schema contracts, Mermaid diagram (hubs/links/sats), BK→HK rules, SCD2 policy, and integration notes for Gold derivations.  
-🟥 15. Integration validation: derive a thin Gold (e.g., `sales_daily`) from DV components and reconcile KPIs vs existing Gold; write a short runbook and rollback steps.  
+**Tasks (numbered)**  
+
+1) 🟥 [DBX-DE-Prof][Modeling][Governance]  
+Define Data Vault standards: naming conventions, BK normalization (upper/trim), hash algorithm (e.g., sha2), delimiter policy, null handling, `record_source`, and audit columns (`load_ts`, `batch_id`).  
+
+2) 🟥 [DBX-DE-Assoc][Delta-Basics][Modeling]  
+Build `silver.customer_hub`: deduplicate/harmonize business keys, compute `customer_hk`, enforce uniqueness (constraints/checks), add lineage/audit fields.  
+
+3) 🟥 [DBX-DE-Assoc][Delta-Basics][Modeling]  
+Build `silver.product_hub`: normalize `sku/product_code`, compute `product_hk`, enforce uniqueness, and add lineage/audit fields.  
+
+4) 🟥 [DBX-DE-Assoc][Modeling]  
+Build `silver.calendar_hub`: generate required date range, decide natural vs hashed key (`date_key` vs `date_hk`), and persist attributes (year, month, day).  
+
+5) 🟥 [DBX-DE-Assoc][Delta-MERGE][Testing]  
+Implement idempotent hub loads: MERGE on BK hashes or deterministic `replaceWhere` windows; validate re-run yields identical end state.  
+
+6) 🟥 [DBX-DE-Assoc][Modeling]  
+Design `silver.sales_link`: define grain (e.g., order_line), compute `sales_lk` as hash of participating hub keys, carry minimal invariants (e.g., source_system).  
+
+7) 🟥 [DBX-DE-Assoc][Testing]  
+Resolve FKs from cleaned sales to hubs: handle late-arriving/unknown keys with sentinel HKs, log exceptions, and persist a reconciliation table.  
+
+8) 🟥 [DBX-DE-Assoc][Delta-MERGE][Testing]  
+Load `silver.sales_link` idempotently: apply constraints (non-null HKs), RI checks (anti-joins), and uniqueness on `sales_lk`; measure violations and fix.  
+
+9) 🟥 [DBX-DE-Prof][Modeling]  
+Design `silver.customer_satellite` (SCD2): choose descriptive attributes (country, segment), define SCD2 columns (`effective_from`, `effective_to`, `is_current`), and compute change hash.  
+
+10) 🟥 [DBX-DE-Assoc][Spark-Aggregations][Testing]  
+Implement SCD2 change detection: window over BK, compare change hashes, close/open rows with correct timestamps; ensure no overlaps and time-travel correctness.  
+
+11) 🟥 [DBX-DE-Assoc][Modeling]  
+Add a second satellite (optional but recommended): `silver.product_satellite` for category/brand with SCD2 handling and change hash.  
+
+12) 🟥 [DBX-DE-Assoc][Platform][Optimization]  
+Performance & storage: choose partitioning/Z-ORDER (e.g., by `effective_from` or `order_date`), compact small files, set table properties (e.g., retention/VACUUM policy).  
+
+13) 🟥 [DBX-DE-Prof][Testing][Monitoring-Logs]  
+Data quality & RI validation: cardinality checks (1:1 hubs, 1:N link), orphan detection, duplicate rates; publish a DV QA report table with metrics per entity.  
+
+14) 🟥 [DBX-DE-Prof][Governance][Docs]  
+Documentation & contracts: publish DV schema contracts, Mermaid diagram (hubs/links/sats), BK→HK rules, SCD2 policy, and integration notes for Gold derivations.  
+
+15) 🟥 [DBX-DE-Prof][Testing][Ops]  
+Integration validation: derive a thin Gold (e.g., `sales_daily`) from DV components and reconcile KPIs vs existing Gold; write a short runbook and rollback steps.  
+
 
 **User Stories (breakdown)**  
 - As a DE, I create hubs/links/satellites that integrate with existing Silver/Gold contracts.  
@@ -2307,21 +2339,51 @@ As a Data Analyst, I want to implement advanced segmentation logic and dynamic d
  - Accessibility: color contrast ≥ 4.5:1, keyboard focus order set, alt text on key visuals, consistent formats.  
 
 **Tasks**  
-🟨 1. Define dynamic segmentation rules (RFM buckets, churn cutoff, CLV tiers); document defaults.  
-🟨 2. Implement What-if parameters (recency window, churn cutoff, CLV tier cutpoints).  
-🟨 3. Build parameter/measure tables; bind measures to parameters.  
-🟨 4. Create field parameters for dimension and measure switching; wire to visuals.  
-🟨 5. Create drill-through pages (Segment detail, Customer detail) with Back buttons.  
-🟨 6. Add tooltip pages (mini profile).  
-🟨 7. Add a Methods banner (DAX) with active thresholds and snapshot.  
-🟩 8. Connect to Gold `customer_360` and `customer_scores_gold`; validate relationships/counts.  
-🟩 9. Implement and test RLS (BrandManager, Executive) in Desktop/Service.  
-🟨 10. Optimize performance (reduce visuals, aggregations if needed, avoid high-card slicers).  
-🟨 11. Configure bookmarks and sync slicers; verify interactions.  
-🟨 12. Accessibility pass (contrast, focus order, alt text, formats).  
-🟨 13. Validate cross-highlighting and edge cases (empty/ALL segments, mobile).  
-🟨 14. Document thresholds, navigation map, screenshots, RLS notes in README.  
-🟨 15. (Optional) Calculation groups for dynamic formatting/switching.  
+
+🟨 [DBX-DA-Assoc][Modeling]
+Define dynamic segmentation rules (RFM buckets, churn cutoff, CLV tiers); document defaults.
+
+🟨 [DBX-DA-Assoc][Dashboards]
+Implement What-if parameters (recency window, churn cutoff, CLV tier cutpoints).
+
+🟨 [DBX-DA-Assoc][Dashboards][Modeling]
+Build parameter/measure tables; bind measures to parameters.
+
+🟨 [DBX-DA-Assoc][Dashboards][Modeling]
+Create field parameters for dimension and measure switching; wire to visuals.
+
+🟨 [DBX-DA-Assoc][Dashboards]
+Create drill-through pages (Segment detail, Customer detail) with Back buttons.
+
+🟨 [DBX-DA-Assoc][Dashboards]
+Add tooltip pages (mini profile).
+
+🟨 [DBX-DA-Assoc][Dashboards][Docs]
+Add a Methods banner (DAX) with active thresholds and snapshot.
+
+🟩 [DBX-DA-Assoc][Platform][Modeling]
+Connect to Gold customer_360 and customer_scores_gold; validate relationships/counts.
+
+🟩 [DBX-DA-Assoc][Governance][Security]
+Implement and test RLS (BrandManager, Executive) in Desktop/Service.
+
+🟨 [DBX-DA-Assoc][Optimization][Performance]
+Optimize performance (reduce visuals, aggregations if needed, avoid high-card slicers).
+
+🟨 [DBX-DA-Assoc][Dashboards]
+Configure bookmarks and sync slicers; verify interactions.
+
+🟨 [DBX-DA-Assoc][Accessibility]
+Accessibility pass (contrast, focus order, alt text, formats).
+
+🟨 [DBX-DA-Assoc][Testing][Dashboards]
+Validate cross-highlighting and edge cases (empty/ALL segments, mobile).
+
+🟨 [DBX-DA-Assoc][Docs][Governance]
+Document thresholds, navigation map, screenshots, RLS notes in README.
+
+🟨 [DBX-DA-Assoc][Modeling][Optional]
+(Optional) Calculation groups for dynamic formatting/switching.
 
 **User Stories (breakdown)**  
 - As a DA, I deliver dynamic segmentation with What‑if parameters and drill‑through.  
