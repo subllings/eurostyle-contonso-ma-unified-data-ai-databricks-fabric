@@ -1259,7 +1259,7 @@ As a Data Scientist, I want to score churn/CLV and join them into Customer 360 s
 - Databricks: [Batch inference patterns](https://docs.databricks.com/machine-learning/model-inference/index.html), [Delta MERGE](https://docs.databricks.com/delta/merge.html)  
 - Explainability: [Interpretable ML](https://christophm.github.io/interpretable-ml-book/)  
 - Data quality & drift: [Evidently](https://docs.evidentlyai.com/) (PSI, drift), Great Expectations for schema checks  
- - Microsoft Purview — Connect Azure Databricks Unity Catalog: https://learn.microsoft.com/purview/register-scan-azure-databricks-unity-catalog  
+ - [Microsoft Purview — Connect Azure Databricks Unity Catalog](https://learn.microsoft.com/purview/register-scan-azure-databricks-unity-catalog)  
 
 **Key Concepts**:  
 - Idempotent batch scoring: partition by `as_of_date` and write with MERGE/overwrite-by-partition; include `_SUCCESS`/manifest when exporting.  
