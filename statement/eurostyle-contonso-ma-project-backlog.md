@@ -757,21 +757,53 @@ As a Data Scientist, I want to perform **Exploratory Data Analysis (EDA)** to un
  - Data dictionary updated or created for key fields used in labels/features (e.g., last_activity_date, net_margin).  
 
 **Tasks**:  
-🟥 1) [DBX-ML-Assoc][EDA] Load Bronze tables and sample safely for iteration (record table names, counts, and sample logic).  
-🟥 2) [DBX-ML-Assoc][EDA] Generate quick profiles (distributions, missingness, outliers) and capture shapes/head/tail for reproducibility.  
-🟥 3) [DBX-ML-Assoc][Feature-Engineering][DBX-ML-Assoc][EDA] Map entities/joins needed for churn and CLV (customers, transactions, products, brand dimension).  
-🟥 4) [DBX-ML-Assoc][Feature-Engineering] Define churn = inactivity > 90 days; compute last_activity_date per customer and create label churn_90d.  
-🟥 5) [DBX-ML-Assoc][EDA] Draft CLV definition (12-month net margin) and required inputs (gross revenue, returns, costs).  
-🟥 6) [DBX-ML-Assoc][EDA] Create leakage checklist; flag/remove fields with future info (e.g., cancellation_date after cutoff).  
-🟥 7) [DBX-ML-Assoc][Splits] Decide split protocol: time-based cutoff and/or GroupKFold by customer; freeze seed; persist split artifacts.  
-🟥 8) [DBX-ML-Assoc][Metrics] Implement rule-based churn baseline (e.g., inactive > X days) and compute AUC/PR‑AUC on validation.  
-🟥 9) [DBX-ML-Assoc][Feature-Engineering] Compute RFM features and segment customers; record segment distributions.  
-🟥 10) [DBX-ML-Prof][Monitoring] Compare EuroStyle vs Contoso distributions; quantify overlaps; run drift checks (e.g., PSI/KS on top features).  
-🟥 11) [DBX-ML-Assoc][MLflow] Initialize MLflow experiment; log baseline runs, parameters (churn_horizon, cutoff_date), and artifacts (plots/tables).  
-🟥 12) [DBX-ML-Assoc][EDA] Compile prioritized data-quality issue list with owners/severity and proposed fixes (feeds Feature 2.2 and DE backlog).  
-🟥 13) [DBX-ML-Assoc][UC] Create data risk log (PII handling, leakage risks, gaps) and share in team space.  
-🟥 14) [DBX-ML-Assoc][EDA] Produce and commit an EDA notebook and a 1–2 page readout; link them in this backlog.  
-🟥 15) [DBX-ML-Assoc][EDA] Update data dictionary for key fields; note any ambiguous semantics to resolve with DA/DE.  
+**Tasks**
+
+1) 🟥 [DBX-ML-Assoc][EDA]  
+Load Bronze tables and sample safely for iteration (record table names, counts, and sample logic).  
+
+2) 🟥 [DBX-ML-Assoc][EDA]  
+Generate quick profiles (distributions, missingness, outliers) and capture shapes/head/tail for reproducibility.  
+
+3) 🟥 [DBX-ML-Assoc][EDA][Feature-Engineering]  
+Map entities/joins needed for churn and CLV (customers, transactions, products, brand dimension).  
+
+4) 🟥 [DBX-ML-Assoc][Feature-Engineering]  
+Define churn = inactivity > 90 days; compute last_activity_date per customer and create label churn_90d.  
+
+5) 🟥 [DBX-ML-Assoc][EDA]  
+Draft CLV definition (12-month net margin) and required inputs (gross revenue, returns, costs).  
+
+6) 🟥 [DBX-ML-Assoc][EDA]  
+Create leakage checklist; flag/remove fields with future info (e.g., cancellation_date after cutoff).  
+
+7) 🟥 [DBX-ML-Assoc][Splits]  
+Decide split protocol: time-based cutoff and/or GroupKFold by customer; freeze seed; persist split artifacts.  
+
+8) 🟥 [DBX-ML-Assoc][Metrics]  
+Implement rule-based churn baseline (e.g., inactive > X days) and compute AUC/PR-AUC on validation.  
+
+9) 🟥 [DBX-ML-Assoc][Feature-Engineering]  
+Compute RFM features and segment customers; record segment distributions.  
+
+10) 🟥 [DBX-ML-Prof][Monitoring]  
+Compare EuroStyle vs Contoso distributions; quantify overlaps; run drift checks (e.g., PSI/KS on top features).  
+
+11) 🟥 [DBX-ML-Assoc][MLflow]  
+Initialize MLflow experiment; log baseline runs, parameters (churn_horizon, cutoff_date), and artifacts (plots/tables).  
+
+12) 🟥 [DBX-ML-Assoc][EDA]  
+Compile prioritized data-quality issue list with owners/severity and proposed fixes (feeds Feature 2.2 and DE backlog).  
+
+13) 🟥 [DBX-ML-Assoc][UC]  
+Create data risk log (PII handling, leakage risks, gaps) and share in team space.  
+
+14) 🟥 [DBX-ML-Assoc][EDA]  
+Produce and commit an EDA notebook and a 1–2 page readout; link them in this backlog.  
+
+15) 🟥 [DBX-ML-Assoc][EDA]  
+Update data dictionary for key fields; note any ambiguous semantics to resolve with DA/DE.  
+
 🟦 Note: Governance — Tag PII in Purview (classifications/labels) for customer fields surfaced in EDA; link glossary terms to churn/CLV concepts.
 
 **User Stories (breakdown)**  
