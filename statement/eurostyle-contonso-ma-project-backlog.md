@@ -896,20 +896,50 @@ As a Data Scientist, I want RFM and behavioral features to build churn & CLV mod
  - Join keys verified against Gold (`customer_360_gold`) with row counts and uniqueness checks.  
 
 **Tasks**:  
-🟥 1) Fix an as‑of date (T) and feature windows; record source snapshot/Delta versions.  
-🟥 2) Compute RFM anchored at T (Recency days since last tx ≤ T; Frequency count in last 365d; Monetary sum/avg).  
-🟥 3) Add basket diversity (distinct categories in last 12m) and intensity ratios (category share).  
-🟥 4) Add cross‑brand features (has_both_brands, brand_count, brand_switches).  
-🟥 5) Run a leakage checklist for all engineered features; ensure they use only pre‑T information.  
-🟥 6) Correlation and mutual‑information screening; deduplicate highly similar features; log decisions.  
-🟥 7) Cardinality and constant checks; drop extreme high‑card/constant fields; set thresholds and document.  
-🟥 8) Define imputation/log transforms; fit on TRAIN only; persist transform params (e.g., means/medians) as artifacts.  
-🟥 9) Persist features to Delta as versioned tables (e.g., `silver.features_rfm_v1`, `silver.customer_features_v1`) with metadata columns (version, created_ts, source_snapshot, as_of_date).  
-🟥 10) Track feature set metadata in MLflow (params: version, feature_count; artifacts: schema JSON, data dictionary).  
-🟥 11) Define consumption contract with DE/DA (schema, business keys, refresh cadence) for integration into `customer_360_gold`; validate joinability and counts.  
-🟥 12) Train quick baselines on sample data using the features; log metrics to MLflow; compare to rule/RFM yardsticks.  
-🟥 13) Run data quality checks (Great Expectations/Evidently) on feature tables (nulls, ranges, freshness); save reports.  
-🟥 14) Register access and documentation for the feature tables (owners, permissions, table comments).  
+**Tasks**
+
+1) 🟥 [DBX-ML-Assoc][EDA]  
+Fix an as-of date (T) and feature windows; record source snapshot/Delta versions.  
+
+2) 🟥 [DBX-ML-Assoc][Feature-Engineering]  
+Compute RFM anchored at T (Recency days since last tx ≤ T; Frequency count in last 365d; Monetary sum/avg).  
+
+3) 🟥 [DBX-ML-Assoc][Feature-Engineering]  
+Add basket diversity (distinct categories in last 12m) and intensity ratios (category share).  
+
+4) 🟥 [DBX-ML-Assoc][Feature-Engineering]  
+Add cross-brand features (has_both_brands, brand_count, brand_switches).  
+
+5) 🟥 [DBX-ML-Assoc][EDA]  
+Run a leakage checklist for all engineered features; ensure they use only pre-T information.  
+
+6) 🟥 [DBX-ML-Assoc][Feature-Engineering]  
+Correlation and mutual-information screening; deduplicate highly similar features; log decisions.  
+
+7) 🟥 [DBX-ML-Assoc][Feature-Engineering]  
+Cardinality and constant checks; drop extreme high-card/constant fields; set thresholds and document.  
+
+8) 🟥 [DBX-ML-Assoc][Feature-Engineering]  
+Define imputation/log transforms; fit on TRAIN only; persist transform params (e.g., means/medians) as artifacts.  
+
+9) 🟥 [DBX-ML-Assoc][Feature-Store]  
+Persist features to Delta as versioned tables (e.g., `silver.features_rfm_v1`, `silver.customer_features_v1`) with metadata columns (version, created_ts, source_snapshot, as_of_date).  
+
+10) 🟥 [DBX-ML-Assoc][MLflow]  
+Track feature set metadata in MLflow (params: version, feature_count; artifacts: schema JSON, data dictionary).  
+
+11) 🟥 [DBX-ML-Assoc][UC]  
+Define consumption contract with DE/DA (schema, business keys, refresh cadence) for integration into `customer_360_gold`; validate joinability and counts.  
+
+12) 🟥 [DBX-ML-Assoc][MLflow]  
+Train quick baselines on sample data using the features; log metrics to MLflow; compare to rule/RFM yardsticks.  
+
+13) 🟥 [DBX-ML-Prof][Monitoring]  
+Run data quality checks (Great Expectations/Evidently) on feature tables (nulls, ranges, freshness); save reports.  
+
+14) 🟥 [DBX-ML-Assoc][UC]  
+Register access and documentation for the feature tables (owners, permissions, table comments).  
+
 
 **User Stories (breakdown)**  
 - As a DS, I compute and persist RFM and behavior features with versioning.  
