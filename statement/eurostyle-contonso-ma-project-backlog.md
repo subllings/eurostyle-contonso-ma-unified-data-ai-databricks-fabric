@@ -13,12 +13,12 @@
   - [Epic 4 – Platform Integration (Databricks ↔ Fabric)](#epic-4)
   - [Epic 5 – Optional Extensions](#epic-5)
 - Features
-  - Epic 1: [1.1](#feature-1-1), [1.2](#feature-1-2), [1.3](#feature-1-3)
-  - Governance: [G.1](#feature-g-1)
-  - Epic 2: [2.1](#feature-2-1), [2.2](#feature-2-2), [2.3](#feature-2-3), [2.4](#feature-2-4)
-  - Epic 3: [3.1](#feature-3-1), [3.2](#feature-3-2), [3.3](#feature-3-3), [3.4](#feature-3-4)
-  - Epic 4: [4.1](#feature-4-1), [4.2](#feature-4-2), [4.3](#feature-4-3)
-  - Epic 5: [5.1](#feature-5-1), [5.2](#feature-5-2), [5.3](#feature-5-3), [5.4](#feature-5-4)
+  - Epic 1: [Feature 1.1](#feature-1-1), [Feature 1.2](#feature-1-2), [Feature 1.3](#feature-1-3)
+  - Governance: [Feature G.1](#feature-g-1)
+  - Epic 2: [Feature 2.1](#feature-2-1), [Feature 2.2](#feature-2-2), [Feature 2.3](#feature-2-3), [Feature 2.4](#feature-2-4)
+  - Epic 3: [Feature 3.1](#feature-3-1), [Feature 3.2](#feature-3-2), [Feature 3.3](#feature-3-3), [Feature 3.4](#feature-3-4)
+  - Epic 4: [Feature 4.1](#feature-4-1), [Feature 4.2](#feature-4-2), [Feature 4.3](#feature-4-3)
+  - Epic 5: [Feature 5.1](#feature-5-1), [Feature 5.2](#feature-5-2), [Feature 5.3](#feature-5-3), [Feature 5.4](#feature-5-4)
 
 
 ## Certifications — where to study and how this backlog maps
@@ -247,13 +247,13 @@ TBD | Draft | M | -
 As a Data Engineer, I want to ingest EuroStyle and Contoso CSVs into Bronze so the teams can start analyzing real data.  
 
 **Learning Resources**:  
-- [Medallion Architecture](https://docs.databricks.com/en/lakehouse/medallion-architecture.html)  
+- [Medallion Architecture](https://docs.databricks.com/aws/en/lakehouse/medallion)  
 - [Delta Lake Basics](https://docs.databricks.com/en/delta/index.html)  
 - [What is Delta Lake in Azure Databricks?](https://learn.microsoft.com/azure/databricks/delta/)
 - [Apache Spark&trade; Tutorial: Getting Started with Apache Spark on Databricks](https://www.databricks.com/spark/getting-started-with-apache-spark/dataframes#visualize-the-dataframe)
 - [PySpark DataFrame API](https://spark.apache.org/docs/latest/api/python/reference/pyspark.sql/dataframe.html)  
 - [Tutorial: Build an ETL pipeline with Lakeflow Declarative Pipelines](https://learn.microsoft.com/azure/databricks/getting-started/data-pipeline-get-started)
-- [Power BI Databricks connector – DirectQuery](https://learn.microsoft.com/power-bi/connect-data/desktop-azure-databricks?tabs=directquery)
+
 - [Unity Catalog – create/manage tables](https://docs.databricks.com/aws/en/tables/managed)
 - [Databricks SQL – CREATE VIEW syntax](https://learn.microsoft.com/azure/databricks/sql/language-manual/sql-ref-syntax-ddl-create-view)
 - [PySpark DataFrame.withColumnRenamed](https://spark.apache.org/docs/latest/api/python/reference/pyspark.sql/api/pyspark.sql.DataFrame.withColumnRenamed.html)
@@ -394,8 +394,8 @@ As a Data Engineer, I want Silver tables with clean, harmonized schemas so Analy
  - [Star schema guidance (natural/business vs surrogate keys)](https://learn.microsoft.com/power-bi/guidance/star-schema)  
  - [Delta Lake — overwrite specific partitions with replaceWhere](https://learn.microsoft.com/azure/databricks/delta/delta-batch#overwrite-specific-partitions-with-replacewhere)  
  - [Microsoft Purview — Connect Azure Databricks Unity Catalog](https://learn.microsoft.com/purview/register-scan-azure-databricks-unity-catalog)  
- - [Microsoft Purview — Classifications and sensitivity labels](https://learn.microsoft.com/purview/sensitivity-labels-overview)  
- - [Microsoft Purview — Glossary and business terms](https://learn.microsoft.com/purview/glossary-terms)
+ - [Microsoft Purview — Classifications and sensitivity labels](https://learn.microsoft.com/en-us/purview/sensitivity-labels)  
+ - [Microsoft Purview — Glossary and business terms](https://learn.microsoft.com/en-us/purview/purview-glossary)
 
 **Key Concepts**:  
 - Silver = cleaned and standardized layer.  
@@ -805,8 +805,8 @@ As a Data Scientist, I want to perform **Exploratory Data Analysis (EDA)** to un
  - [Imbalanced-learn: handling class imbalance](https://imbalanced-learn.org/stable/user_guide.html)  
  - [Time-based and grouped CV (scikit-learn)](https://scikit-learn.org/stable/modules/cross_validation.html#cross-validation-iterators)  
  - [Delta Lake time travel for reproducibility](https://docs.delta.io/latest/delta-utility.html#time-travel)  
- - Microsoft Purview — Connect Azure Databricks Unity Catalog: https://learn.microsoft.com/purview/register-scan-azure-databricks-unity-catalog  
- - Microsoft Purview — Glossary: https://learn.microsoft.com/purview/glossary-terms  
+ 
+ - [Microsoft Purview — Connect Azure Databricks Unity Catalog](https://docs.delta.io/latest/delta-utility.html#time-travel)
 
 **Key Concepts**:  
 - **EDA (Exploratory Data Analysis)** = profiling data to find patterns, missing values, distributions.  
@@ -835,49 +835,49 @@ As a Data Scientist, I want to perform **Exploratory Data Analysis (EDA)** to un
 1) 🟥 [DBX-ML-Assoc][EDA]  
 Load Bronze tables and sample safely for iteration (record table names, counts, and sample logic).  
 
-2) 🟥 [DBX-ML-Assoc][EDA]  
+1) 🟥 [DBX-ML-Assoc][EDA]  
 Generate quick profiles (distributions, missingness, outliers) and capture shapes/head/tail for reproducibility.  
 
-3) 🟥 [DBX-ML-Assoc][EDA][Feature-Engineering]  
+1) 🟥 [DBX-ML-Assoc][EDA][Feature-Engineering]  
 Map entities/joins needed for churn and CLV (customers, transactions, products, brand dimension).  
 
-4) 🟥 [DBX-ML-Assoc][Feature-Engineering]  
+1) 🟥 [DBX-ML-Assoc][Feature-Engineering]  
 Define churn = inactivity > 90 days; compute last_activity_date per customer and create label churn_90d.  
 
-5) 🟥 [DBX-ML-Assoc][EDA]  
+1) 🟥 [DBX-ML-Assoc][EDA]  
 Draft CLV definition (12-month net margin) and required inputs (gross revenue, returns, costs).  
 
-6) 🟥 [DBX-ML-Assoc][EDA]  
+1) 🟥 [DBX-ML-Assoc][EDA]  
 Create leakage checklist; flag/remove fields with future info (e.g., cancellation_date after cutoff).  
 
-7) 🟥 [DBX-ML-Assoc][Splits]  
+1) 🟥 [DBX-ML-Assoc][Splits]  
 Decide split protocol: time-based cutoff and/or GroupKFold by customer; freeze seed; persist split artifacts.  
 
-8) 🟥 [DBX-ML-Assoc][Metrics]  
+1) 🟥 [DBX-ML-Assoc][Metrics]  
 Implement rule-based churn baseline (e.g., inactive > X days) and compute AUC/PR-AUC on validation.  
 
-9) 🟥 [DBX-ML-Assoc][Feature-Engineering]  
+1) 🟥 [DBX-ML-Assoc][Feature-Engineering]  
 Compute RFM features and segment customers; record segment distributions.  
 
-10) 🟥 [DBX-ML-Prof][Monitoring]  
+1)  🟥 [DBX-ML-Prof][Monitoring]  
 Compare EuroStyle vs Contoso distributions; quantify overlaps; run drift checks (e.g., PSI/KS on top features).  
 
-11) 🟥 [DBX-ML-Assoc][MLflow]  
+1)  🟥 [DBX-ML-Assoc][MLflow]  
 Initialize MLflow experiment; log baseline runs, parameters (churn_horizon, cutoff_date), and artifacts (plots/tables).  
 
-12) 🟥 [DBX-ML-Assoc][EDA]  
+1)  🟥 [DBX-ML-Assoc][EDA]  
 Compile prioritized data-quality issue list with owners/severity and proposed fixes (feeds Feature 2.2 and DE backlog).  
 
-13) 🟥 [DBX-ML-Assoc][UC]  
+1)  🟥 [DBX-ML-Assoc][UC]  
 Create data risk log (PII handling, leakage risks, gaps) and share in team space.  
 
-14) 🟥 [DBX-ML-Assoc][EDA]  
+1)  🟥 [DBX-ML-Assoc][EDA]  
 Produce and commit an EDA notebook and a 1–2 page readout; link them in this backlog.  
 
-15) 🟥 [DBX-ML-Assoc][EDA]  
+1)  🟥 [DBX-ML-Assoc][EDA]  
 Update data dictionary for key fields; note any ambiguous semantics to resolve with DA/DE.  
 
-16) 🟦 [Governance]  
+1)  🟦 [Governance]  
 Tag PII in Purview (classifications/labels) for customer fields surfaced in EDA; link glossary terms to churn/CLV concepts.  
 
 
@@ -950,8 +950,7 @@ As a Data Scientist, I want RFM and behavioral features to build churn & CLV mod
  - [Evidently AI: data/drift reports](https://docs.evidentlyai.com/)  
  - [scikit-learn preprocessing (impute/scale/transform)](https://scikit-learn.org/stable/modules/preprocessing.html)  
  - [scikit-learn feature selection (mutual information, variance, etc.)](https://scikit-learn.org/stable/modules/feature_selection.html)  
- - Microsoft Purview — Glossary and business terms: https://learn.microsoft.com/purview/glossary-terms  
- - Microsoft Purview — Data Quality for UC: https://learn.microsoft.com/purview/unified-catalog-data-quality-azure-databricks-unity-catalog  
+ - [Microsoft Purview — Data Quality for UC](https://learn.microsoft.com/purview/unified-catalog-data-quality-azure-databricks-unity-catalog)  
 
 **Key Concepts**:  
 - **RFM** = **Recency, Frequency, Monetary** value (classic segmentation method).  
@@ -1639,11 +1638,10 @@ TBD | Draft | M | -
 As an Executive, I want consolidated GMV, AOV, and margin so I can track EuroStyle + Contoso performance.  
 
 **Learning Resources**:  
-- [RLS in Power BI Desktop (define roles)](https://learn.microsoft.com/power-bi/transform-model/desktop-rls)  
+- [RLS in Power BI Desktop (define roles)](https://learn.microsoft.com/en-us/fabric/security/service-admin-row-level-security)  
 - [Performance Analyzer (optimize visuals)](https://learn.microsoft.com/power-bi/create-reports/desktop-performance-analyzer)  
 - [Bookmarks (demo flow)](https://learn.microsoft.com/power-bi/create-reports/desktop-bookmarks)  
-- [Use aggregations in Power BI Desktop (model-level, DirectQuery/Hybrid)](https://learn.microsoft.com/power-bi/transform-model/aggregations-aggregations)  
-- [Aggregate data in a visualization (sum, average, etc.)](https://learn.microsoft.com/power-bi/create-reports/desktop-aggregate-data)  
+- [Aggregate data in a visualization (sum, average, etc.)](https://learn.microsoft.com/en-us/power-bi/create-reports/service-aggregates)  
 - [Small multiples for brand/region comparisons](https://learn.microsoft.com/power-bi/visuals/power-bi-visualization-small-multiples)  
 - [Field parameters (flexible dimensions)](https://learn.microsoft.com/power-bi/create-reports/power-bi-field-parameters)
 - [Create report bookmarks in Power BI to share insights and build stories](https://learn.microsoft.com/en-us/power-bi/create-reports/desktop-bookmarks)
@@ -1771,9 +1769,8 @@ As a Marketing Manager, I want to see customer segments & churn risk so I can de
  - [Bookmarks and Selection pane](https://learn.microsoft.com/en-us/power-bi/create-reports/desktop-bookmarks)  
  - [Performance Analyzer](https://learn.microsoft.com/en-us/power-bi/create-reports/desktop-performance-analyzer)  
  - [Accessibility in Power BI](https://learn.microsoft.com/en-us/power-bi/create-reports/desktop-accessibility-creating-reports)  
- - [Aggregations and composite models](https://learn.microsoft.com/en-us/power-bi/enterprise/aggregations-advanced)  
  - [Row-level security (RLS) in Power BI models](https://learn.microsoft.com/en-us/power-bi/enterprise/service-admin-rls)  
- - [Direct Lake overview (Fabric)](https://learn.microsoft.com/en-us/fabric/data-warehouse/direct-lake-overview)  
+ - [Direct Lake overview (Fabric)](https://learn.microsoft.com/en-us/fabric/fundamentals/direct-lake-overview)  
 
 **Key Concepts**:  
 - Customer segmentation = group customers by behavior (RFM).  
@@ -1942,7 +1939,7 @@ As a Data Engineer, I want Gold marts exported to Fabric so dashboards can consu
 
 **Learning Resources**:  
 - [Fabric Lakehouse Overview](https://learn.microsoft.com/en-us/fabric/data-engineering/lakehouse-overview)  
-- [Fabric Data Pipelines](https://learn.microsoft.com/en-us/fabric/data-factory/)  
+- [Differences between Azure Data Factory and Fabric Data Factory](https://learn.microsoft.com/en-us/fabric/data-factory/compare-fabric-data-factory-and-azure-data-factory)  
 - [Databricks Parquet & Delta Export](https://docs.databricks.com/delta/delta-batch.html)  
 
 For your information
@@ -2176,7 +2173,7 @@ As a Data Scientist, I want churn and CLV scores exported from Databricks into F
 **Learning Resources**:  
 - [Batch Scoring on Databricks](https://docs.databricks.com/en/machine-learning/model-inference/index.html)  
 - [MLflow Model Registry](https://mlflow.org/docs/latest/model-registry.html)  
-- [Fabric Data Pipelines](https://learn.microsoft.com/en-us/fabric/data-factory/)  
+- [Fabric Data Factory](https://learn.microsoft.com/en-us/fabric/data-factory/)  
 
 **Key Concepts**:  
 - Batch-scored outputs (`customer_id`, churn probability, CLV value) must be stored in Gold.  
@@ -2448,9 +2445,8 @@ As a Data Analyst, I want to implement advanced segmentation logic and dynamic d
  - [Bookmarks and Selection pane](https://learn.microsoft.com/en-us/power-bi/create-reports/desktop-bookmarks)  
  - [Performance Analyzer](https://learn.microsoft.com/en-us/power-bi/create-reports/desktop-performance-analyzer)  
  - [Accessibility in Power BI](https://learn.microsoft.com/en-us/power-bi/create-reports/desktop-accessibility-creating-reports)  
- - [Aggregations and composite models](https://learn.microsoft.com/en-us/power-bi/enterprise/aggregations-advanced)  
  - [Row-level security (RLS) in Power BI models](https://learn.microsoft.com/en-us/power-bi/enterprise/service-admin-rls)  
- - [Direct Lake and Lakehouse datasets (Fabric)](https://learn.microsoft.com/en-us/fabric/data-warehouse/direct-lake-overview)  
+
 
 **Key Concepts**  
 - Advanced segmentation = grouping customers dynamically by RFM, churn risk, CLV tiers.  
@@ -2602,7 +2598,7 @@ As a Data Scientist, I want to implement advanced survival analysis and probabil
 
 #### PhD-Level / Advanced References  
 - [Harrell (2015) — Regression Modeling Strategies (Springer, 2nd ed.)](https://link.springer.com/book/10.1007/978-3-319-19425-7)  
-- [Klein & Moeschberger (2005) — Survival Analysis: Techniques for Censored and Truncated Data (Springer)](https://link.springer.com/book/10.1007/0-387-21645-6)  
+- [Klein & Moeschberger (2005) — Survival Analysis: Techniques for Censored and Truncated Data (Springer)](https://link.springer.com/chapter/10.1007/0-387-21645-6_13)  
 - [Hosmer, Lemeshow & May (2008) — Applied Survival Analysis: Regression Modeling of Time-to-Event Data (Wiley)](https://www.wiley.com/en-us/Applied+Survival+Analysis%3A+Regression+Modeling+of+Time+to+Event+Data%2C+2nd+Edition-p-9780471754992)  
 - [Bishop (2006) — Pattern Recognition and Machine Learning (Springer)](https://www.springer.com/gp/book/9780387310732)  
 - [Goodfellow, Bengio & Courville (2016) — Deep Learning (MIT Press)](https://www.deeplearningbook.org/)  
