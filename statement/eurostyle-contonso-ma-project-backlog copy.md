@@ -593,9 +593,7 @@ Document schemas and assumptions: contracts for all marts, margin proxy method, 
 15) 🟥 [DBX-DE-Assoc][UC-Permissions]  
 Register helper views (e.g., top-level selects), set table comments/permissions, and finalize hand-off notes.  
 
-
-
-16) 🟦  
+16) 🟦 [Governance] 
 After first Gold load, run a Purview UC scan and validate assets and lineage for `gold.sales_daily`; attach evidence.
 
 
