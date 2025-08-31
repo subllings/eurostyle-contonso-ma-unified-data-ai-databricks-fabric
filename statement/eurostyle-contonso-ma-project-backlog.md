@@ -1851,37 +1851,54 @@ For your information
 
 
 **Tasks**  
-🟥 1) List Gold tables to export (e.g., `sales_daily_gold`, `customer_360_gold`, `customer_scores_gold`) and confirm owners.  
+**Tasks (numbered)**  
 
-🟥 2) Define export layout: base path per table, partitioning (if any), file size targets, and naming (snake_case, datestamps).  
+1) 🟥 [DBX-DE-Assoc][Platform]  
+List Gold tables to export (e.g., `sales_daily_gold`, `customer_360_gold`, `customer_scores_gold`) and confirm owners.  
 
-🟥 3) Generate Parquet files; coalesce to 128–512MB per file; write `_SUCCESS`.  
+2) 🟥 [DBX-DE-Assoc][Platform]  
+Define export layout: base path per table, partitioning (if any), file size targets, and naming (snake_case, datestamps).  
 
-🟥 4) Compute row counts per table/partition; optionally compute file-level checksums (md5) and store alongside.  
+3) 🟥 [DBX-DE-Assoc][Delta-Basics]  
+Generate Parquet files; coalesce to 128–512MB per file; write `_SUCCESS`.  
 
-🟥 5) Create `release_manifest.json` capturing dataset name, version, tables, schema (name, dtype, nullability), partitions, file lists, counts, checksums, created_ts, and source snapshot (Delta version or commit).  
+4) 🟥 [DBX-DE-Assoc][Testing]  
+Compute row counts per table/partition; optionally compute file-level checksums (md5) and store alongside.  
 
-🟥 6) Dry-run export on one small table; locally verify Parquet opens and schema matches expectations.  
+5) 🟥 [DBX-DE-Prof][Modeling][Governance]  
+Create `release_manifest.json` capturing dataset name, version, tables, schema (name, dtype, nullability), partitions, file lists, counts, checksums, created_ts, and source snapshot (Delta version or commit).  
 
-🟥→🟩 7) Export to Fabric Lakehouse `/Files/dropzone/<release>/...`  
+6) 🟥 [DBX-DE-Assoc][Testing]  
+Dry-run export on one small table; locally verify Parquet opens and schema matches expectations.  
+
+7) 🟥→🟩 [DBX-DE-Assoc][Platform][Ops]  
+Export to Fabric Lakehouse `/Files/dropzone/<release>/...`  
    - **Case A – Community Edition / Free:** Download Parquet + manifest from Databricks FileStore and manually upload into Fabric Lakehouse (no direct connector available).  
    - **Case B – Trial Premium / Full Workspace:** Configure OneLake or ADLS Gen2 mount/shortcut from Databricks and write Parquet/Delta directly into Fabric Lakehouse (recommended for automation).  
 
-🟩 8) In Fabric Data Pipelines: configure file source → Lakehouse table mappings; set column types; create Delta tables.  
+8) 🟩 [DBX-DE-Assoc][Platform]  
+In Fabric Data Pipelines: configure file source → Lakehouse table mappings; set column types; create Delta tables.  
 
-🟩 9) Validate ingestion: compare counts vs manifest; check nullability/dtypes; ensure partition columns are correct.  
+9) 🟩 [DBX-DE-Assoc][Testing]  
+Validate ingestion: compare counts vs manifest; check nullability/dtypes; ensure partition columns are correct.  
 
-🟩 10) Create/verify shortcuts or views if needed for Power BI; test Direct Lake connectivity with a basic visual.  
+10) 🟩 [DBX-DA-Assoc][Dashboards][Testing]  
+Create/verify shortcuts or views if needed for Power BI; test Direct Lake connectivity with a basic visual.  
 
-🟥→🟩 11) Capture evidence (screenshots/links), store manifest and a README with steps, and note any edge cases.  
+11) 🟥→🟩 [DBX-DE-Prof][Ops][Governance]  
+Capture evidence (screenshots/links), store manifest and a README with steps, and note any edge cases.  
 
-🟥→🟩 12) Document re-run/idempotency guidance and ownership (who exports, who ingests, cadence).  
+12) 🟥→🟩 [DBX-DE-Prof][Ops]  
+Document re-run/idempotency guidance and ownership (who exports, who ingests, cadence).  
 
-🟩 13) Apply sensitivity labels and ownership metadata; add table comments/Descriptions in the Lakehouse.  
+13) 🟩 [Governance]  
+Apply sensitivity labels and ownership metadata; add table comments/Descriptions in the Lakehouse.  
 
-🟨 14) Build a tiny Direct Lake smoke report (1–2 visuals) and capture Performance Analyzer notes/screenshots.  
+14) 🟨 [DBX-DA-Assoc][Dashboards][Testing]  
+Build a tiny Direct Lake smoke report (1–2 visuals) and capture Performance Analyzer notes/screenshots.  
 
-🟥→🟩 15) Establish versioned releases and a `current` pointer/view; document rollback steps and tolerance thresholds.  
+15) 🟥→🟩 [DBX-DE-Prof][Ops][Governance]  
+Establish versioned releases and a `current` pointer/view; document rollback steps and tolerance thresholds.  
 
 
 **Deliverables**  
