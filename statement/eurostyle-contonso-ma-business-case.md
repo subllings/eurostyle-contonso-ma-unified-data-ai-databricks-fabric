@@ -162,7 +162,7 @@ You will work with **two European retail datasets** to simulate EuroStyle (North
 
 ## Detailed Deliverables
 
-For full details of tasks, acceptance criteria, and technical specifications, see the [Product Backlog](./statement/eurostyle-contonso-ma-project-backlog.md).
+For full details of tasks, acceptance criteria, and technical specifications, see the [Product Backlog](./eurostyle-contonso-ma-project-backlog.md).
 
 Note: For acronym definitions (GMV, AOV, RFM, CLV, RLS, etc.), see the repository [Glossary](../GLOSSARY.md).
 
