@@ -1014,22 +1014,54 @@ As a Data Scientist, I want baseline models for churn and CLV so I can evaluate 
 - MLflow logs: params, metrics, ROC/PR curves, calibration curve, feature importance/permutation importances; artifacts saved; run IDs and experiment name documented.  
 - Seeds fixed; code and data versions captured; no leakage (train-only fit for imputers/scalers, as-of filtering).  
 
-**Tasks (numbered)**:  
-🟥 1) Load Feature 2.2 dataset(s) and 2.1 split artifacts; verify shapes and label presence; check class balance.  
-🟥 2) Establish baselines: churn majority-class and CLV mean predictor; compute baseline metrics.  
-🟥 3) Build churn pipeline: train-only imputers/scalers + Logistic Regression (class_weight as needed); train on TRAIN.  
-🟥 4) Evaluate churn on VALID/TEST: AUC, AUCPR, accuracy; plot ROC/PR; compute thresholds @K (e.g., top 10%).  
-🟥 5) Calibrate churn probabilities (Platt or Isotonic) on VALID; report Brier score and reliability curve; re-evaluate on TEST.  
-🟥 6) Bootstrap CIs for churn metrics (e.g., AUC, AUCPR) with 500 resamples; log CIs.  
-🟥 7) Build CLV model: Random Forest Regressor (or Gradient Boosting if RF unavailable); train on TRAIN.  
-🟥 8) Evaluate CLV on VALID/TEST: RMSE, MAE, R<sup>2</sup> (and MAPE if nonzero targets); bootstrap 95% CIs.  
-🟥 9) Light tuning (1–2 hyperparams each) using VALID; document chosen params; avoid overfitting.  
-🟥 10) Segment-wise metrics: brand/region deciles for churn; error by segment for CLV; summarize deltas vs global.  
-🟥 11) Feature importance: permutation importances (or SHAP if available) for both models; log plots.  
-🟥 12) Persist artifacts: metrics CSV, ROC/PR images, calibration plot, importances; serialize pipelines; log to MLflow; record run IDs.  
-🟥 13) Reproducibility check: re-run on fixed seed; metrics within tolerance; note environment versions.  
-🟥 14) Draft scoring contract preview (inputs/outputs) for Feature 2.4; align column names and dtypes.  
-🟥 15) Handoff summary: write a short model card (purpose, data, metrics, risks, thresholds).  
+
+**Tasks**
+
+1) 🟥 [DBX-ML-Assoc][EDA]  
+Load Feature 2.2 dataset(s) and 2.1 split artifacts; verify shapes and label presence; check class balance.  
+
+2) 🟥 [DBX-ML-Assoc][Metrics]  
+Establish baselines: churn majority-class and CLV mean predictor; compute baseline metrics.  
+
+3) 🟥 [DBX-ML-Assoc][Feature-Engineering]  
+Build churn pipeline: train-only imputers/scalers + Logistic Regression (class_weight as needed); train on TRAIN.  
+
+4) 🟥 [DBX-ML-Assoc][Metrics]  
+Evaluate churn on VALID/TEST: AUC, AUCPR, accuracy; plot ROC/PR; compute thresholds @K (e.g., top 10%).  
+
+5) 🟥 [DBX-ML-Assoc][Metrics]  
+Calibrate churn probabilities (Platt or Isotonic) on VALID; report Brier score and reliability curve; re-evaluate on TEST.  
+
+6) 🟥 [DBX-ML-Prof][Experimentation]  
+Bootstrap CIs for churn metrics (e.g., AUC, AUCPR) with 500 resamples; log CIs.  
+
+7) 🟥 [DBX-ML-Assoc][Feature-Engineering]  
+Build CLV model: Random Forest Regressor (or Gradient Boosting if RF unavailable); train on TRAIN.  
+
+8) 🟥 [DBX-ML-Assoc][Metrics]  
+Evaluate CLV on VALID/TEST: RMSE, MAE, R<sup>2</sup> (and MAPE if nonzero targets); bootstrap 95% CIs.  
+
+9) 🟥 [DBX-ML-Prof][Hyperparameter-Tuning]  
+Light tuning (1–2 hyperparams each) using VALID; document chosen params; avoid overfitting.  
+
+10) 🟥 [DBX-ML-Prof][Monitoring]  
+Segment-wise metrics: brand/region deciles for churn; error by segment for CLV; summarize deltas vs global.  
+
+11) 🟥 [DBX-ML-Prof][Experimentation]  
+Feature importance: permutation importances (or SHAP if available) for both models; log plots.  
+
+12) 🟥 [DBX-ML-Assoc][MLflow]  
+Persist artifacts: metrics CSV, ROC/PR images, calibration plot, importances; serialize pipelines; log to MLflow; record run IDs.  
+
+13) 🟥 [DBX-ML-Assoc][EDA]  
+Reproducibility check: re-run on fixed seed; metrics within tolerance; note environment versions.  
+
+14) 🟥 [DBX-ML-Assoc][UC]  
+Draft scoring contract preview (inputs/outputs) for Feature 2.4; align column names and dtypes.  
+
+15) 🟥 [DBX-ML-Prof][Registry]  
+Handoff summary: write a short model card (purpose, data, metrics, risks, thresholds).  
+
 
 **Deliverables**  
 - Notebook: `notebooks/feature_2_3_model_training.ipynb` (synthetic fallback supported).  
