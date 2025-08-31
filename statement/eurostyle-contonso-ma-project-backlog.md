@@ -1849,8 +1849,8 @@ For your information
 - Row counts and optional checksums match source within tolerance; sampling spot-checks pass.  
  - Datasets are queryable from Power BI (Direct Lake) and a tiny visual loads without refresh errors. Follow Ops runbook (Appendix B) for validation checklist.  
 
-**Tasks (numbered)**  
-**Tasks (numbered)**  
+
+**Tasks**  
 🟥 1) List Gold tables to export (e.g., `sales_daily_gold`, `customer_360_gold`, `customer_scores_gold`) and confirm owners.  
 
 🟥 2) Define export layout: base path per table, partitioning (if any), file size targets, and naming (snake_case, datestamps).  
@@ -1946,21 +1946,53 @@ As a Data Analyst, I want Power BI dashboards published through Fabric so execut
 - Deploy dashboards via Fabric pipelines.  
  
 **Tasks (numbered)**:  
-1) Set up Fabric workspace artifacts (Lakehouse, semantic model) and connect to Gold tables.  
-2) Build Executive pages: theme, navigation, KPI cards (GMV, AOV, margin) with consistent currency formats and tooltips.  
-3) Build Segmentation pages: connect to `customer_scores_gold`; define relationships (customer/date); design segments and slicers.  
-4) Validate cross-highlighting behavior and performance; avoid excessively high-cardinality slicers.  
-5) Define RLS roles (e.g., `BrandManager` brand filter, `Executive` unrestricted); map to security groups.  
-6) Test RLS with "View as" for both roles; verify measures behave correctly and visuals respect filters.  
-7) Prepare Fabric Deployment Pipeline (Dev → Test); parameterize dataset connections if needed.  
-8) Promote to Test; validate dataset parameters, refresh, and fix any broken lineage.  
-9) Polish visuals, accessibility (titles/alt text), and page performance (optimize visuals, fields).  
-10) Document sharing (audience, app access), dataset/dashboards URLs, and pipeline links; capture screenshots for hand-off.  
-11) Create and publish a Fabric App with audiences; configure navigation and app permissions.  
-12) Configure dataset refresh schedules and parameters/secrets (e.g., workspace/Lakehouse bindings); verify post-promotion refresh.  
-13) Apply sensitivity labels and endorse/certify the dataset; add descriptions and ownership metadata.  
-14) Run Performance Analyzer and document actions; reduce heavy visuals/queries and optimize interactions.  
-15) Add a "How to use" + QA checklist page; verify responsiveness and accessibility; finalize hand-off pack.  
+**Tasks (numbered)**  
+
+1) 🟥 [DBX-DA-Assoc][Platform]  
+Set up Fabric workspace artifacts (Lakehouse, semantic model) and connect to Gold tables.  
+
+2) 🟥 [DBX-DA-Assoc][Dashboards]  
+Build Executive pages: theme, navigation, KPI cards (GMV, AOV, margin) with consistent currency formats and tooltips.  
+
+3) 🟥 [DBX-DA-Assoc][Dashboards]  
+Build Segmentation pages: connect to `customer_scores_gold`; define relationships (customer/date); design segments and slicers.  
+
+4) 🟥 [DBX-DA-Assoc][Dashboards][Testing]  
+Validate cross-highlighting behavior and performance; avoid excessively high-cardinality slicers.  
+
+5) 🟥 [DBX-DA-Assoc][RLS]  
+Define RLS roles (e.g., `BrandManager` brand filter, `Executive` unrestricted); map to security groups.  
+
+6) 🟥 [DBX-DA-Assoc][RLS][Testing]  
+Test RLS with "View as" for both roles; verify measures behave correctly and visuals respect filters.  
+
+7) 🟥 [DBX-DA-Assoc][Platform][Ops]  
+Prepare Fabric Deployment Pipeline (Dev → Test); parameterize dataset connections if needed.  
+
+8) 🟥 [DBX-DA-Assoc][Platform][Ops]  
+Promote to Test; validate dataset parameters, refresh, and fix any broken lineage.  
+
+9) 🟥 [DBX-DA-Assoc][Dashboards][Testing]  
+Polish visuals, accessibility (titles/alt text), and page performance (optimize visuals, fields).  
+
+10) 🟥 [DBX-DA-Assoc][Ops][Governance]  
+Document sharing (audience, app access), dataset/dashboards URLs, and pipeline links; capture screenshots for hand-off.  
+
+11) 🟩 [DBX-DA-Assoc][Platform]  
+Create and publish a Fabric App with audiences; configure navigation and app permissions.  
+
+12) 🟩 [DBX-DA-Assoc][Ops][Platform]  
+Configure dataset refresh schedules and parameters/secrets (e.g., workspace/Lakehouse bindings); verify post-promotion refresh.  
+
+13) 🟩 [Governance]  
+Apply sensitivity labels and endorse/certify the dataset; add descriptions and ownership metadata.  
+
+14) 🟨 [DBX-DA-Assoc][Dashboards][Testing]  
+Run Performance Analyzer and document actions; reduce heavy visuals/queries and optimize interactions.  
+
+15) 🟩 [DBX-DA-Assoc][Dashboards][Ops]  
+Add a "How to use" + QA checklist page; verify responsiveness and accessibility; finalize hand-off pack.  
+
 
 **Deliverables**  
 - Published dashboards (Executive and Segmentation) with stable URLs.  
