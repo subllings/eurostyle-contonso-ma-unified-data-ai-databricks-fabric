@@ -2641,6 +2641,45 @@ Note on numbering: Tasks are grouped by workflow (prep → train → validate �
    - Content: statistical assumptions, diagnostics, managerial implications, limitations, reproducibility (seed, snapshot, version).  
    - Bonus: prepare slides with hazard curves, uplift charts, and fairness dashboards → useful for job interviews and portfolio.  
 
+#### PhD Enhancements — Survival / BTYD / Advanced DS
+
+To extend the advanced notes into true PhD-level depth, students should also:
+
+- **Mathematical Derivations**
+  - Write out the **partial likelihood** of the Cox PH model and derive the score equations.
+  - Derive the **BG/NBD likelihood function** from first principles (purchase process + dropout process).
+  - Work through the **Gamma–Gamma model** assumption of independence between frequency and monetary value, and test this assumption empirically.
+
+- **Simulation Studies**
+  - Simulate censored survival data with known hazard rates (e.g., exponential, Weibull) and verify recovery of parameters by Cox PH and AFT models.
+  - Generate synthetic purchase data (Poisson–Gamma mixtures) and check if BG/NBD recovers true parameters.
+  - Stress test calibration: simulate non-stationary hazards and show when survival models mis-calibrate.
+
+- **Theoretical Assumptions**
+  - Explore **proportional hazards violations** (time-varying covariates, non-linear effects).
+  - Test independence assumptions in BTYD models using correlation and posterior predictive checks.
+  - Formalize **prior elicitation** for Bayesian survival/BTYD (e.g., Gamma priors for rates, Dirichlet for mixtures).
+
+- **Proof-of-Concept Code / Research Repos**
+  - Replicate examples from:
+    - [`scikit-survival`](https://scikit-survival.readthedocs.io/) (Cox, AFT, IBS).
+    - [`lifetimes`](https://lifetimes.readthedocs.io/) (BG/NBD, Gamma-Gamma).
+    - [`lifelines`](https://lifelines.readthedocs.io/en/latest/) (Kaplan–Meier, Cox, Aalen).
+  - Extend notebooks by adding bootstrap confidence intervals, posterior predictive checks, or causal adjustments.
+
+- **Canonical Book References**
+  - Klein & Moeschberger — *Survival Analysis: Techniques for Censored and Truncated Data* (Springer, 2003)  
+  - Hosmer, Lemeshow & May — *Applied Survival Analysis: Regression Modeling of Time-to-Event Data* (Wiley, 2008)  
+  - Harrell — *Regression Modeling Strategies* (Springer, 2015)  
+  - Fader & Hardie — *Customer Base Analysis with Probability Models* (various working papers, 2005–2019)  
+  - Gelman et al. — *Bayesian Data Analysis* (CRC Press, 2013)  
+  - Pearl, Glymour & Jewell — *Causal Inference in Statistics: A Primer* (Wiley, 2016)  
+
+- **Extra PhD-Level Research Directions**
+  - Investigate **causal survival analysis** (treatment effects on churn with time-to-event outcomes).
+  - Explore **hierarchical BTYD models** (brand/region random effects).
+  - Compare **Bayesian vs frequentist calibration** for churn probabilities.
+  - Prototype **sequence models** (RNNs/Transformers) with time-gap embeddings, and benchmark vs BTYD survival curves.
 
 ---
 
