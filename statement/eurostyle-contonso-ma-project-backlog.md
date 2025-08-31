@@ -10,9 +10,6 @@ Role-based study guides are available:
 - Data Scientist: `certification/data-scientist-certifications.md` (also available as `ml-ai-engineer-certifications.md`)
 - Data Business Analyst (preferred): `certification/data-business-analyst-certifications.md` (alias: `certification/analyst-bi-certifications.md`)
 
-A certification‑compliant use case that maps backlog tasks to exam‑aligned competencies is here:
-- `statement/eurostyle-contonso-ma-certification-compliant.md`
-
 ---
 
 ## Platform Architecture – Free vs Paid (Databricks ↔ Microsoft Fabric)
@@ -58,8 +55,8 @@ It provides a clear mapping of **who delivers what, and when**, ensuring no role
 | Sprint | Data Engineer (DE) | Data Scientist (DS) | Data Business Analyst (DA) |
 |--------|---------------------|---------------------|-------------------|
 | **0 (0.5d)** | 🟥 Set up Databricks workspace and folder structure; define ingestion paths for EuroStyle & Contoso | 🟥 Define hypotheses for churn (inactivity >90 days) and Customer Lifetime Value (CLV); identify required features | 🟩 🟨 Define initial KPI Catalog v0.1 (GMV, AOV, margin, churn rate); map differences EuroStyle vs Contoso |
-| **1 (4.5d)** | 🟥 Ingest EuroStyle & Contoso raw CSVs into Bronze Delta tables; add metadata (`ingest_ts`, `source_system`); kick off 🟦 [Governance G.1](#feature-g-1) (Purview + UC setup: SQL Warehouse HTTP Path, system tables, credential) | 🟥 Perform **Exploratory Data Analysis (EDA)** on Bronze (Contoso first): distributions, missing values, brand overlap; draft churn & CLV definitions | 🟩 🟨 Build "First Look Dashboard" (Contoso first) with Bronze KPIs: **GMV (Gross Merchandise Value)**, **AOV (Average Order Value)**, order counts |
-| **2 (4.5d)** | 🟥 Transform Bronze → Silver: deduplication, schema harmonization, standardize currencies, align product hierarchies; continue 🟦 [Governance G.1](#feature-g-1) (run first Purview scan, verify lineage, capture evidence) | 🟥 Engineer features: **RFM (Recency, Frequency, Monetary value)**, basket diversity, cross-brand overlap; track feature sets in MLflow | 🟩 🟨 Redesign dashboards on Silver; compare Raw vs Silver KPIs; implement first **Row-Level Security (RLS)** rules |
+| **1 (4.5d)** | 🟥 Ingest EuroStyle & Contoso raw CSVs into Bronze Delta tables; add metadata (`ingest_ts`, `source_system`); kick off 🟦 Governance G.1 (Purview + UC setup: SQL Warehouse HTTP Path, system tables, credential) | 🟥 Perform **Exploratory Data Analysis (EDA)** on Bronze (Contoso first): distributions, missing values, brand overlap; draft churn & CLV definitions | 🟩 🟨 Build "First Look Dashboard" (Contoso first) with Bronze KPIs: **GMV (Gross Merchandise Value)**, **AOV (Average Order Value)**, order counts |
+| **2 (4.5d)** | 🟥 Transform Bronze → Silver: deduplication, schema harmonization, standardize currencies, align product hierarchies; continue 🟦 Governance G.1(run first Purview scan, verify lineage, capture evidence) | 🟥 Engineer features: **RFM (Recency, Frequency, Monetary value)**, basket diversity, cross-brand overlap; track feature sets in MLflow | 🟩 🟨 Redesign dashboards on Silver; compare Raw vs Silver KPIs; implement first **Row-Level Security (RLS)** rules |
 | **3 (4.5d)** | 🟥 Build Gold marts: `sales_daily` (sales, GMV, AOV, margin), `category_perf`, `customer_360` with RFM base | 🟥 Train baseline models: Logistic Regression (churn), Random Forest (CLV regression); log experiments in MLflow | 🟩 🟨 Deliver **Executive Dashboard**: consolidated KPIs (GMV, AOV, margin), brand comparisons, North vs South splits |
 | **4 (4.5d)** | 🟥→🟩 Export Gold marts to Fabric Lakehouse (Parquet + manifest, or Shortcuts); orchestrate ingestion with Fabric Data Pipelines | 🟥→🟩 Run batch scoring for churn & CLV; join scored tables into Gold `customer_360`; export to Fabric and validate metrics/skew | 🟩 🟨 Build full **Power BI Post-Merger Suite**: Executive + Customer Segmentation dashboards (with churn & CLV); deploy with Fabric pipelines |
 
