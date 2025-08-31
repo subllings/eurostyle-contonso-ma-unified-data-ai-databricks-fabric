@@ -1963,7 +1963,7 @@ As a Data Analyst, I want Power BI dashboards published through Fabric so execut
 - Deploy dashboards via Fabric pipelines.  
  
 **Tasks (numbered)**:  
-**Tasks (numbered)**  
+
 
 1) 🟥 [DBX-DA-Assoc][Platform]  
 Set up Fabric workspace artifacts (Lakehouse, semantic model) and connect to Gold tables.  
@@ -2459,20 +2459,29 @@ Note: Some items intentionally span days (bookmarks/interactions and cross‑hig
 **User Story**  
 As a Data Scientist, I want to implement advanced survival analysis and probabilistic models so that stakeholders gain deeper insights into customer lifetime and churn timing, beyond standard classification/regression.  
 
-**Learning Resources**  
+#### Learning Resources (Standard)  
 - [Survival Analysis in Python (lifelines)](https://lifelines.readthedocs.io/en/latest/)  
 - [BG/NBD – step-by-step derivation (Fader, Hardie & Lee, 2019, PDF)](https://www.brucehardie.com/notes/039/bgnbd_derivation__2019-11-06.pdf)  
-- [The Gamma-Gamma Model of Monetary Value](https://www.brucehardie.com/notes/025/gamma_gamma.pdf)
+- [The Gamma-Gamma Model of Monetary Value](https://www.brucehardie.com/notes/025/gamma_gamma.pdf)  
 - [Sequential Deep Learning with PyTorch](https://pytorch.org/tutorials/beginner/basics/intro.html)  
-- [BTYD models notebook on Databricks](https://www.databricks.com/notebooks/Customer%20Lifetime%20Value%20Virtual%20Workshop/02%20The%20BTYD%20Models.html)
- - [scikit-survival documentation (Cox PH, IBS, calibration)](https://scikit-survival.readthedocs.io)  
- - [Harrell — Regression Modeling Strategies (survival best practices)](https://hbiostat.org/rms)  
- - [Therneau — Proportional Hazards tests (cox.zph vignette)](https://cran.r-project.org/package=survival)  
- - [lifetimes (Python) docs — BG/NBD & Gamma-Gamma](https://lifetimes.readthedocs.io)  
- - [Fader & Hardie BTYD resource hub](https://www.brucehardie.com)  
- - [scikit-learn — Probability calibration (reliability curves)](https://scikit-learn.org/stable/modules/calibration.html)  
- - [MLflow — Tracking and Model Registry](https://mlflow.org/docs/latest/tracking.html)  
- - [Delta Lake — MERGE, constraints, replaceWhere](https://docs.databricks.com/delta/)
+- [BTYD models notebook on Databricks](https://www.databricks.com/notebooks/Customer%20Lifetime%20Value%20Virtual%20Workshop/02%20The%20BTYD%20Models.html)  
+- [scikit-survival documentation (Cox PH, IBS, calibration)](https://scikit-survival.readthedocs.io)  
+- [Therneau — Proportional Hazards tests (cox.zph vignette)](https://cran.r-project.org/package=survival)  
+- [lifetimes (Python) docs — BG/NBD & Gamma-Gamma](https://lifetimes.readthedocs.io)  
+- [Fader & Hardie BTYD resource hub](https://www.brucehardie.com)  
+- [scikit-learn — Probability calibration (reliability curves)](https://scikit-learn.org/stable/modules/calibration.html)  
+- [MLflow — Tracking and Model Registry](https://mlflow.org/docs/latest/tracking.html)  
+- [Delta Lake — MERGE, constraints, replaceWhere](https://docs.databricks.com/delta/)  
+
+#### PhD-Level / Advanced References  
+- [Harrell — Regression Modeling Strategies (survival best practices)](https://hbiostat.org/rms)  
+- [Klein & Moeschberger (2005) — Survival Analysis: Techniques for Censored and Truncated Data (Springer)](https://link.springer.com/book/10.1007/0-387-21645-6)  
+- [Hosmer, Lemeshow & May (2008) — Applied Survival Analysis: Regression Modeling of Time-to-Event Data (Wiley)](https://www.wiley.com/en-us/Applied+Survival+Analysis%3A+Regression+Modeling+of+Time+to+Event+Data%2C+2nd+Edition-p-9780471754992)  
+- [Harrell (2015) — Regression Modeling Strategies (Springer, 2nd ed.)](https://link.springer.com/book/10.1007/978-3-319-19425-7)  
+- [Fader & Hardie — Customer-Base Analysis and Probability Models (BTYD research hub)](https://www.brucehardie.com)  
+- [Bishop (2006) — Pattern Recognition and Machine Learning (Springer)](https://www.springer.com/gp/book/9780387310732)  
+- [Goodfellow, Bengio & Courville (2016) — Deep Learning (MIT Press)](https://www.deeplearningbook.org/)  
+
 
 **Key Concepts**  
 - **Survival models** predict *time until churn*, producing hazard curves and probabilities per customer.  
