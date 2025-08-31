@@ -2340,49 +2340,49 @@ As a Data Analyst, I want to implement advanced segmentation logic and dynamic d
 
 **Tasks**  
 
-🟨 [DBX-DA-Assoc][Modeling]
+1) 🟨 [DBX-DA-Assoc][Modeling]
 Define dynamic segmentation rules (RFM buckets, churn cutoff, CLV tiers); document defaults.
 
-🟨 [DBX-DA-Assoc][Dashboards]
+2) 🟨 [DBX-DA-Assoc][Dashboards]
 Implement What-if parameters (recency window, churn cutoff, CLV tier cutpoints).
 
-🟨 [DBX-DA-Assoc][Dashboards][Modeling]
+3) 🟨 [DBX-DA-Assoc][Dashboards][Modeling]
 Build parameter/measure tables; bind measures to parameters.
 
-🟨 [DBX-DA-Assoc][Dashboards][Modeling]
+4) 🟨 [DBX-DA-Assoc][Dashboards][Modeling]
 Create field parameters for dimension and measure switching; wire to visuals.
 
-🟨 [DBX-DA-Assoc][Dashboards]
+5) 🟨 [DBX-DA-Assoc][Dashboards]
 Create drill-through pages (Segment detail, Customer detail) with Back buttons.
 
-🟨 [DBX-DA-Assoc][Dashboards]
+6) 🟨 [DBX-DA-Assoc][Dashboards]
 Add tooltip pages (mini profile).
 
-🟨 [DBX-DA-Assoc][Dashboards][Docs]
+7) 🟨 [DBX-DA-Assoc][Dashboards][Docs]
 Add a Methods banner (DAX) with active thresholds and snapshot.
 
-🟩 [DBX-DA-Assoc][Platform][Modeling]
+8) 🟩 [DBX-DA-Assoc][Platform][Modeling]
 Connect to Gold customer_360 and customer_scores_gold; validate relationships/counts.
 
-🟩 [DBX-DA-Assoc][Governance][Security]
+9) 🟩 [DBX-DA-Assoc][Governance][Security]
 Implement and test RLS (BrandManager, Executive) in Desktop/Service.
 
-🟨 [DBX-DA-Assoc][Optimization][Performance]
+10) 🟨 [DBX-DA-Assoc][Optimization][Performance]
 Optimize performance (reduce visuals, aggregations if needed, avoid high-card slicers).
 
-🟨 [DBX-DA-Assoc][Dashboards]
+11) 🟨 [DBX-DA-Assoc][Dashboards]
 Configure bookmarks and sync slicers; verify interactions.
 
-🟨 [DBX-DA-Assoc][Accessibility]
+12) 🟨 [DBX-DA-Assoc][Accessibility]
 Accessibility pass (contrast, focus order, alt text, formats).
 
-🟨 [DBX-DA-Assoc][Testing][Dashboards]
+13) 🟨 [DBX-DA-Assoc][Testing][Dashboards]
 Validate cross-highlighting and edge cases (empty/ALL segments, mobile).
 
-🟨 [DBX-DA-Assoc][Docs][Governance]
+14) 🟨 [DBX-DA-Assoc][Docs][Governance]
 Document thresholds, navigation map, screenshots, RLS notes in README.
 
-🟨 [DBX-DA-Assoc][Modeling][Optional]
+15) 🟨 [DBX-DA-Assoc][Modeling][Optional]
 (Optional) Calculation groups for dynamic formatting/switching.
 
 **User Stories (breakdown)**  
@@ -2495,61 +2495,61 @@ As a Data Scientist, I want to implement advanced survival analysis and probabil
 - Document in README with plots and interpretation (e.g., "50% of Segment A expected to churn within 6 months").  
 
 **Tasks**  
-🟥 [DBX-DS-Assoc][DataPrep]
+1) 🟥 [DBX-DS-Assoc][DataPrep]
 Prepare survival dataset (event = churn, duration = days since last purchase).
 
-🟥 [DBX-DS-Assoc][Modeling][Lifelines]
+2) 🟥 [DBX-DS-Assoc][Modeling][Lifelines]
 Train Cox model or Kaplan-Meier survival curves using lifelines.
 
-🟥 [DBX-DS-Assoc][Modeling][BTYD]
+3) 🟥 [DBX-DS-Assoc][Modeling][BTYD]
 Implement BG/NBD and Gamma-Gamma CLV model with the lifetimes package.
 
-🟥 [DBX-DS-Assoc][Visualization][Docs]
+4) 🟥 [DBX-DS-Assoc][Visualization][Docs]
 Generate visualizations (hazard curves, CLV distributions).
 
-🟥 [DBX-DS-Prof][Modeling][DeepLearning][Optional]
+5) 🟥 [DBX-DS-Prof][Modeling][DeepLearning][Optional]
 (Optional) Prototype a sequential NN model (LSTM/Transformer) for churn prediction.
 
-🟥 [DBX-DS-Assoc][Docs][Evaluation]
+6) 🟥 [DBX-DS-Assoc][Docs][Evaluation]
 Document findings and compare with baseline tree-based models.
 
-🟥 [DBX-DS-Assoc][Governance][DataPrep]
+7) 🟥 [DBX-DS-Assoc][Governance][DataPrep]
 Fix as-of date, churn horizon, and censoring rules; implement leakage guardrails (features pre as-of only, labels from forward inactivity window).
 
-🟥 [DBX-DS-Assoc][Modeling][Platform]
+8) 🟥 [DBX-DS-Assoc][Modeling][Platform]
 Build survival and BTYD modeling frames; persist feature views with version metadata (snapshot, schema hash).
 
-🟥 [DBX-DS-Assoc][Testing][Evaluation]
+9) 🟥 [DBX-DS-Assoc][Testing][Evaluation]
 Create temporal splits with rolling-origin backtests; include segment-wise evaluation (brand/region).
 
-🟥 [DBX-DS-Prof][Testing][Evaluation]
+10) 🟥 [DBX-DS-Prof][Testing][Evaluation]
 Validate assumptions: Cox PH tests; BG/NBD and Gamma-Gamma convergence/identifiability; record diagnostics.
 
-🟥 [DBX-DS-Assoc][Metrics][Evaluation]
+11) 🟥 [DBX-DS-Assoc][Metrics][Evaluation]
 Compute metrics: C-index, IBS, calibration/reliability plots; lift/gains for top-N; CLV error (MAPE/RMSE).
 
-🟥 [DBX-DS-Assoc][Calibration][Evaluation]
+12) 🟥 [DBX-DS-Assoc][Calibration][Evaluation]
 Calibrate and set acceptance thresholds and operating points by horizon (30/60/90d).
 
-🟥 [DBX-DS-Assoc][Ops][Tracking]
+13) 🟥 [DBX-DS-Assoc][Ops][Tracking]
 Track runs in MLflow (params, metrics, artifacts, seeds); record data snapshot IDs and environment details.
 
-🟥 [DBX-DS-Assoc][Ops][Platform]
+14) 🟥 [DBX-DS-Assoc][Ops][Platform]
 Score full population; write customer_scores_gold idempotently (MERGE/replaceWhere); enforce Delta constraints (keys, bounds 0–1).
 
-🟥→🟩 [DBX-DS-Assoc][Testing][Ops]
+15) 🟥→🟩 [DBX-DS-Assoc][Testing][Ops]
 Run E2E checks: bounds/nulls/joins; BI spot-checks in Power BI; verify "Today looks normal?" banner behavior.
 
-🟥→🟩 [DBX-DS-Assoc][Governance][Docs]
+16) 🟥→🟩 [DBX-DS-Assoc][Governance][Docs]
 Hand-off to Feature 3.4: field list (risk bands, CLV tiers), RLS awareness, and dashboard binding notes.
 
-🟥 [DBX-DS-Prof][Monitoring][Testing]
+17) 🟥 [DBX-DS-Prof][Monitoring][Testing]
 Monitoring: feature drift (PSI), performance stability by brand/region, fairness checks; set weekly report and alert thresholds.
 
-🟥 [DBX-DS-Assoc][Docs][Governance]
+18) 🟥 [DBX-DS-Assoc][Docs][Governance]
 Documentation: plots, acceptance thresholds, runbook, risks/mitigations, reproducibility notes (seeds, as-of, schema).
 
-🟥 [DBX-DS-Prof][Modeling][DeepLearning][Optional]
+19) 🟥 [DBX-DS-Prof][Modeling][DeepLearning][Optional]
 (Optional) Prototype sequence model (LSTM/Transformer) as comparator; document performance/calibration deltas. 
 
 **User Stories (breakdown)**  
