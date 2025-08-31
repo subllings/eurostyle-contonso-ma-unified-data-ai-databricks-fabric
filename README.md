@@ -82,8 +82,8 @@ In a production environment, this would be automated and governed using:
 - [Business Case](./statement/eurostyle-contonso-ma-business-case.md)
 - [Product Backlog](./statement/eurostyle-contonso-ma-project-backlog.md)
 - [Getting Started (free/trial setup)](./GETTING_STARTED.md)
-- [Certification-compliant mapping](./statement/eurostyle-contonso-ma-certification-compliant.md)
-- [Certification guides (DE/DS/DA)](./certification/)
+- [Certification-Compliant Use Case Mapping](./statement/eurostyle-contonso-ma-certification-compliant.md)
+- [Certification guides (Data Engineer / Data Scientist / Data Analyst)](./certification/)
 - [Glossary](./GLOSSARY.md)
 
 
