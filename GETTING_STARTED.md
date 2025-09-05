@@ -25,11 +25,18 @@ Steps (Azure Portal)
 - Basics:
   - Subscription: select yours
   - Resource group: `rg-es-contoso-ma`
-  - Workspace name: `adb-es-contoso-ma`
+  - Workspace name: `ws-es-contoso-ma`
   - Region: same as the resource group (keep data locality)
   - Pricing Tier: Trial (Premium — 14 days Free DBUs)
 - Review + create → after deployment, Open and Launch Workspace
 - Reference: Getting started → Create workspace: https://learn.microsoft.com/azure/databricks/getting-started/
+
+![picture 0](images/34f990123328fe7d587a16e04ffc0210fccb4b30330e8b2983fb3bf201eb777e.png)  
+
+![picture 1](images/cd0cf50dced839e1b298f83151e1e5a587f2f78db39ae58881fe12c32a704e3b.png)  
+
+![picture 2](images/b4ea5df4a49ee639e554f5f435b285da47e8fb3ecb9589845b0a8d3a717c4db4.png)  
+
 
 Minimal workspace configuration
 - Compute (cluster)
