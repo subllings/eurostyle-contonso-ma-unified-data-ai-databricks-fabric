@@ -396,3 +396,6 @@ This glossary lists the tags used in this file. For broader definitions shared a
 | [MS-DP700][Ingestion-Streaming] | Streaming ingestion | Eventstreams, Real-Time Intelligence, Structured Streaming. |
 | [MS-DP700][Monitoring] | Monitoring | Monitoring Hub, histories, alerts, troubleshooting. |
 | [MS-DP700][Performance] | Performance optimization | Lakehouse, DW, Spark tuning in Fabric. |
+---
+ Additional resource: [secloudis.com](https://secloudis.com) – articles and notes on cloud, data, analytics, and artificial intelligence (optional external reference).
+

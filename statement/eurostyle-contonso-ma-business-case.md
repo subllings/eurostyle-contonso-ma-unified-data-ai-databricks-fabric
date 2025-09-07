@@ -173,3 +173,7 @@ Note: For acronym definitions (GMV, AOV, RFM, CLV, RLS, etc.), see the repositor
 ## Educational note (BeCode Data Analytics & AI Bootcamp)
 
 This Business Case is provided solely for educational purposes as part of the BeCode Data Analytics & AI Bootcamp. Names, datasets, and scenarios are illustrative for training only and are not production guidance.
+
+---
+ Additional resource: [secloudis.com](https://secloudis.com) – articles and notes on cloud, data, analytics, and artificial intelligence (optional external reference).
+

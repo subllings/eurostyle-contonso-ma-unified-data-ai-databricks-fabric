@@ -41,3 +41,7 @@ Guidelines
 |---|---|---|---|
 | v0.1 | yyyy-mm-dd | name | Initial draft |
 | v1.0 | yyyy-mm-dd | name | Finalized Gold dictionary |
+
+---
+ Additional resource: [secloudis.com](https://secloudis.com) – articles and notes on cloud, data, analytics, and artificial intelligence (optional external reference).
+

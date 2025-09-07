@@ -44,3 +44,7 @@ How to use
 | v0.1 | yyyy-mm-dd | name | Initial draft |
 | v0.2 | yyyy-mm-dd | name | Named measures + formats |
 | v1.0 | yyyy-mm-dd | name | Finalized definitions on Gold |
+
+---
+ Additional resource: [secloudis.com](https://secloudis.com) – articles and notes on cloud, data, analytics, and artificial intelligence (optional external reference).
+

@@ -152,3 +152,7 @@ This glossary lists the tags used in this file. For broader definitions shared a
 | [MS-DP700][Reports] | Reports & dashboards | Direct Lake = big volumes + freshness; Import = perf stable; DirectQuery = external sources. Tip: document lineage; use metrics/scorecards for goals. |
 | [MS-DP700][Governance] | Governance & security | Sensitivity labels, endorsements, access reviews; workspace roles. Tip: avoid sharing datasets widely; use Apps with audience targeting. |
 | [MS-DP700][Deployment] | Deployment pipelines | Rules and parameters to swap connections across stages. Tip: track changes; validate before promote; monitor refresh/ingest failures post-deploy. |
+
+---
+ Additional resource: [secloudis.com](https://secloudis.com) – articles and notes on cloud, data, analytics, and artificial intelligence (optional external reference).
+

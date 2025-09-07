@@ -281,3 +281,7 @@ This glossary lists the tags used in this file. For broader definitions shared a
 | [DBX-ML-Prof][Drift-Metrics] | Drift Detection Metrics | Detect covariate/label drift with PSI/KS and population share changes. Example: `from scipy.stats import ks_2samp; ks_2samp(a,b)`. Tip: compare to training baselines and recent windows; investigate upstream pipeline changes first. |
 | [DBX-ML-Prof][CI-CD] | Model CI/CD | Automate tests (unit on features, smoke scoring), evaluate models in pipelines, and require approvals before registry promotion. Tip: pin library versions; fail fast on schema changes. |
 | [DBX-ML-Prof][Governance] | Governance (Unity Catalog) | Enforce permissions on models/features; capture lineage; use catalog.schema for clarity. Example: `models:/cat.sch.model_name`. Tip: audit access and stage transitions. |
+
+---
+ Additional resource: [secloudis.com](https://secloudis.com) – articles and notes on cloud, data, analytics, and artificial intelligence (optional external reference).
+

@@ -35,7 +35,6 @@ To address this, the CMO and CDAO asked the **Data Engineer**, **Data Scientist*
 
 ![picture 8](images/daa5adb827d2fc7487dc37c035199c3f628e68fac93ce5aefcec854f1cca42bd.png)  
 
-
 ---
 
 ## Platform Context
@@ -83,11 +82,11 @@ In a production environment, this would be automated and governed using:
 - [Product Backlog](./statement/eurostyle-contonso-ma-project-backlog.md)
 - [Getting Started (free/trial setup)](./GETTING_STARTED.md)
 - [Certification-Compliant Use Case Mapping](./statement/eurostyle-contonso-ma-certification-compliant.md)
-- [Certification guides (Data Engineer / Data Scientist / Data Analyst)](./certification/)
+- Certification guides:
+  - [Data Engineer](./certification/data-engineer-certifications.md)
+  - [Data Scientist](./certification/data-scientist-certifications.md)
+  - [Data Business Analyst](./certification/data-business-analyst-certifications.md)
 - [Glossary](./GLOSSARY.md)
-
-
-
 
 
 ---
@@ -95,4 +94,7 @@ In a production environment, this would be automated and governed using:
 ## Educational note (BeCode Data Analytics & AI Bootcamp)
 
 This repository is provided solely for educational purposes as part of the BeCode Data Analytics & AI Bootcamp. Names, datasets, and scenarios are illustrative for training only and are not production guidance.
+
+---
+ Additional resource: [secloudis.com](https://secloudis.com) – articles and notes on cloud, data, analytics, and artificial intelligence (optional external reference).
 
