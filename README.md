@@ -80,6 +80,7 @@ In a production environment, this would be automated and governed using:
 
 - [Business Case](./statement/eurostyle-contonso-ma-business-case.md)
 - [Product Backlog](./statement/eurostyle-contonso-ma-project-backlog.md)
+- Solutions: https://github.com/yves-schillings/eurostyle-contonso-ma-unified-data-ai-databricks-fabric-sol/tree/main/solution
 - [Getting Started (free/trial setup)](./GETTING_STARTED.md)
 - [Certification-Compliant Use Case Mapping](./statement/eurostyle-contonso-ma-certification-compliant.md)
 - Certification guides:
